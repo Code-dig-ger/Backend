@@ -1,7 +1,6 @@
 import json
 import requests
 
-from django.db import connection
 from problem.models import Problem 
 
 from django.core.mail import send_mail	
@@ -24,17 +23,6 @@ def rating_to_difficulty(rating):
 		return 'S'
 	else :
 		return 'C'
-
-def alter_tables():	
-	cursor = connection.cursor()
-	cursor.execute('ALTER TABLE codeforces_organization CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	cursor.execute('ALTER TABLE codeforces_user CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	cursor.execute('ALTER TABLE codeforces_country CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	cursor.execute('ALTER TABLE codeforces_contest CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	cursor.execute('ALTER TABLE problem_problem CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	cursor.execute('ALTER TABLE problem_atcoder_contest CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci')
-	return
-
 
 def codeforces_update_users():
 	url = "https://codeforces.com/api/user.ratedList"
@@ -300,7 +288,6 @@ def update_codeforces():
 	recepient = 'shivamsinghal1012@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
-	alter_tables()
 	codeforces_update_users()
 	codeforces_update_problems()
 	codeforces_update_contest()
