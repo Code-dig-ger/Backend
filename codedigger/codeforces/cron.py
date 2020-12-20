@@ -28,10 +28,8 @@ def rating_to_difficulty(rating):
 def codeforces_update_users():
 
 	url = "https://codeforces.com/api/user.ratedList"
-
 	
 	res  = requests.get(url)
- 
 
 	if res.status_code != 200 :
 		return
