@@ -1,5 +1,6 @@
 import json
 import requests
+from requests.exceptions import Timeout
 
 from problem.models import Problem 
 
@@ -25,10 +26,17 @@ def rating_to_difficulty(rating):
 		return 'C'
 
 def codeforces_update_users():
+
 	url = "https://codeforces.com/api/user.ratedList"
-	res = requests.get(url)
+
+	try:
+		res  = requests.get(url, timeout=(600,900))
+	except Timeout:
+		return 
+
 	if res.status_code != 200 :
 		return
+	
 	data= res.json()
 
 	if(data["status"] != 'OK') :
