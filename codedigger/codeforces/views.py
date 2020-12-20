@@ -121,3 +121,26 @@ class ContestRankAPIView(
             qs = qs.filter(contestId = contestId)
         return qs
 
+
+
+
+### TESTING CODEFORCES STUFF
+
+from .cron import codeforces_update_users , codeforces_update_problems , codeforces_update_contest
+
+
+def testing_users(request):
+    codeforces_update_users()
+    return HttpResponse("OKAY")
+
+
+def testing_problems(request):
+    codeforces_update_problems()
+    return HttpResponse("OKAY")
+
+
+def testing_contest(request):
+    codeforces_update_contest()
+    return HttpResponse("OKAY")
+
+

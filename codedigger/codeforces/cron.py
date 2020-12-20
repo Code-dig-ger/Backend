@@ -27,6 +27,8 @@ def rating_to_difficulty(rating):
 def codeforces_update_users():
 	url = "https://codeforces.com/api/user.ratedList"
 	res = requests.get(url)
+	if res.status_code != 200 :
+		return
 	data= res.json()
 
 	if(data["status"] != 'OK') :
@@ -100,6 +102,10 @@ def codeforces_update_problems():
 	# if no , update the problems , else not .. 
 	url = "https://codeforces.com/api/contest.list"
 	res = requests.get(url)
+
+	if res.status_code != 200 :
+		return
+
 	data = res.json()
 
 	if(data["status"] != 'OK') :
@@ -144,6 +150,10 @@ def codeforces_update_problems():
 	
 	url = "https://codeforces.com/api/contest.list?gym=true"
 	res = requests.get(url)
+
+	if res.status_code != 200 :
+		return
+
 	data = res.json()
 
 	if(data["status"] != 'OK') :
@@ -153,6 +163,8 @@ def codeforces_update_problems():
 
 		url = "https://codeforces.com/api/contest.standings?contestId=" + str(codeforces_contest['id']) + "&from=1&count=1"
 		res = requests.get(url)
+		if res.status_code != 200 :
+			continue
 		data= res.json()
 
 		if(data["status"] != 'OK') :
@@ -192,6 +204,8 @@ def codeforces_update_problems():
 def codeforces_update_contest():
 	url = "https://codeforces.com/api/contest.list"
 	res = requests.get(url)
+	if res.status_code != 200 :
+		return
 	data = res.json()
 
 	if(data["status"] != 'OK') :
@@ -204,6 +218,10 @@ def codeforces_update_contest():
 
 		url = "https://codeforces.com/api/contest.ratingChanges?contestId=" + str(codeforces_contest['id'])
 		res = requests.get(url)
+
+		if res.status_code != 200 :
+			continue
+
 		data = res.json()
 
 		if(data["status"] != 'OK') :
