@@ -40,7 +40,7 @@ class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length = 68,min_length = 6,write_only=True)
     username = serializers.CharField(max_length = 68)
     tokens = serializers.SerializerMethodField()
-
+    first_time_login = serializers.SerializerMethodField()
 
     def get_tokens(self, obj):
         user = User.objects.get(username=obj['username'])
@@ -48,10 +48,17 @@ class LoginSerializer(serializers.ModelSerializer):
             'refresh': user.tokens()['refresh'],
             'access': user.tokens()['access']
         }
-    
+    def get_first_time_login(self,obj):
+        qs = Profile.objects.get(owner__username = obj['username'])
+        if qs.name is None:
+            return True
+        return False
+
+
+
     class Meta:
         model = User
-        fields = ['id','username','email','password','tokens']
+        fields = ['id','username','email','password','tokens','first_time_login']
 
     def validate(self,attrs):
         username =  attrs.get('username','')
@@ -122,6 +129,9 @@ def check_uva_handle(value):
     if value is not None and not check_handle_uva(value):
         raise serializers.ValidationError('The given handle does not exist')
 
+
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField(validators=[required])
     codeforces = serializers.CharField(validators=[check_cf])
@@ -129,17 +139,22 @@ class ProfileSerializer(serializers.ModelSerializer):
     codechef = serializers.CharField(validators=[check_codechef],allow_blank = True)
     atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True)
     uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True)
-    #uva_id = serializers.SerializerMethodField()
+    password = serializers.CharField(max_length = 68,min_length = 6,write_only=True)
 
+    def validate(self,attrs):
+        username = self.context.get('user')
+        password = attrs.get('password')
+        if password.strip() is None:
+            return super().validate(attrs)
+        qs = User.objects.filter(username=username).first()
+        qs.set_password(password)
+        qs.save()
+        return super().validate(attrs)
 
-    # def get_uva_id(self,obj):
-    #     uva = obj['uva_handle']
-    #     if not uva_id.strip():
-    #         return get_uva(uva)
 
     class Meta:
         model = Profile
-        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle']
+        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle','password']
 
 
     
