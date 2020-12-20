@@ -26,7 +26,7 @@ def rating_to_difficulty(rating):
 		return 'C'
 
 def codeforces_update_users():
-
+	
 	url = "https://codeforces.com/api/user.ratedList"
 	
 	res  = requests.get(url)
@@ -38,6 +38,8 @@ def codeforces_update_users():
 
 	if(data["status"] != 'OK') :
 		return 
+
+	print(data['status'])
 
 	rank = 0
 	organization.objects.all().update(current = 0)
@@ -57,6 +59,7 @@ def codeforces_update_users():
 			name = name[:100]
 
 		newUser.name = name		
+		print(name)
 		newUser.rating = codeforces_user['rating']
 		newUser.maxRating = codeforces_user['maxRating']
 		newUser.rank = codeforces_user['rank']
