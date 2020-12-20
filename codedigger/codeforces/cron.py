@@ -29,10 +29,9 @@ def codeforces_update_users():
 
 	url = "https://codeforces.com/api/user.ratedList"
 
-	try:
-		res  = requests.get(url, timeout=(600,900))
-	except Timeout:
-		return 
+	
+	res  = requests.get(url)
+ 
 
 	if res.status_code != 200 :
 		return
