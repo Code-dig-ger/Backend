@@ -50,7 +50,7 @@ class RegisterView(generics.GenericAPIView):
         relative_link = reverse('email-verify')
 
 
-        absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        absurl = 'http://' + current_site + relative_link + "?token=" + str(token)
         email_body = 'Hi' + user.username + '. Use link below to verify your email \n' + absurl
         data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
         Util.send_email(data)
@@ -108,7 +108,7 @@ class ProfileUpdateView(UpdateAPIView):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
         return data
-        
+
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user)
 
