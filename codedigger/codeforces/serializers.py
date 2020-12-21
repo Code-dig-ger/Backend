@@ -44,10 +44,10 @@ class contestRankSerializer(serializers.ModelSerializer):
             'organizationRank'
         ]
 
-class UserSerializer(WritableNestedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     country = CountrySerializer()
     organization = OrganizationSerializer()
-    rank = contestRankSerializer(source = 'contestRank' , many = True)
+    contestRank = ContestSerializer( many = True)
     
     class Meta:
         model= user

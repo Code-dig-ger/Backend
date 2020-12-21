@@ -30,9 +30,11 @@ def codeforces_update_users():
 	url = "https://codeforces.com/api/user.ratedList"
 	
 	res  = requests.get(url)
+	cnt = 0
 
-	if res.status_code != 200 :
-		return
+	while res.status_code != 200 and cnt < 3:
+		res  = requests.get(url)
+		cnt+=1
 	
 	data= res.json()
 	del res
