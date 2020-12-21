@@ -40,7 +40,7 @@ class TopicwiseGetSerializer(serializers.ModelSerializer):
 
 class TopicwiseRetrieveSerializer(WritableNestedModelSerializer):
     user = serializers.SerializerMethodField()
-    problem = ProblemSerializer(many = True,context = {'user' : user,'list' : List.name})
+    problem = ProblemSerializer(many = True,context = {'user' : user,'list' : })
     def get_user(self,attrs):
         user = self.context.get('user')
         return user
