@@ -35,11 +35,12 @@ def codeforces_update_users():
 		return
 	
 	data= res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
 
-	print(data['status'])
+	#print(data['status'])
 
 	rank = 0
 	organization.objects.all().update(current = 0)
@@ -59,7 +60,7 @@ def codeforces_update_users():
 			name = name[:100]
 
 		newUser.name = name		
-		print(name)
+		#print(name)
 		newUser.rating = codeforces_user['rating']
 		newUser.maxRating = codeforces_user['maxRating']
 		newUser.rank = codeforces_user['rank']
@@ -103,6 +104,8 @@ def codeforces_update_users():
 			newUser.organizationRank = obj.current
 
 		newUser.save()
+
+	del data
 	return 
 
 def codeforces_update_problems():
@@ -115,6 +118,7 @@ def codeforces_update_problems():
 		return
 
 	data = res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
@@ -206,7 +210,7 @@ def codeforces_update_problems():
 			if len(Problem.objects.filter(prob_id = str(contest_problem['contestId']) + contest_problem['index'])) == 0: 
 				new_problem.save()
 
-	
+	del data
 	return
 
 def codeforces_update_contest():
@@ -215,6 +219,7 @@ def codeforces_update_contest():
 	if res.status_code != 200 :
 		return
 	data = res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
@@ -306,6 +311,8 @@ def codeforces_update_contest():
 				ucr.countryRank = cntry_contest_participation.current
 
 			ucr.save()
+
+	del data
 	return
 
 def update_codeforces():
