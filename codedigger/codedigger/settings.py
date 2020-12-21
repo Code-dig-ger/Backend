@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'django_crontab',
+    'lists'
 ]
 
 SWAGGER_SETTINGS = {
