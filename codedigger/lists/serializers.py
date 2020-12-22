@@ -4,26 +4,23 @@ from problem.models import Problem
 from user.models import User
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
 
     def get_description(self,obj):
-        curr_list = self.context["list"]
-        qs = ListInfo.objects.filter(problem=obj,curr_list__name=curr_list)
+        name = self.context.get("name")
+        qs = ListInfo.objects.filter(l__name = name,problem = obj)
         if qs.exists():
-            return qs.desciption
+            for ele in qs.values('description'):
+                return ele['description']
         return " "
 
 
-
     def get_solved(self,obj):
-        user = self.context["user"]
+        user = self.context.get("user")
         solve = Solved.objects.filter(user__username=user,problem = obj)
-        if solve.exists():
-            return True
-        return False
+        return solve.exists()
 
 
 
@@ -40,10 +37,18 @@ class TopicwiseGetSerializer(serializers.ModelSerializer):
 
 class TopicwiseRetrieveSerializer(WritableNestedModelSerializer):
     user = serializers.SerializerMethodField()
-    problem = ProblemSerializer(many = True,context = {'user' : user,'list' : })
+    problem = serializers.SerializerMethodField()
+    
     def get_user(self,attrs):
         user = self.context.get('user')
         return user
+
+
+    def get_problem(self,attrs):
+        user = self.context.get('user')
+        name = attrs.name
+        qs = attrs.problem.all()
+        return ProblemSerializer(qs,many = True,context = {"name" : name,"user" : user}).data
 
     class Meta:
         model = List

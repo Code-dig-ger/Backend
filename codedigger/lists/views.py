@@ -3,11 +3,12 @@ from .models import ListInfo,Solved,List
 from problem.models import Problem
 from user.models import User
 from .serializers import TopicwiseGetSerializer,TopicwiseRetrieveSerializer
+from django.db.models import Q
 
 class TopicwiseGetView(generics.ListAPIView):
     serializer_class=TopicwiseGetSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = List.objects.filter(isTopicWise=True,isList=True)
+    queryset = List.objects.filter(Q(type_list = '1') | Q(type_list = '3'))
 
 
 class TopicWiseRetrieveView(generics.RetrieveAPIView):
