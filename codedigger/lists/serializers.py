@@ -28,14 +28,14 @@ class ProblemSerializer(serializers.ModelSerializer):
         model = Problem
         fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','description','solved')
 
-class TopicwiseGetSerializer(serializers.ModelSerializer):
+class GetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
         fields = ('id','name','description',)
 
 
-class TopicwiseRetrieveSerializer(WritableNestedModelSerializer):
+class RetrieveSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     problem = serializers.SerializerMethodField()
     
@@ -54,3 +54,29 @@ class TopicwiseRetrieveSerializer(WritableNestedModelSerializer):
         model = List
         fields = ('id','user','name','description','problem',)
     
+
+class GetLadderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = List
+        fields = ('id','name','description',)
+
+class LadderRetrieveSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    problem = serializers.SerializerMethodField()
+    
+    def get_user(self,attrs):
+        user = self.context.get('user')
+        return user
+
+    def get_problem(self,attrs):
+        user = self.context.get('user')
+        name = attrs.name
+        for qs in attrs.problem.all():
+            solve = Solved.objects.filter(user__username=user,problem=qs)
+            if not solve.exists():
+                return ProblemSerializer(qs,context = {"name" : name,"user" : user}).data
+
+    class Meta:
+        model = List
+        fields = ('id','user','name','description','problem',)

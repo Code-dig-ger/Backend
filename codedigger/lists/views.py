@@ -2,19 +2,19 @@ from rest_framework import generics,status,permissions,views
 from .models import ListInfo,Solved,List
 from problem.models import Problem
 from user.models import User
-from .serializers import TopicwiseGetSerializer,TopicwiseRetrieveSerializer
+from .serializers import GetLadderSerializer,GetSerializer,LadderRetrieveSerializer,RetrieveSerializer
 from django.db.models import Q
 
-class TopicwiseGetView(generics.ListAPIView):
-    serializer_class=TopicwiseGetSerializer
+class TopicwiseGetListView(generics.ListAPIView):
+    serializer_class=GetSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = List.objects.filter(Q(type_list = '1') | Q(type_list = '3'))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
 
 
 class TopicWiseRetrieveView(generics.RetrieveAPIView):
-    serializer_class = TopicwiseRetrieveSerializer
+    serializer_class = RetrieveSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = List.objects.all()
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
     lookup_field = "name"
 
     def get_serializer_context(self,**kwargs):
@@ -23,5 +23,19 @@ class TopicWiseRetrieveView(generics.RetrieveAPIView):
         return data
 
 
+class TopicwiseGetLadderView(generics.ListAPIView):
+    serializer_class=GetLadderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
 
 
+class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
+    serializer_class = LadderRetrieveSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
+    lookup_field = "name"
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
