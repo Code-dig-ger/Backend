@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['localhost' , '165.22.209.64','127.0.0.1']
+ALLOWED_HOSTS = ['localhost' , '165.22.209.64','127.0.0.1' , '128.199.26.91']
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -179,11 +179,12 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-    ('0 0 * * *', 'problem.cron.update_spoj'),
-    ('0 20 * * *', 'codeforces.cron.update_codeforces'),
-    ('0 6 * * *', 'problem.cron.update_codechef'),
-    ('0 10 * * *', 'problem.cron.update_atcoder'),
-    ('0 15 * * *', 'problem.cron.update_uva'),
+    #('0 0 * * *', 'problem.cron.update_spoj'),
+    ('30 12 * * *', 'codeforces.cron.update_codeforces'),
+    #('30 23 * * *', 'problem.cron.update_codechef'),
+    #('15 23 * * *', 'problem.cron.update_atcoder'),
+    #('0 23 * * *', 'problem.cron.update_uva'),
+    ('15 11 * * *' , 'codeforces.cron.codeforces_update_problems')
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

@@ -1,6 +1,5 @@
 import json
 import requests
-from requests.exceptions import Timeout
 
 from problem.models import Problem 
 
@@ -30,16 +29,24 @@ def codeforces_update_users():
 	url = "https://codeforces.com/api/user.ratedList"
 	
 	res  = requests.get(url)
+	cnt = 0
 
-	if res.status_code != 200 :
-		return
+	while res.status_code != 200 and cnt < 3:
+		res  = requests.get(url)
+		cnt+=1
 	
 	data= res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
 
-	print(data['status'])
+	subject = 'Codeforces update Users Started (Status OK)'
+	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
+	#print(data['status'])
 
 	rank = 0
 	organization.objects.all().update(current = 0)
@@ -59,7 +66,7 @@ def codeforces_update_users():
 			name = name[:100]
 
 		newUser.name = name		
-		print(name)
+		#print(name)
 		newUser.rating = codeforces_user['rating']
 		newUser.maxRating = codeforces_user['maxRating']
 		newUser.rank = codeforces_user['rank']
@@ -103,11 +110,25 @@ def codeforces_update_users():
 			newUser.organizationRank = obj.current
 
 		newUser.save()
+
+	subject = 'Codeforces update Users Finished (All users are updated)'
+	message = 'This is automated message from Codedigger which tells that your codeforces updation has finished'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
+	del data
 	return 
 
 def codeforces_update_problems():
 	# check whether we have updated the problems of a particular contest , 
 	# if no , update the problems , else not .. 
+
+	subject = 'Codeforces update Problems Started'
+	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
+
 	url = "https://codeforces.com/api/contest.list"
 	res = requests.get(url)
 
@@ -115,6 +136,7 @@ def codeforces_update_problems():
 		return
 
 	data = res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
@@ -206,7 +228,12 @@ def codeforces_update_problems():
 			if len(Problem.objects.filter(prob_id = str(contest_problem['contestId']) + contest_problem['index'])) == 0: 
 				new_problem.save()
 
-	
+	subject = 'Codeforces update Problem Finished'
+	message = 'This is automated message from Codedigger which tells that your codeforces updation has finished'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
+	del data
 	return
 
 def codeforces_update_contest():
@@ -215,6 +242,7 @@ def codeforces_update_contest():
 	if res.status_code != 200 :
 		return
 	data = res.json()
+	del res
 
 	if(data["status"] != 'OK') :
 		return 
@@ -306,6 +334,8 @@ def codeforces_update_contest():
 				ucr.countryRank = cntry_contest_participation.current
 
 			ucr.save()
+
+	del data
 	return
 
 def update_codeforces():
@@ -315,7 +345,6 @@ def update_codeforces():
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	codeforces_update_users()
-	codeforces_update_problems()
 	codeforces_update_contest()
 
 	subject = 'Codeforces update Finished'
