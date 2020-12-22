@@ -179,7 +179,7 @@ SIMPLE_JWT = {
 
 CRONJOBS = [
     #('0 0 * * *', 'problem.cron.update_spoj'),
-    ('0 3 * * *', 'codeforces.cron.update_codeforces'),
+    ('30 12 * * *', 'codeforces.cron.update_codeforces'),
     #('30 23 * * *', 'problem.cron.update_codechef'),
     #('15 23 * * *', 'problem.cron.update_atcoder'),
     #('0 23 * * *', 'problem.cron.update_uva'),
