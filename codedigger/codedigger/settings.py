@@ -178,11 +178,12 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-    ('0 0 * * *', 'problem.cron.update_spoj'),
-    ('0 3 * * *', 'codeforces.cron.update_codeforces'),
-    ('30 23 * * *', 'problem.cron.update_codechef'),
-    ('15 23 * * *', 'problem.cron.update_atcoder'),
-    ('0 23 * * *', 'problem.cron.update_uva'),
+    #('0 0 * * *', 'problem.cron.update_spoj'),
+    ('30 12 * * *', 'codeforces.cron.update_codeforces'),
+    #('30 23 * * *', 'problem.cron.update_codechef'),
+    #('15 23 * * *', 'problem.cron.update_atcoder'),
+    #('0 23 * * *', 'problem.cron.update_uva'),
+    ('15 11 * * *' , 'codeforces.cron.codeforces_update_problems')
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
