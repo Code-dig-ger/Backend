@@ -7,13 +7,13 @@ from django.db.models import Q
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
 
 
 class TopicWiseRetrieveView(generics.RetrieveAPIView):
     serializer_class = RetrieveSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
     lookup_field = "name"
 
@@ -25,14 +25,50 @@ class TopicWiseRetrieveView(generics.RetrieveAPIView):
 
 class TopicwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
 
 
 class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     serializer_class = LadderRetrieveSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
+    lookup_field = "name"
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
+
+
+class LevelwiseGetListView(generics.ListAPIView):
+    serializer_class=GetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False))
+
+
+class LevelwiseRetrieveView(generics.RetrieveAPIView):
+    serializer_class = RetrieveSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False))
+    lookup_field = "name"
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
+
+
+class LevelwiseGetLadderView(generics.ListAPIView):
+    serializer_class=GetLadderSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False))
+
+
+class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
+    serializer_class = LadderRetrieveSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False))
     lookup_field = "name"
 
     def get_serializer_context(self,**kwargs):
