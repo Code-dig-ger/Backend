@@ -11,10 +11,10 @@ TYPE_CHOICES = (
 
 class List(models.Model):
     owner = models.ForeignKey(to=User,on_delete=models.CASCADE)
-    problem = models.ManyToManyField(Problem,related_name='problem')
+    problem = models.ManyToManyField(Problem,through= 'ListInfo',through_fields=('p_list','problem'),related_name='problem')
     name = models.CharField(max_length=255,default=" ")
     description = models.TextField(max_length=400,default=" ")
-    isAdmin = models.BooleanField(default=True)
+    isAdmin = models.BooleanField(default=False)
     isTopicWise = models.BooleanField(default=True)
     type_list = models.CharField(max_length=10,choices=TYPE_CHOICES,default='1')
 
@@ -23,12 +23,12 @@ class List(models.Model):
     
 
 class ListInfo(models.Model):   
-    l = models.ForeignKey(List,on_delete=models.CASCADE,related_name="curr_list")
+    p_list = models.ForeignKey(List,on_delete=models.CASCADE,related_name="curr_list")
     problem = models.ForeignKey(Problem,on_delete = models.CASCADE,related_name='curr_prob')
     description = models.TextField(max_length=400,default=" ")
 
     def __str__(self):
-        return str(self.l) + str(self.problem)
+        return str(self.p_list) + str(self.problem)
     
 class Solved(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="user")

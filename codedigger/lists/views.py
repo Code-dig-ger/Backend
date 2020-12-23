@@ -2,8 +2,15 @@ from rest_framework import generics,status,permissions,views
 from .models import ListInfo,Solved,List
 from problem.models import Problem
 from user.models import User
-from .serializers import GetLadderSerializer,GetSerializer,LadderRetrieveSerializer,RetrieveSerializer
+from .serializers import (
+    GetLadderSerializer,
+    GetSerializer,
+    LadderRetrieveSerializer,
+    RetrieveSerializer
+)
 from django.db.models import Q
+from .permissions import IsOwner
+
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -75,3 +82,12 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
         return data
+
+
+# class UserPlaylist(generics.ListCreateAPIView):
+#     permission_classes = [permissions.IsAuthenticated,IsOwner]
+#     queryset = List.objects.all()
+#     serializer_class = 
+
+#     def perform_create(self,serializer):
+#         user = self.request.user

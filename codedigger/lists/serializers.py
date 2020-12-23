@@ -10,7 +10,7 @@ class ProblemSerializer(serializers.ModelSerializer):
 
     def get_description(self,obj):
         name = self.context.get("name")
-        qs = ListInfo.objects.filter(l__name = name,problem = obj)
+        qs = ListInfo.objects.filter(p_list__name = name,problem = obj)
         if qs.exists():
             for ele in qs.values('description'):
                 return ele['description']
