@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import generics,mixins,permissions 
 
 from .models import user,country,organization,contest,user_contest_rank
-from .models import organization_contest_participation, country_contest_participation
 from problem.models import Problem
 
 from .serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
@@ -126,23 +125,5 @@ class ContestRankAPIView(
 
 
 
-### TESTING CODEFORCES STUFF
-
-from .cron import codeforces_update_users , codeforces_update_problems , codeforces_update_contest
-
-
-def testing_users(request):
-    codeforces_update_users()
-    return HttpResponse("OKAY")
-
-
-def testing_problems(request):
-    codeforces_update_problems()
-    return HttpResponse("OKAY")
-
-
-def testing_contest(request):
-    codeforces_update_contest()
-    return HttpResponse("OKAY")
 
 
