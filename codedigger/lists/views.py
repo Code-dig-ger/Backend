@@ -11,7 +11,6 @@ from .serializers import (
 from django.db.models import Q
 from .permissions import IsOwner
 
-
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -22,7 +21,7 @@ class TopicWiseRetrieveView(generics.RetrieveAPIView):
     serializer_class = RetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
-    lookup_field = "name"
+    lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -40,7 +39,8 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     serializer_class = LadderRetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
-    lookup_field = "name"
+    lookup_field = "slug"
+    pagination_class = [ResultPagination]
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -58,7 +58,7 @@ class LevelwiseRetrieveView(generics.RetrieveAPIView):
     serializer_class = RetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False))
-    lookup_field = "name"
+    lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -76,18 +76,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     serializer_class = LadderRetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False))
-    lookup_field = "name"
+    lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
         return data
-
-
-# class UserPlaylist(generics.ListCreateAPIView):
-#     permission_classes = [permissions.IsAuthenticated,IsOwner]
-#     queryset = List.objects.all()
-#     serializer_class = 
-
-#     def perform_create(self,serializer):
-#         user = self.request.user

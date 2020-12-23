@@ -4,6 +4,7 @@ from problem.models import Problem
 from user.models import User
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
+
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -70,12 +71,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         return user
 
     def get_problem(self,attrs):
+        cnt = 0
         user = self.context.get('user')
         name = attrs.name
-        for qs in attrs.problem.all():
-            solve = Solved.objects.filter(user__username=user,problem=qs)
-            if not solve.exists():
-                return ProblemSerializer(qs,context = {"name" : name,"user" : user}).data
+        while cnt <= 3:
+            for qs in attrs.problem.all()[cnt:cnt+2]
+                
+        # for qs in attrs.problem.all():
+        #     solve = Solved.objects.filter(user__username=user,problem=qs)
+        #     cnt += 1
+        #     if not solve.exists():
+        #         return ProblemSerializer(qs[cnt:cnt+2],many=True,context = {"name" : name,"user" : user}).data
+        qs = attrs.problem.all()
+        return ProblemSerializer(qs,many = True,context = {"name" : name,"user" : user}).data
 
     class Meta:
         model = List
