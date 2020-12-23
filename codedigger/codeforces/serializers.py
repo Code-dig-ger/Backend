@@ -1,15 +1,12 @@
 from rest_framework import serializers
-from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from .models import user,country,organization,contest ,user_contest_rank
-from .models import organization_contest_participation, country_contest_participation
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = country
         fields = [
             'name',
-            'total'
         ]
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -17,7 +14,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = organization
         fields = [
             'name',
-            'total'
         ]
 
 class ContestSerializer(serializers.ModelSerializer):
@@ -29,7 +25,6 @@ class ContestSerializer(serializers.ModelSerializer):
             'contestId',
             'duration',
             'startTime',
-            'participants',
             'Type'
         ]
 
@@ -39,9 +34,7 @@ class contestRankSerializer(serializers.ModelSerializer):
         model = user_contest_rank
         fields = [
             'contest',
-            'worldRank',
-            'countryRank',
-            'organizationRank'
+            'worldRank'
         ]
 
 class UserSerializer(serializers.ModelSerializer):
@@ -58,9 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
             'maxRating',
             'rank',
             'maxRank',
-            'worldRank',
-            'countryRank',
-            'organizationRank',
             'country',
             'organization',
             'photoUrl',

@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
 
 from django.core.exceptions import ObjectDoesNotExist
-from .models import organization , country , user , contest , user_contest_rank , organization_contest_participation, country_contest_participation
+from .models import organization , country , user , contest , user_contest_rank 
 
 
 def rating_to_difficulty(rating):
@@ -46,12 +46,6 @@ def codeforces_update_users():
 	recepient = 'shivamsinghal1012@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
-	#print(data['status'])
-
-	rank = 0
-	organization.objects.all().update(current = 0)
-	country.objects.all().update(current = 0)
-
 	for codeforces_user in data["result"]:
 
 		newUser,created = user.objects.get_or_create(handle = codeforces_user['handle'])
@@ -66,48 +60,21 @@ def codeforces_update_users():
 			name = name[:100]
 
 		newUser.name = name		
-		#print(name)
 		newUser.rating = codeforces_user['rating']
 		newUser.maxRating = codeforces_user['maxRating']
 		newUser.rank = codeforces_user['rank']
 		newUser.maxRank  = codeforces_user['maxRank']
-		rank+=1
-		newUser.worldRank = rank
 		newUser.photoUrl = codeforces_user['titlePhoto'][2:]
 
 		if 'country' in codeforces_user :
 
-			obj, created = country.objects.get_or_create(
-				name=  codeforces_user['country'] ,
-				defaults={
-					'current': '0',
-					'total' : '0'
-				}
-			)
-
-			obj.current = str(int(obj.current) + 1)
-			if int(obj.current) > int(obj.total) :
-				obj.total = obj.current
-			obj.save()
+			obj, created = country.objects.get_or_create(name=  codeforces_user['country'] )
 			newUser.country = obj
-			newUser.countryRank = obj.current
 
 		if 'organization' in codeforces_user :
 
-			obj, created = organization.objects.get_or_create(
-				name=  codeforces_user['organization'] ,
-				defaults={
-					'current': '0',
-					'total' : '0'
-				}
-			)
-
-			obj.current = str(int(obj.current) + 1)
-			if int(obj.current) > int(obj.total) :
-				obj.total = obj.current
-			obj.save()
+			obj, created = organization.objects.get_or_create(name=  codeforces_user['organization'] )
 			newUser.organization = obj
-			newUser.organizationRank = obj.current
 
 		newUser.save()
 
@@ -120,8 +87,6 @@ def codeforces_update_users():
 	return 
 
 def codeforces_update_problems():
-	# check whether we have updated the problems of a particular contest , 
-	# if no , update the problems , else not .. 
 
 	subject = 'Codeforces update Problems Started'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
@@ -237,6 +202,12 @@ def codeforces_update_problems():
 	return
 
 def codeforces_update_contest():
+
+	subject = 'Codeforces update Contest Started'
+	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
 	url = "https://codeforces.com/api/contest.list"
 	res = requests.get(url)
 	if res.status_code != 200 :
@@ -246,9 +217,6 @@ def codeforces_update_contest():
 
 	if(data["status"] != 'OK') :
 		return 
-
-	organization_contest_participation.objects.all().update(current = 0)
-	country_contest_participation.objects.all().update(current = 0)
 
 	for codeforces_contest in data["result"]:
 
@@ -274,8 +242,10 @@ def codeforces_update_contest():
 		if 'startTimeSeconds' in codeforces_contest:
 			new_contest.startTime = codeforces_contest['startTimeSeconds']
 
-		new_contest.participants = len(data['result'])
 		new_contest.save()
+
+		if len(user_contest_rank.objects.filter(contest = new_contest)) > 0 :
+			continue
 
 		for participant in data['result']:
 			user_handle = participant['handle']
@@ -291,65 +261,12 @@ def codeforces_update_contest():
 
 			ucr.worldRank = rank
 
-			if contest_user.organization : 
-				contest_user_org = contest_user.organization
-				
-				# check for organization_contest_participation 
-
-				org_contest_participation,created = organization_contest_participation.objects.get_or_create(
-					organization = contest_user_org,
-					contest = new_contest,
-					defaults= {
-						'current' : '0',
-						'total' : '0'
-					}
-				)
-				org_contest_participation.current = str(int(org_contest_participation.current) + 1)
-				if int(org_contest_participation.current) > int(org_contest_participation.total) :
-					org_contest_participation.total = org_contest_participation.current
-
-				org_contest_participation.save()
-				ucr.organizationRank = org_contest_participation.current
-
-			if contest_user.country : 
-
-				contest_user_country = contest_user.country
-
-				# check for country_contest_participation
-
-				cntry_contest_participation,created = country_contest_participation.objects.get_or_create(
-					country = contest_user_country,
-					contest = new_contest,
-					defaults= {
-						'current' : '0',
-						'total': '0'
-					}
-				)
-				cntry_contest_participation.current = str(int(cntry_contest_participation.current) + 1)
-				
-				if int(cntry_contest_participation.current) > int(cntry_contest_participation.total) :
-					cntry_contest_participation.total = cntry_contest_participation.current
-				
-				cntry_contest_participation.save()
-				ucr.countryRank = cntry_contest_participation.current
-
 			ucr.save()
 
-	del data
-	return
-
-def update_codeforces():
-	subject = 'Codeforces update Started'
-	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
-	recepient = 'shivamsinghal1012@gmail.com'
-	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-
-	codeforces_update_users()
-	codeforces_update_contest()
-
-	subject = 'Codeforces update Finished'
+	subject = 'Codeforces update Contest Finished'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has finished'
 	recepient = 'shivamsinghal1012@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-	
 
+	del data
+	return
