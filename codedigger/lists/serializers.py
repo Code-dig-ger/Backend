@@ -74,16 +74,11 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         cnt = 0
         user = self.context.get('user')
         name = attrs.name
-        while cnt <= 3:
-            for qs in attrs.problem.all()[cnt:cnt+2]
-                
-        # for qs in attrs.problem.all():
-        #     solve = Solved.objects.filter(user__username=user,problem=qs)
-        #     cnt += 1
-        #     if not solve.exists():
-        #         return ProblemSerializer(qs[cnt:cnt+2],many=True,context = {"name" : name,"user" : user}).data
-        qs = attrs.problem.all()
-        return ProblemSerializer(qs,many = True,context = {"name" : name,"user" : user}).data
+        for qs in attrs.problem.all():
+            solve = Solved.objects.filter(user__username=user,problem=qs)
+            cnt += 1
+            if not solve.exists():
+                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
 
     class Meta:
         model = List
