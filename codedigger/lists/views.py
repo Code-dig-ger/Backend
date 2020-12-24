@@ -40,7 +40,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
     lookup_field = "slug"
-    
+
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username

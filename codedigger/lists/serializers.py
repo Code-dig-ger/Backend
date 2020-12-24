@@ -3,6 +3,8 @@ from .models import ListInfo,Solved,List,ListInfo
 from problem.models import Problem
 from user.models import User
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+from django.core.paginator import Paginator
+
 
 
 class ProblemSerializer(serializers.ModelSerializer):
@@ -33,7 +35,7 @@ class GetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','name','description',)
+        fields = ('id','name','description','slug')
 
 
 class RetrieveSerializer(serializers.ModelSerializer):
@@ -53,14 +55,14 @@ class RetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','user','name','description','problem',)
+        fields = ('id','user','name','description','slug','problem',)
     
 
 class GetLadderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','name','description',)
+        fields = ('id','name','description','slug',)
 
 class LadderRetrieveSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -71,15 +73,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         return user
 
     def get_problem(self,attrs):
-        cnt = 0
         user = self.context.get('user')
         name = attrs.name
-        for qs in attrs.problem.all():
-            solve = Solved.objects.filter(user__username=user,problem=qs)
-            cnt += 1
-            if not solve.exists():
-                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+        page_size = 2
+        paginator = Paginator(attrs.problem.all(),page_size)
+        page = 1
+        while page <= 3:
+            qs = paginator.page(page)
+            for ele in qs:
+                solve = Solved.objects.filter(user__username=user,problem=ele)
+                if not solve.exists():
+                    return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+            page += 1
 
     class Meta:
         model = List
-        fields = ('id','user','name','description','problem',)
+        fields = ('id','user','name','description','slug','problem',)
