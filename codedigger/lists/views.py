@@ -26,6 +26,7 @@ class TopicWiseRetrieveView(generics.RetrieveAPIView):
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
+        data['page'] = self.request.GET.get('page',1)
         return data
 
 
@@ -44,6 +45,8 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
+        data['page'] = self.request.GET.get('page',1)
+        data['logged_in'] = self.request.user.is_authenticated
         return data
 
 
@@ -62,6 +65,7 @@ class LevelwiseRetrieveView(generics.RetrieveAPIView):
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
+        data['page'] = self.request.GET.get('page',1)
         return data
 
 
@@ -80,4 +84,6 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
         data['user'] = self.request.user.username
+        data['page'] = self.request.GET.get('page',1)
+        data['logged_in'] = self.request.user.is_authenticated
         return data
