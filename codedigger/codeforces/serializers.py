@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import user,country,organization,contest ,user_contest_rank
+from problem.models import Problem
 
 class CountrySerializer(serializers.ModelSerializer):
 
@@ -70,7 +71,6 @@ class contestRankSerializer(serializers.ModelSerializer):
         cur_contest = obj.contest
         cur_country = cur_user.country
         usersCountry = user.objects.filter(country = cur_country)
-        print(user_contest_rank.objects.filter(user__in = usersCountry , contest = cur_contest , worldRank__lt = obj.worldRank))
         rank = user_contest_rank.objects.filter(user__in = usersCountry , contest = cur_contest , worldRank__lt = obj.worldRank).count()
         return rank+1
 
@@ -93,7 +93,7 @@ class contestRankSerializer(serializers.ModelSerializer):
             'totalOrganizationParticipants',
         ]
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer():
     country = CountrySerializer()
     organization = OrganizationSerializer()
     
@@ -107,7 +107,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_countryRank(self, obj):
         if obj.country == None :
-            return None
+            return Nonserializers.ModelSerializere
         return user.objects.filter(rating__gt = obj.rating , country = obj.country).count()+1
 
     def get_organizationRank(self, obj):
@@ -135,4 +135,64 @@ class UserSerializer(serializers.ModelSerializer):
             'worldRank',
             'countryRank',
             'organizationRank',
+        ]
+
+
+class UpsolveProblemsSerializer(serializers.ModelSerializer):
+
+    platform = serializers.CharField(source='get_platform_display')
+    difficulty = serializers.CharField(source='get_difficulty_display') 
+    status = serializers.SerializerMethodField()
+
+    def get_status(self , obj):
+
+        if obj.prob_id in self.context.get('solved') :
+            return 'solved'
+        elif obj.prob_id in self.context.get('upsolved') :
+            return 'upsolved'
+        elif obj.prob_id in self.context.get('wrong') :
+            return 'wrong'
+        else :
+            return 'not_attempt'
+
+    class Meta:
+        model= Problem
+        fields = [
+            'name',
+            'url',
+            'prob_id',
+            'tags',
+            'contest_id',
+            'rating',
+            'index',
+            'platform',
+            'difficulty',
+            'editorial',
+            'status',
+        ]
+
+
+class UpsolveContestSerializer(serializers.ModelSerializer):
+
+    Type = serializers.CharField(source='get_Type_display') 
+    problems = serializers.SerializerMethodField()
+
+    def get_problems(self , obj):
+        context = {
+            'wrong' : self.context.get('wrong') , 
+            'upsolved' : self.context.get('upsolved') ,
+            'solved' : self.context.get('solved') 
+        }
+        pr = Problem.objects.filter(contest_id = obj.contestId).order_by('index')
+        return UpsolveProblemsSerializer(pr , many = True , context = context).data
+
+    class Meta:
+        model = contest
+        fields = [
+            'name',
+            'contestId',
+            'duration',
+            'startTime',
+            'Type',
+            'problems',
         ]
