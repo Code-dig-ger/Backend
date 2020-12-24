@@ -48,7 +48,7 @@ class user(models.Model):
 class user_contest_rank(models.Model):
 	user = models.ForeignKey(user , on_delete=models.CASCADE)
 	contest = models.ForeignKey(contest , on_delete=models.CASCADE)
-	worldRank = models.CharField(max_length=6)
+	worldRank = models.IntegerField(blank = True , null = True)
 
 	def __str__(self):
 		return self.user.name + self.contest.name

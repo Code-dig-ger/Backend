@@ -244,7 +244,7 @@ def codeforces_update_contest():
 
 		new_contest.save()
 
-		if len(user_contest_rank.objects.filter(contest = new_contest)) > 0 :
+		if len(user_contest_rank.objects.filter(contest = new_contest)) == len(data['result']) :
 			continue
 
 		for participant in data['result']:
