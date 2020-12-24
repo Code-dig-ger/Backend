@@ -19,8 +19,8 @@ class contest(models.Model):
 	)
 	name = models.CharField(max_length=200)
 	contestId = models.CharField(max_length=10)
-	duration = models.CharField(max_length=50)
-	startTime = models.CharField(max_length=50 , blank = True , null = True)
+	duration = models.IntegerField(blank = True , null = True)
+	startTime = models.IntegerField(blank = True , null = True)
 	Type = models.CharField(max_length=1, choices=TYPE)
 
 	def __str__(self):
@@ -29,8 +29,8 @@ class contest(models.Model):
 class user(models.Model):
 	name = models.CharField(max_length=100 , blank=True, null=True,)
 	handle = models.CharField(max_length=50)
-	rating = models.CharField(max_length=4)
-	maxRating = models.CharField(max_length=4)
+	rating = models.IntegerField(blank = True , null = True)
+	maxRating = models.IntegerField(blank = True , null = True)
 	rank = models.CharField(max_length=50)
 	maxRank = models.CharField(max_length=50)
 	country = models.ForeignKey(country , on_delete=models.SET_NULL, blank=True, null=True,)
