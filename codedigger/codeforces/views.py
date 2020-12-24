@@ -6,7 +6,6 @@ from .models import user,country,organization,contest,user_contest_rank
 from problem.models import Problem
 
 from .serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
-from .serializers import contestRankSerializer
 from problem.serializers import ProbSerializer
 import json
 
@@ -99,24 +98,6 @@ class ContestAPIView(
     def get_queryset(self):
 
         qs = contest.objects.all()
-        contestId = self.request.GET.get('contestId')
-        if contestId is not None:
-            qs = qs.filter(contestId = contestId)
-        return qs
-
-class ContestRankAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView,
-    ):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    #authentication_classes = [SessionAuthentication]
-    serializer_class = contestRankSerializer
-    #passed_id = None 
-
-    #running queries and stuff
-    def get_queryset(self):
-
-        qs = user_contest_rank.objects.all()
         contestId = self.request.GET.get('contestId')
         if contestId is not None:
             qs = qs.filter(contestId = contestId)

@@ -8,5 +8,4 @@ urlpatterns = [
     path('organization', views.OrganizationAPIView.as_view(), name='organization.index'),
     path('country', views.CountryAPIView.as_view(), name='country.index'),
     path('contest', views.ContestAPIView.as_view(), name='contest.index'),
-    path('contestRank' , views.ContestRankAPIView.as_view(), name='contestRank.index'),
 ]
