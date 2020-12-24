@@ -1,22 +1,5 @@
-# Difficulty section 
-# name , prob_id, url , platform = 'C' , difficulty 
-
-# Tag 
-# prob_id = id 
-# l = list ( problem.tag )
-# l.append(new_tag)
-# problem.tags = l
-# problem.save
-
-# Contest 
-# prob_id = id
-# problem.contest = contest_id (DEC19A/B)
-# problem.save
-
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from pyvirtualdisplay import Display
 from time import sleep
 
 import os,json,django
@@ -28,142 +11,97 @@ platform = "C"
 
 
 def tagsScraper():
-    display = Display(visible=0, size=(800, 800))  
-    display.start()
-    url = "https://www.codechef.com/tags/problems/?itm_medium=navmenu&itm_campaign=tagsproblems"
-    driver = webdriver.Chrome()
-    driver.get(url)
-    sleep(3)
-    tagBtn = driver.find_element_by_xpath('//*[@id="tags_filter"]')
-    prblmBtn = driver.find_element_by_xpath('//*[@id="problem_count"]')
-    tagBtn.click()
-    prblmBtn.click()
-    prblmBtn.click()
-    r = driver.page_source
-    soup = BeautifulSoup(r, 'html5lib')
-    # print (soup.prettify)
-
-    # Storage 
-    majorTags = []
-
-    for tag in soup.findAll('div', class_ = "problem-tagbox"):
-        tagPart = tag.text.strip().split()
-        # print(tagPart[0])
-        # print(int(tagPart[-1]))
-        if int(tagPart[-1]) >= 13:
-            majorTags.append(tagPart[0])
-        else:
-            break
-
-    print(len(majorTags))
-
-    for ta in majorTags:
-        # url for tags 
-        tUrl = f"https://www.codechef.com/tags/problems/{ta}"
-
-        print(tUrl)
-
-        b_url = "https://www.codechef.com"
-
-        # Accessing page
-
-        driver.get(tUrl)
-        sleep(5)
-        r = driver.page_source
-
-        soup = BeautifulSoup(r, 'html5lib')
+    module_dir = os.path.dirname(__file__)  
+    file_path = os.path.join(module_dir, 'taglist.txt')
+    with open(file_path, 'r') as f:
+        for line in f:
+            print("**===================**")
+            t = line[:-1]
+            print(t)
+            url = f"https://www.codechef.com/get/tags/problems/{t}"
+            r = requests.get(url)
+            print(r.status_code)
+            data = r.json()
+            # data = {}
+            
+            # dataform = str(r).strip("'<>() ").replace('\'', '\"')
+            # data = json.loads(dataform)
         
-        for prob in soup.findAll('div', class_='problem-tagbox-inner'):
-            name = prob.find('a').text
-            link = prob.find('a').get('href')
-            name = name.split(" - ")
-            prob_id = name[1]
-            title = name[0]
-            link = b_url+link
-            try:
-                pro = Problem.objects.get(prob_id = prob_id, platform = "C")
-            except Problem.DoesNotExist:
-                pro = None
-            t = []
-            for t1 in prob.findAll('div', class_='actual_tag'):
-                t.append(t1.text.strip())
+            b_url = "https://www.codechef.com/problems/"
 
-            if pro:
-                pro.tags = t
-                pro.save()
-            else:
-                if title != "":
-                    Problem.objects.create(name=title,prob_id=prob_id,url = link,tags = t,platform=platform)                
+            for item in data['all_problems']:
+                prob_id = data['all_problems'][item]['code']
+                tag = data['all_problems'][item]['tags']
+                title = prob_id
+                link = b_url+prob_id
+                try:
+                    pro = Problem.objects.get(prob_id = prob_id, platform = platform)
+                except Problem.DoesNotExist:
+                    pro = None
+                
+                if pro:
+                    pro.tags = tag
+                    pro.save()
                 else:
-                    Problem.objects.create(name=prob_id,prob_id=prob_id,url = link,tags = t,platform=platform)                
-                    
-    driver.quit()        
+                    Problem.objects.create(name=title,prob_id=prob_id,url = link,tags = tag,platform=platform)                
+                        
 
 
 def longChallenge(b_url, div, mon, yr):
     print("longchallenge started")
-    display = Display(visible=0, size=(800, 800))  
-    display.start()
-    driver = webdriver.Chrome()
+    
     for y in yr:
         for m in mon:
             for d in div:
                 # driver.get(url+m+y+d)
                 if y == "18" and (m == "JAN" or m == "FEB"):
                     if(d == "B"):
-                        continue
+                        break
                     cont = m+y
-                    driver.get(b_url+cont)
                 else:
                     cont = m+y+d
-                    driver.get(b_url+cont)
+                    # driver.get(b_url+cont)
 
-                sleep(5)
-                r = driver.page_source
-                soup = BeautifulSoup(r, 'html5lib')
-                storeProb(soup,cont,b_url)
-    driver.quit()
+                url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
+                r = requests.get(url)
+                data = r.json()
+                storeProb(data,cont,b_url)
                 
 def lunchTime(b_url, div):
     print("lunch time started")
-    display = Display(visible=0, size=(800, 800))  
-    display.start()
-    driver = webdriver.Chrome()
     latestLunch = 90
     while latestLunch > 57:
         for d in div:
-            cont = "LTIME"+str(latestLunch)+d
-            driver.get(b_url+cont)
-            sleep(3)
-            r = driver.page_source
-            soup = BeautifulSoup(r, 'html5lib')
-            storeProb(soup, cont, b_url)
+            cont = "LTIME"+str(latestLunch)+d         
+            url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
+            r = requests.get(url)
+            data = r.json()
+            storeProb(data, cont, b_url)
         latestLunch = latestLunch-1
-    driver.quit()
+
 
 def cookOff(b_url, div):
     print("cookOFF started")
-    display = Display(visible=0, size=(800, 800))  
-    display.start()
-    driver = webdriver.Chrome()
-    latestOff = 124
+    latestOff = 125
     while latestOff > 91:
         for d in div:
             cont = "COOK"+str(latestOff)+d
-            driver.get(b_url+cont)
-            sleep(3)
-            r = driver.page_source
-            soup = BeautifulSoup(r, 'html5lib')
-            storeProb(soup, cont, b_url)
+            url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
+            r = requests.get(url)
+            data = r.json()
+            storeProb(data, cont, b_url)
         latestOff = latestOff-1
-    driver.quit()
 
-def storeProb(soup, cont, b_url):
-    problems = soup.findAll('a', class_="ember-view")
-    for prob in problems[4:]:
-        n = prob.text.strip()
-        u = b_url[:-1] + prob.get('href')
-        c = prob.get('href').split('/')[-1]
+def storeProb(data, cont, b_url):
+    for item in data['problems']:
+        
+        if data['problems'][item]['category_name'] != 'main':
+            continue
+
+        n = data['problems'][item]['name']
+        u = b_url + data['problems'][item]['problem_url']
+        c = data['problems'][item]['code']
+        
         try:
             p = Problem.objects.get(prob_id=c, platform=platform)
         except Problem.DoesNotExist:
@@ -187,7 +125,7 @@ def contestIdScraper():
     div = ["A", "B"]
     yr = ["18", "19", "20"]
     mon = ["JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"]
-    b_url = "https://www.codechef.com/"
+    b_url = "https://www.codechef.com"
     longChallenge(b_url, div, mon, yr)
     lunchTime(b_url, div)
     cookOff(b_url, div)
