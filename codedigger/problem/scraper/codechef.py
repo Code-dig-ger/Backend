@@ -15,12 +15,15 @@ def tagsScraper():
     file_path = os.path.join(module_dir, 'taglist.txt')
     with open(file_path, 'r') as f:
         for line in f:
-            print("**===================**")
+           
             t = line[:-1]
-            print(t)
+            
             url = f"https://www.codechef.com/get/tags/problems/{t}"
             r = requests.get(url)
-            print(r.status_code)
+            
+            if r.status_code != 200 :
+                continue
+            
             data = r.json()
             # data = {}
             
@@ -64,6 +67,8 @@ def longChallenge(b_url, div, mon, yr):
 
                 url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
                 r = requests.get(url)
+                if r.status_code != 200 :
+                    continue
                 data = r.json()
                 storeProb(data,cont,b_url)
                 
@@ -75,6 +80,8 @@ def lunchTime(b_url, div):
             cont = "LTIME"+str(latestLunch)+d         
             url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
             r = requests.get(url)
+            if r.status_code != 200 :
+                continue
             data = r.json()
             storeProb(data, cont, b_url)
         latestLunch = latestLunch-1
@@ -88,6 +95,8 @@ def cookOff(b_url, div):
             cont = "COOK"+str(latestOff)+d
             url = f"https://www.codechef.com/api/contests/{cont}?v=1608807222132"                   
             r = requests.get(url)
+            if r.status_code != 200 :
+                continue
             data = r.json()
             storeProb(data, cont, b_url)
         latestOff = latestOff-1
@@ -141,6 +150,8 @@ def codeChefScraper():
     for level in levels:
         # requesting site for data 
         r = requests.get(f_url+level)
+        if r.status_code != 200 :
+            continue
         soup = BeautifulSoup(r.content, 'html5lib')
         problemRow = soup.findAll('tr', class_="problemrow")
         print(level)

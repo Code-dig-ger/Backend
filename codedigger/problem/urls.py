@@ -1,8 +1,11 @@
 from django.urls import path
 
-from .views import StatusAPIView
 from . import views
 
 urlpatterns = [
-    path('', StatusAPIView.as_view()),
+    path('', views.StatusAPIView.as_view()),
+    path('upsolve/codeforces' , views.UpsolveContestAPIView.as_view()),
+    path('upsolve/codechef' , views.CCUpsolveContestAPIView.as_view()),
+
+
 ]
