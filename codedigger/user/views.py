@@ -50,7 +50,7 @@ class RegisterView(generics.GenericAPIView):
         relative_link = reverse('email-verify')
 
 
-        absurl = 'http://' + current_site + relative_link + "?token=" + str(token)
+        absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
         email_body = 'Hi' + user.username + '. Use link below to verify your email \n' + absurl
         data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
         Util.send_email(data)
@@ -137,7 +137,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
             redirect_url = request.data.get('redirect_url', '')
-            absurl = 'http://'+current_site + relativeLink
+            absurl = 'https://'+current_site + relativeLink
             email_body = 'Hello, \n Use link below to reset your password  \n' + \
                 absurl+"?redirect_url="+redirect_url
             data = {'email_body': email_body, 'to_email': user.email,
