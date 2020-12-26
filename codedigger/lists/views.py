@@ -1,7 +1,7 @@
-from rest_framework import generics,status,permissions,views
+from rest_framework import generics,status,permissions,views,response
 from .models import ListInfo,Solved,List
 from problem.models import Problem
-from user.models import User
+from user.models import User,Profile
 from .serializers import (
     GetLadderSerializer,
     GetSerializer,
@@ -10,6 +10,7 @@ from .serializers import (
 )
 from django.db.models import Q
 from .permissions import IsOwner
+from .solved_update import codechef
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -87,3 +88,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         data['page'] = self.request.GET.get('page',None)
         data['logged_in'] = self.request.user.is_authenticated
         return data
+
+
+class updateview(views.APIView):
+    def get(self,request,*args, **kwargs):
+        codechef(self.request.user.username)
+        return response.Response(data={'status' : 'ok'})
