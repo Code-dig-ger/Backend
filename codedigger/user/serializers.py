@@ -9,6 +9,26 @@ from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
 
 
+
+
+class GuruSerializer(serializers.ModelSerializer):
+    gurus = serializers.CharField(max_length=300)
+    class Meta:
+        model = Profile
+        fields = ['gurus']
+    
+    def validate(self,attrs):
+        return attrs
+    
+    def update(self , instance , validated_data):
+        print('LOL')
+        print(validated_data)
+        instance.gurus = validated_data.get('gurus' , instance.gurus)
+        instance.save()
+        return instance
+
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68,min_length=6,write_only=True)
 

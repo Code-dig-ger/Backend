@@ -8,4 +8,9 @@ urlpatterns = [
     path('organization', views.OrganizationAPIView.as_view(), name='organization.index'),
     path('country', views.CountryAPIView.as_view(), name='country.index'),
     path('contest', views.ContestAPIView.as_view(), name='contest.index'),
+    path('get_contests', views.GetContestsAPIView.as_view(), name='get_contests'),
+    path('mentor_contest' , views.MentorContestAPIView.as_view() , name = 'mentor.contest'),
+    path('mentor_problem' , views.MentorProblemAPIView.as_view() , name = 'mentor.problem'),
+    path('mentor' , views.MentorAPIView.as_view() , name = 'mentor'),
+
 ]
