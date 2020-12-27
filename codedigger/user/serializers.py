@@ -7,7 +7,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str,force_str,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
-
+import requests,json
 
 
 
@@ -18,11 +18,14 @@ class GuruSerializer(serializers.ModelSerializer):
         fields = ['gurus']
     
     def validate(self,attrs):
+        handles_list = attrs.get('gurus' ,'').strip().split(' ')
+        for handle in handles_list:
+            if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
+                raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
         return attrs
     
     def update(self , instance , validated_data):
-        print('LOL')
-        print(validated_data)
         instance.gurus = validated_data.get('gurus' , instance.gurus)
         instance.save()
         return instance
