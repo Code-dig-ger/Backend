@@ -10,6 +10,26 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import organization , country , user , contest , user_contest_rank 
 
 
+def sendMailToUsers(rating_changes):
+	for rating_change in rating_changes:
+		if rating_change['handle'] in users(activated):
+			send_mail()
+
+
+def ratingChangeReminder():
+	contests=data('https://codeforces.com/api/contest.list')['result']
+
+	for contest in contests:
+		rating_changes = data("https://codeforces.com/api/contest.ratingChanges?contestId="+str(contest['contestId']))
+		if rating_changes['status']=='OK':
+			if not in file:
+				sendMailToUsers(rating_changes)
+				#TODO insert to file
+			else:
+				break
+		else:
+			continue
+
 def rating_to_difficulty(rating):
 	if rating <= 1100 : 
 		return 'B'
