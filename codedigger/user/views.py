@@ -8,7 +8,7 @@ from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.conf import settings  
-import jwt
+import jwt , json
 from .permissions import IsOwner
 from rest_framework.generics import RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
@@ -25,6 +25,10 @@ from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from .handle_validator import get_uva
 
+# Profile
+from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
+from codeforces.models import user as CodeforcesUser
+from codeforces.serializers import UserSerializer as CodeforcesUserSerializer
 
 class CustomRedirect(HttpResponsePermanentRedirect):
 
@@ -190,4 +194,76 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+
+
+
+class UserProfileGetView(generics.GenericAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+
+    def get(self , request , owner_id__username):
+
+        try :
+            user = User.objects.get(username = owner_id__username)
+        except User.DoesNotExist : 
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User doesn\'t exists in our database. Register Now! :)'})
+
+        profile = Profile.objects.get(owner = user)
+
+        if profile.codeforces == "":
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his/her account. :( '})
+
+        ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
+
+        data = {
+            'codeforces' : {
+                'error' : ermsg.format('Codeforces')
+            },
+            'codechef' : {
+                'error' : ermsg.format('Codechef')
+            },
+            'atcoder' : {
+                'error' : ermsg.format('Atcoder')
+            },
+            'uva' : {
+                'error' : ermsg.format('UVa')
+            },
+            'spoj' : {
+                'error' : ermsg.format('Spoj')
+            }
+        }
+
+        try :
+            codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
+        except CodeforcesUser.DoesNotExist :
+            codeforces_user = None
+
+        if profile.codeforces != "":
+            codeforces_user , codeforces_data = get_codeforces_profile(profile.codeforces , codeforces_user)
+            if codeforces_user != None :
+                data['codeforces'] = CodeforcesUserSerializer(codeforces_user).data
+                data['codeforces']['contribution'] = codeforces_data['contribution']
+                data['codeforces']['avatar'] = codeforces_data['avatar']
+                data['codeforces']['lastOnlineTimeSeconds'] = codeforces_data['lastOnlineTimeSeconds']
+                data['codeforces']['friendOfCount'] = codeforces_data['friendOfCount'] 
+                data['codeforces']['status'] = codeforces_data['status'] 
+            else :
+                data['codeforces'] = codeforces_data 
+                data['codeforces']['contestRank'] = []
+
+        if profile.atcoder != "":
+            data['atcoder'] = get_atcoder_profile(profile.atcoder)
+
+        if profile.uva_handle != "":
+            data['uva'] = get_uva_profile(profile.uva_id , profile.uva_handle)
+
+        if profile.spoj != "":
+            data['spoj'] = get_spoj_profile(profile.spoj)
+
+        if profile.codechef != "":
+            data['codechef'] = get_codechef_profile(profile.codechef)
+
+        return Response({'status' : 'OK' , 'result' : data})
+        
 

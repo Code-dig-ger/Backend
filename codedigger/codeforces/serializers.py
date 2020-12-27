@@ -33,6 +33,11 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 class ContestSerializer(serializers.ModelSerializer):
     Type = serializers.CharField(source='get_Type_display') 
+    participants = serializers.SerializerMethodField()
+
+    def get_participants(self , obj):
+        return user_contest_rank.objects.filter(contest = obj).count()
+
     class Meta:
         model = contest
         fields = [
@@ -40,7 +45,8 @@ class ContestSerializer(serializers.ModelSerializer):
             'contestId',
             'duration',
             'startTime',
-            'Type'
+            'Type',
+            'participants'
         ]
 
 class contestRankSerializer(serializers.ModelSerializer):
@@ -93,21 +99,25 @@ class contestRankSerializer(serializers.ModelSerializer):
             'totalOrganizationParticipants',
         ]
 
-class UserSerializer():
+class UserSerializer(serializers.ModelSerializer):
     country = CountrySerializer()
     organization = OrganizationSerializer()
-    
+
+    totalUsers = serializers.SerializerMethodField()
     contestRank = serializers.SerializerMethodField()
     worldRank = serializers.SerializerMethodField()
     countryRank = serializers.SerializerMethodField()
     organizationRank = serializers.SerializerMethodField()
+
+    def get_totalUsers(self, obj):
+        return user.objects.all().count()
 
     def get_worldRank(self , obj):
         return user.objects.filter(rating__gt = obj.rating).count()+1
 
     def get_countryRank(self, obj):
         if obj.country == None :
-            return Nonserializers.ModelSerializere
+            return None
         return user.objects.filter(rating__gt = obj.rating , country = obj.country).count()+1
 
     def get_organizationRank(self, obj):
@@ -131,8 +141,9 @@ class UserSerializer():
             'country',
             'organization',
             'photoUrl',
-            'contestRank',
+            'totalUsers',
             'worldRank',
             'countryRank',
             'organizationRank',
+            'contestRank',
         ]
