@@ -18,6 +18,7 @@ class GuruSerializer(serializers.ModelSerializer):
         fields = ['gurus']
     
     def validate(self,attrs):
+
         handles_list = attrs.get('gurus' ,'').strip().split(' ')
         for handle in handles_list:
             if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
