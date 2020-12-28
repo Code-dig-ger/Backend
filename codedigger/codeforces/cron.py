@@ -8,25 +8,34 @@ from codedigger.settings import EMAIL_HOST_USER
 
 from django.core.exceptions import ObjectDoesNotExist
 from .models import organization , country , user , contest , user_contest_rank 
+from user.models import Profile
 
 
 def sendMailToUsers(rating_changes):
+	users=Profile.objects.all() 			#TODO
 	for rating_change in rating_changes:
-		if rating_change['handle'] in users(activated):
-			send_mail()
+		if rating_change['handle'] in users:
+			subject = 'Codeforces Rating Updated'
+			message = 'Your rating is updated'
+			recepient = 'shshankchugh@gmail.com'  #TODO
+			send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+			
 
 
 def ratingChangeReminder():
 	contests=data('https://codeforces.com/api/contest.list')['result']
 
 	for contest in contests:
-		rating_changes = data("https://codeforces.com/api/contest.ratingChanges?contestId="+str(contest['contestId']))
+		id = str(contest['contestId'])
+		rating_changes = data("https://codeforces.com/api/contest.ratingChanges?contestId="+id)
 		if rating_changes['status']=='OK':
-			if not in file:
-				sendMailToUsers(rating_changes)
-				#TODO insert to file
-			else:
-				break
+			with open('data.txt', 'a') as file:
+    			data = file.read().replace('\n', '')
+				if id not in data:
+					file.append(id+' ')
+					sendMailToUsers(rating_changes)
+				else:
+					break
 		else:
 			continue
 
