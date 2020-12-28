@@ -10,7 +10,7 @@ from .serializers import (
 )
 from django.db.models import Q
 from .permissions import IsOwner
-from .solved_update import codechef
+from .solved_update import codeforces,uva,atcoder
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -92,5 +92,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
 
 class updateview(views.APIView):
     def get(self,request,*args, **kwargs):
-        codechef(self.request.user.username)
+        # codechef(self.request.user.username)
+        # spoj(self.request.user.username)
+        codeforces(self.request.user.username)
+        uva(self.request.user.username)
+        atcoder(self.request.user.username)
         return response.Response(data={'status' : 'ok'})

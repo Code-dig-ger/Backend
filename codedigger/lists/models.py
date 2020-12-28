@@ -58,4 +58,4 @@ class Solved(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="user")
     problem = models.ForeignKey(Problem,on_delete = models.CASCADE,related_name='prob')
     def __str__(self):
-        return str(self.user.username) + "'s solve" 
+        return str(self.user.username) + " "  + str(self.problem.name)
