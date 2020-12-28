@@ -30,6 +30,10 @@ from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get
 from codeforces.models import user as CodeforcesUser
 from codeforces.serializers import UserSerializer as CodeforcesUserSerializer
 
+# Friends
+from .serializers import SendFriendRequestSerializer , RemoveFriendSerializer , AcceptFriendRequestSerializer , FriendsShowSerializer
+from .models import UserFriends
+
 class CustomRedirect(HttpResponsePermanentRedirect):
 
     allowed_schemes = ['https']
@@ -196,6 +200,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
 
 
+# Profile View 
 
 class UserProfileGetView(generics.GenericAPIView):
     serializer_class = ProfileSerializer
@@ -211,7 +216,7 @@ class UserProfileGetView(generics.GenericAPIView):
 
         profile = Profile.objects.get(owner = user)
 
-        if profile.codeforces == "":
+        if profile.codeforces == None:
             return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his/her account. :( '})
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
@@ -267,3 +272,139 @@ class UserProfileGetView(generics.GenericAPIView):
         return Response({'status' : 'OK' , 'result' : data})
         
 
+# Friends Related View Start
+
+class SendFriendRequest(generics.GenericAPIView):
+
+    serializer_class = SendFriendRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        to_user = request.data["to_user"]
+
+        # Check this username is Valid or Not 
+        try: 
+            to_user = User.objects.get(username = to_user , is_verified = True)
+        except User.DoesNotExist :
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+
+        # Check whether this have sent a request already or not 
+        try:
+            status = UserFriends.objects.get(from_user = request.user, to_user = to_user)
+            if status.status == True:
+                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'})
+            else :
+                return Response({'status' : 'FAILED' , 'error' : 'You have already Sent a Friend Request to this User.'})
+        except UserFriends.DoesNotExist:
+            # Check for Opposite 
+
+            try : 
+                status = UserFriends.objects.get(from_user = to_user, to_user = request.user)
+                if status.status == True:
+                    return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'})
+                else :
+                    status.status = True
+                    return Response({'status' : 'OK' , 'result' : 'You are now Friends'})
+
+            except UserFriends.DoesNotExist:
+                UserFriends.objects.create(from_user = request.user , to_user = to_user , status = False)
+                return Response({'status' : 'OK' , 'result' : 'Friend Request Sent!'})
+
+class RemoveFriend(generics.GenericAPIView):
+
+    serializer_class = RemoveFriendSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        user = request.data["user"]
+
+        # Check this username is Valid or Not 
+        try: 
+            user = User.objects.get(username = user , is_verified = True)
+        except User.DoesNotExist :
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+
+        # Check whether this have sent a request already or not 
+        try:
+            status = UserFriends.objects.get(from_user = request.user, to_user = user)
+            try : 
+                opp_status = UserFriends.objects.get(from_user = user, to_user = request.user)
+                opp_status.delete()
+            except UserFriends.DoesNotExist :
+                its_ok = True
+            status.delete()
+            return Response({'status' : 'OK' , 'result' : 'Removed Successfully!'})
+        except UserFriends.DoesNotExist:
+            try : 
+                opp_status = UserFriends.objects.get(from_user = user, to_user = request.user)
+                opp_status.delete()
+                return Response({'status' : 'OK' , 'result' : 'Removed Successfully!'})
+            except UserFriends.DoesNotExist :
+                return Response({'status' : 'FAILED' , 'error' : 'Already Deleted!'})
+
+class AcceptFriendRequest(generics.GenericAPIView):
+
+    serializer_class = AcceptFriendRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request):
+
+        from_user = request.data["from_user"]
+
+        # Check this username is Valid or Not 
+        try: 
+            from_user = User.objects.get(username = from_user , is_verified = True)
+        except User.DoesNotExist :
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+
+        # Check whether this have sent a request already or not 
+        try:
+            status = UserFriends.objects.get(from_user = from_user, to_user = request.user)
+            if status.status :
+                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends!'})
+            status.status = True
+            status.save()
+            return Response({'status' : 'OK' , 'result' : 'You are now Friends!'})
+        except UserFriends.DoesNotExist:
+            return Response({'status' : 'FAILED' , 'error' : 'No Request Found! It seems User have removed Request.'})
+
+class FriendsShowView(generics.GenericAPIView):
+
+    serializer_class = FriendsShowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self , request):
+
+        friendsbyrequest = UserFriends.objects.filter(status = True , from_user = request.user)
+        friendsbyaccept  = UserFriends.objects.filter(status = True , to_user = request.user)
+
+        friendsbyrequest = FriendsShowSerializer(friendsbyrequest , context = {'by_to_user':True} , many = True).data
+        friendsbyaccept = FriendsShowSerializer(friendsbyaccept , context = {'by_to_user':False} , many = True).data
+
+        friends = friendsbyrequest + friendsbyaccept
+        return Response({'status' : 'OK' , 'result' : friends})
+
+class FriendRequestShowView(generics.GenericAPIView):
+
+    serializer_class = FriendsShowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self , request):
+        friendsbyaccept  = UserFriends.objects.filter(status = False , to_user = request.user)
+        friendsbyaccept = FriendsShowSerializer(friendsbyaccept , context = {'by_to_user':False} , many = True).data
+        return Response({'status' : 'OK' , 'result' : friendsbyaccept})
+
+class RequestSendShowView(generics.GenericAPIView):
+
+    serializer_class = FriendsShowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self , request):
+        friendsbyrequest = UserFriends.objects.filter(status = False , from_user = request.user)
+        friendsbyrequest = FriendsShowSerializer(friendsbyrequest , context = {'by_to_user':True} , many = True).data
+        return Response({'status' : 'OK' , 'result' : friendsbyrequest})
+
+
+# Friends Related View Ends

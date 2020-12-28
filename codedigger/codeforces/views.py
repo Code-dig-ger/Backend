@@ -5,6 +5,7 @@ from rest_framework import generics,mixins,permissions
 from .models import user,country,organization,contest
 from .serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
 from problem.serializers import ProbSerializer
+from problem.models import Problem
 import json
 
 
@@ -98,13 +99,3 @@ class ContestAPIView(
         if contestId is not None:
             qs = qs.filter(contestId = contestId)
         return qs
-
-
-
-
-
-
-
-
-
-
