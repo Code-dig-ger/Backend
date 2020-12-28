@@ -32,14 +32,14 @@ class SolveProblemsAPIView(
             problems_list = MentorProblemAPIView.get(self,request)
             final_list=[]
             for problem in problems_list:
-                intersection  = [tag for tag in tags if tag in problem['tags'] ]
-                if len(intersection) !=0:
-                    final_list.append(problem)
+                qs = Problem.objects.filter(contest_id=problem['contestId'] , index = problem['index'] )
+                problem_added=qs.filter(tags__icontains=tags)
+                if len(problem_added)!=0:
+                    final_list.append(problem_added[0])
 
             return JsonResponse({'status':'OK' , 'problems_list':final_list  })
         else:
-            problems_list = Problem.objects.all()
-            problems_list = [ problem for problem in problems_list if problem['tags'] in tags ]
+            problems_list = Problem.objects.filter(tags__icontains=tags)
             return JsonResponse({'status':'OK' , 'problems_list':problems_list  })
 
         

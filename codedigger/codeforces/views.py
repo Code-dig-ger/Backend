@@ -144,7 +144,7 @@ class MentorProblemAPIView(
                 rating  = "" 
                 if 'rating' in problem:
                     rating = problem["rating"]
-                problems_data.append(  { 'sno':sno ,'name':problem['name'] , 'rating':rating , 'link':link,'tags':problem['tags'] }           )
+                problems_data.append(  { 'index':problem['index']  , 'contestId':problem['contestId']  }           )
 
         return problems_data
 
