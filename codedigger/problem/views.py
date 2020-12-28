@@ -9,10 +9,40 @@ from codeforces.models import contest ,user_contest_rank
 from django.db.models import Q
 
 # Serializer and Extra Utils Function
-from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer
+from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer,SolveProblemsSerializer
 from .utils import codeforces_status , codechef_status
 import json
+from django.http import JsonResponse
+from codeforces.views import MentorProblemAPIView
 
+
+
+class SolveProblemsAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,generics.GenericAPIView
+    ):
+
+    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SolveProblemsSerializer
+    def post(self ,request):
+
+        problems_list = []
+        tags = request.data.get('tags').strip().split(' ')
+        if request.data.get('mentors')==True:
+            problems_list = MentorProblemAPIView.get(self,request)
+            final_list=[]
+            for problem in problems_list:
+                intersection  = [tag for tag in tags if tag in problem['tags'] ]
+                if len(intersection) !=0:
+                    final_list.append(problem)
+
+            return JsonResponse({'status':'OK' , 'problems_list':final_list  })
+        else:
+            problems_list = Problem.objects.all()
+            problems_list = [ problem for problem in problems_list if problem['tags'] in tags ]
+            return JsonResponse({'status':'OK' , 'problems_list':problems_list  })
+
+        
 class StatusAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,

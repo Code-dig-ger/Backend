@@ -41,7 +41,6 @@ class MentorAPIView(
         if serializer.is_valid(raise_exception=True):
             serializer.update(validated_data=request.data,instance = Profile.objects.get(owner=self.request.user) )
 
-
         return Response({'success': True, 'message': 'Guru List Updated'})
 
     
@@ -88,8 +87,6 @@ class MentorContestAPIView(
 
         context = { 'status':'OK' , "contests_data" :contests_data }
         return JsonResponse( context )
-
-
 
 
 class MentorProblemAPIView(
@@ -147,10 +144,9 @@ class MentorProblemAPIView(
                 rating  = "" 
                 if 'rating' in problem:
                     rating = problem["rating"]
-                problems_data.append(  { 'sno':sno ,'name':problem['name'] , 'rating':rating , 'link':link }           )
+                problems_data.append(  { 'sno':sno ,'name':problem['name'] , 'rating':rating , 'link':link,'tags':problem['tags'] }           )
 
-        context = { 'status':'OK' , 'problems_data':problems_data }
-        return JsonResponse(context) 
+        return problems_data
 
 
 
