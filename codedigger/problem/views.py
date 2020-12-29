@@ -26,8 +26,7 @@ class SolveProblemsAPIView(
     serializer_class = SolveProblemsSerializer
     def post(self ,request):
 
-        problems_list = []
-        tags = request.data.get('tags').strip().split(' ')
+        tags = request.data.get('tags')
         if request.data.get('mentors')==True:
             problems_list = MentorProblemAPIView.get(self,request)
             final_list=[]

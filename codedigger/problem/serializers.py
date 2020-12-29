@@ -97,8 +97,8 @@ class CCUpsolveContestSerializer(serializers.ModelSerializer):
             'editorial',
         ]
 
-class SolveProblemsSerializer(serializers.ModelSerializer):
-    tags = serializers.CharField(max_length=100)
+class SolveProblemsSerializer(serializers.ModelSerializer): 
+    tags = serializers.ListField()
     mentors=serializers.BooleanField()
     class Meta:
         model = Problem
