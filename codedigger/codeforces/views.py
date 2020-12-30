@@ -23,7 +23,6 @@ class GetContestsAPIView(
         for contest_ in fetched_data:  
             contest.objects.create( Type='R' ,name = contest_['name'] ,contestId=contest_['id'] ,duration=contest_['durationSeconds'] , startTime=contest_['startTimeSeconds'] )
 
-
 class MentorAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
@@ -43,51 +42,54 @@ class MentorAPIView(
 
         return Response({'success': True, 'message': 'Guru List Updated'})
 
-    
 class MentorContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get(self,request):
         #TODO get gurus from DB
-        gurus = [ 'coder_pulkit_c']
+        gurus = [ 'Ashishgup','coder_pulkit_c']
 
         #TODO get user handle
         student = "Shashank_Chugh"
 
-        #fetch from api
+        #fetch student data from api
         submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
-        guru_contests=set()
+        
+        guru_contests={}
         student_contests=set()
 
+        #student submissions in set
         for submission in submissions_student:
-            if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000):
+            if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
                 student_contests.add(submission["problem"]["contestId"])
 
+        #iterate over gurus , to get relevant contestIds 
         for guru in gurus:
             fetched_data = data("https://codeforces.com/api/user.status?handle="+guru)
         
             submissions_guru = fetched_data["result"]
             for submission in submissions_guru:
-                if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000):
-                    guru_contests.add(submission["problem"]["contestId"])
-            
+                if 'contestId' not in submission['problem']:
+                    continue
+                if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
+                  
+                    if (str(submission["problem"]["contestId"]) not in guru_contests)   :
+                        guru_contests[str(submission["problem"]["contestId"])] =1
+                    else:
+                        guru_contests[str(submission["problem"]["contestId"])]+=1
+        
+        guru_contests = sorted(guru_contests.items(), key=lambda x: x[1], reverse=True)
+        print(guru_contests)
+        contest_list=[]
+        for contest in guru_contests:
+            contest_list.append(contest[0])
 
-        contests_data=[]
-        sno=1
-        for id in guru_contests:
-            if id not in student_contests:
-                
-                link= "https://codeforces.com/contest/"+str(id)
-                contest_=contest.objects.get(contestId=id)          
-                contests_data.append({'sno':sno,'link':link , 'duration':contest_.duration , 'name':contest_.name})
-                sno+=1
 
-        context = { 'status':'OK' , "contests_data" :contests_data }
+        context = { 'status':'OK' , 'contest_list':contest_list}
         return JsonResponse( context )
-
 
 class MentorProblemAPIView(
     mixins.CreateModelMixin,
