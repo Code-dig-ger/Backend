@@ -14,7 +14,7 @@ class List(models.Model):
     owner = models.ForeignKey(to=User,on_delete=models.CASCADE)
     problem = models.ManyToManyField(Problem,through= 'ListInfo',through_fields=('p_list','problem'),related_name='problem')
     name = models.CharField(max_length=100,default=" ")
-    description = models.TextField(max_length=400,default=" ",blank=True,null=True)
+    description = models.TextField(max_length=400,blank=True,null=True)
     isAdmin = models.BooleanField(default=False)
     isTopicWise = models.BooleanField(default=True)
     type_list = models.CharField(max_length=1,choices=TYPE_CHOICES,default='1')
@@ -49,7 +49,7 @@ class List(models.Model):
 class ListInfo(models.Model):   
     p_list = models.ForeignKey(List,on_delete=models.CASCADE,related_name="curr_list")
     problem = models.ForeignKey(Problem,on_delete = models.CASCADE,related_name='curr_prob')
-    description = models.TextField(max_length=400,default=" ",blank=True,null=True)
+    description = models.TextField(max_length=400,blank=True,null=True)
 
     def __str__(self):
         return str(self.p_list) +" " +  str(self.problem)

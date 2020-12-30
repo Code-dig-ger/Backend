@@ -114,6 +114,15 @@ class GetLadderSerializer(serializers.ModelSerializer):
         model = List
         fields = ('id','name','description','slug',)
 
+curr_prob = None
+def get_curr_prob():
+    global curr_prob
+    return curr_prob
+
+def change_curr_prob(x):
+    global curr_prob
+    curr_prob=x
+
 
 limit_ladder = None
 def get_ladder():
@@ -142,6 +151,8 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
     page = serializers.SerializerMethodField()
     prev_page = serializers.SerializerMethodField()
     next_page = serializers.SerializerMethodField()
+    curr_prob = serializers.SerializerMethodField()
+
 
     def get_user(self,attrs):
         user = self.context.get('user')
@@ -161,13 +172,13 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
             codechef = Profile.objects.get(owner__username = user).codechef
             atcoder = Profile.objects.get(owner__username = user).atcoder
             temp = []
-            if spoj == "" or spoj is None:
+            if spoj is None:
                 temp.append('S')
-            if uva == "" or uva is None:
+            if uva is None:
                 temp.append('U')
-            if atcoder == "" or atcoder is None:
+            if atcoder is None:
                 temp.append('A')
-            if codechef == "" or codechef is None:
+            if codechef is None:
                 temp.append('C')
             final = None
             prev = None
@@ -193,6 +204,7 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                             solve = Solved.objects.filter(user__username=user,problem=ele)
                             if not solve.exists():
                                 change_page(page)
+                                change_curr_prob(ele.prob_id)
                                 return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
                         page += 1
                 else:
@@ -212,6 +224,8 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                             solve = Solved.objects.filter(user__username=user,problem=ele)
                             if not solve.exists():
                                 change_page(page)
+                                print(ele.prob_id)
+                                change_curr_prob(ele.prob_id)
                                 return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
                         page += 1
                 else:
@@ -264,9 +278,13 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                 return None
             return page+1
 
+    def get_curr_prob(self,obj):
+        return get_curr_prob()
+        
 
     class Meta:
         model = List
-        fields = ('id','user','name','description','problem','page','next_page','prev_page','slug',)
+        fields = ('id','user','name','description','problem','curr_prob','page','next_page','prev_page','slug',)
         change_ladder(None)
         change_page(1)
+        change_curr_prob(None)
