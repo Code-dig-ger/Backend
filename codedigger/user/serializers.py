@@ -26,10 +26,19 @@ class GuruSerializer(serializers.ModelSerializer):
 
         return attrs
     
-    def update(self , instance , validated_data):
-        instance.gurus = validated_data.get('gurus' , instance.gurus)
+    def add(self , instance , validated_data):
+        print(instance.gurus,validated_data)
+        instance.gurus = instance.gurus+validated_data.get('gurus')+' '
         instance.save()
         return instance
+    
+    def delete(self,instance,data):
+
+        instance.gurus = instance.gurus.replace(data['gurus'], '')
+        instance.save()
+        return instance
+       
+
 
 
 

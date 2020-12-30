@@ -38,9 +38,17 @@ class MentorAPIView(
         serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid(raise_exception=True):
-            serializer.update(validated_data=request.data,instance = Profile.objects.get(owner=self.request.user) )
+            serializer.add(validated_data=request.data,instance = Profile.objects.get(owner=self.request.user) )
 
         return Response({'success': True, 'message': 'Guru List Updated'})
+    
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.delete(instance = Profile.objects.get(owner=self.request.user), data=request.data)
+
+        return Response({'success': True, 'message': 'Guru List Updated'})
+
+
 
 class MentorContestAPIView(
     mixins.CreateModelMixin,
@@ -149,23 +157,6 @@ class MentorProblemAPIView(
                 problems_data.append(  { 'index':problem['index']  , 'contestId':problem['contestId']  }           )
 
         return problems_data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class UsersAPIView(
