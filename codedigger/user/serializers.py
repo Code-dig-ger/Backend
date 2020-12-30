@@ -19,28 +19,27 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def validate(self,attrs):
 
-        handles_list = attrs.get('gurus' ,'').strip().split(' ')
-        for handle in handles_list:
-            if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
-                raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+        handle = attrs.get('gurus' ,'')
+        
+        if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
+            raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
 
         return attrs
     
     def add(self , instance , validated_data):
-        print(instance.gurus,validated_data)
+        
+        if (validated_data.get('gurus')+' ') in instance.gurus:
+            raise ValueError((validated_data.get('gurus'))+"is alredy present in list")
         instance.gurus = instance.gurus+validated_data.get('gurus')+' '
         instance.save()
         return instance
     
     def delete(self,instance,data):
 
-        instance.gurus = instance.gurus.replace(data['gurus'], '')
+        instance.gurus = instance.gurus.replace(data['gurus']+' ', '')
         instance.save()
         return instance
        
-
-
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68,min_length=6,write_only=True)

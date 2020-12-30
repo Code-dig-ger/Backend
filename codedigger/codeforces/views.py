@@ -36,7 +36,6 @@ class MentorAPIView(
     def put(self,request):
         
         serializer = self.serializer_class(data=request.data)
-        
         if serializer.is_valid(raise_exception=True):
             serializer.add(validated_data=request.data,instance = Profile.objects.get(owner=self.request.user) )
 
