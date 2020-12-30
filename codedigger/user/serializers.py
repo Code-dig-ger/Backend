@@ -12,14 +12,14 @@ import requests,json
 
 
 class GuruSerializer(serializers.ModelSerializer):
-    gurus = serializers.CharField(max_length=300)
+    guru = serializers.CharField(max_length=300)
     class Meta:
         model = Profile
-        fields = ['gurus']
+        fields = ['guru']
     
     def validate(self,attrs):
 
-        handle = attrs.get('gurus' ,'')
+        handle = attrs.get('guru' ,'')
         
         if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
             raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
@@ -28,15 +28,15 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def add(self , instance , validated_data):
         
-        if (validated_data.get('gurus')+' ') in instance.gurus:
-            raise ValueError((validated_data.get('gurus'))+"is alredy present in list")
-        instance.gurus = instance.gurus+validated_data.get('gurus')+' '
+        if (validated_data.get('guru')+' ') in instance.gurus:
+            raise ValueError((validated_data.get('guru'))+"is already present in list")
+        instance.gurus = instance.gurus+validated_data.get('guru')+' '
         instance.save()
         return instance
     
     def delete(self,instance,data):
 
-        instance.gurus = instance.gurus.replace(data['gurus']+' ', '')
+        instance.gurus = instance.gurus.replace(data['guru']+' ', '')
         instance.save()
         return instance
        
