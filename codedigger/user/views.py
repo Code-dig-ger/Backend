@@ -1,6 +1,15 @@
 from django.shortcuts import render
 from rest_framework import generics,status,permissions,views
-from .serializers import RegisterSerializer,ProfileSerializer,EmailVerificationSerializer,LoginSerializer,RequestPasswordResetEmailSeriliazer,RequestPasswordResetEmailSeriliazer,ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer
+from .serializers import (
+    RegisterSerializer,
+    ProfileSerializer,
+    EmailVerificationSerializer,
+    LoginSerializer,
+    RequestPasswordResetEmailSeriliazer,
+    RequestPasswordResetEmailSeriliazer,
+    ResetPasswordEmailRequestSerializer,
+    SetNewPasswordSerializer,
+)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User,Profile
@@ -13,7 +22,7 @@ from .permissions import IsOwner
 from rest_framework.generics import RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.generics import UpdateAPIView,ListAPIView
+from rest_framework.generics import UpdateAPIView,ListAPIView,ListCreateAPIView
 from .renderers import UserRenderer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
@@ -24,6 +33,7 @@ from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from .handle_validator import get_uva
+from django.contrib.auth import authenticate
 
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
@@ -126,6 +136,19 @@ class ProfileUpdateView(UpdateAPIView):
             pass
         return serializer.save(uva_id = get_uva(uva))
 
+class ChangePassword(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        old_pass = self.request.GET.get('old_pass')
+        new_pass = self.request.GET.get('new_pass')
+        print(str(old_pass) + " " + str(new_pass))
+        user = authenticate(username=self.request.user.username,password=old_pass)
+        if user is None:
+            return Response({'status' : "Wrong Password"})
+        user.set_password(new_pass)
+        user.save()
+        return Response({'status' : "Password Change Complete"})
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer

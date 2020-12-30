@@ -139,26 +139,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     codechef = serializers.CharField(validators=[check_codechef],allow_blank = True)
     atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True)
     uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True)
-    password = serializers.CharField(max_length = 68,min_length = 6,write_only=True)
-
-    def validate(self,attrs):
-        username = self.context.get('user')
-        password = attrs.get('password')
-        if password.strip() is None:
-            return super().validate(attrs)
-        qs = User.objects.filter(username=username).first()
-        qs.set_password(password)
-        qs.save()
-        return super().validate(attrs)
 
 
     class Meta:
         model = Profile
-        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle','password']
+        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle',]
 
 
-    
-    
 
 
 class RequestPasswordResetEmailSeriliazer(serializers.Serializer):

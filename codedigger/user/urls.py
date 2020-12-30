@@ -1,5 +1,16 @@
 from django.urls import path
-from .views import RegisterView,VerifyEmail,LoginApiView,ProfileGetView,ProfileUpdateView,PasswordTokenCheckAPI, RequestPasswordResetEmail,SetNewPasswordAPIView,UserProfileGetView
+from .views import (
+     RegisterView,
+     VerifyEmail,
+     LoginApiView,
+     ProfileGetView,
+     ProfileUpdateView,
+     PasswordTokenCheckAPI,
+     RequestPasswordResetEmail,
+     SetNewPasswordAPIView,
+     UserProfileGetView,
+     ChangePassword
+)
 # Friend Related View
 from .views import SendFriendRequest, RemoveFriend, AcceptFriendRequest, FriendsShowView
 from .views import FriendRequestShowView, RequestSendShowView
@@ -21,7 +32,8 @@ urlpatterns = [
     path('password-reset/<uidb64>/<token>/',
          PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),
-         name='password-reset-complete') , 
+         name='password-reset-complete'), 
+    path('password-change',ChangePassword.as_view(),name='password-change'),
 
     # Friends Related Path Start
     path('user/send-request' , SendFriendRequest.as_view() , name='Send_Friend_Request'),
