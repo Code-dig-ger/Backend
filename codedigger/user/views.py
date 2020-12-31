@@ -157,7 +157,7 @@ class ChangePassword(views.APIView):
         print(str(old_pass) + " " + str(new_pass))
         user = authenticate(username=self.request.user.username,password=old_pass)
         if new_pass == old_pass:
-            return Response({'status' : "The new password is same as the old password")
+            return Response({'status' : "The new password is same as the old password"})
         if len(new_pass) < 6:
             return Response({'status' : "The password is too short, should be of minimum length 6"})
         if user is None:

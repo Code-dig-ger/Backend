@@ -8,7 +8,8 @@ from .views import (
     LevelwiseRetrieveView,
     LevelwiseGetLadderView,
     LevelwiseLadderRetrieveView,
-    updateLadderview
+    updateLadderview,
+    updateListView
 )
 
 
@@ -22,5 +23,6 @@ urlpatterns = [
     path('levelwise/list/<str:slug>',LevelwiseRetrieveView.as_view(),name='levelwise-list-name'),
     path('levelwise/ladder/',LevelwiseGetLadderView.as_view(),name='levelwise-ladder'),
     path('levelwise/ladder/<str:slug>',LevelwiseLadderRetrieveView.as_view(),name='levelwise-list-name'),
-    path('ladder-update',updateLadderview.as_view(),name='update')
+    path('ladder-update',updateLadderview.as_view(),name='ladder-update'),
+    path('list-update',updateListView.as_view(),name='list-update')
 ]

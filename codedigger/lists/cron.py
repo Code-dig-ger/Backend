@@ -9,7 +9,7 @@ from lists.models import Solved
 from user.models import Profile,User
 from problem.models import Problem
 
-def codeforces(user):
+def cron_codeforces(user):
     if user is None or user == "":
         return
     cf_handle = Profile.objects.get(owner__username = user).codeforces
@@ -41,7 +41,7 @@ def codeforces(user):
                 prob = Problem.objects.get(prob_id=prob_id,platform='F')
                 Solved.objects.create(user=curr_user,problem=prob)
     
-def uva(user):
+def cron_uva(user):
     if user is None or user == "":
         return
     uva_id = Profile.objects.get(owner__username = user).uva_id
@@ -70,7 +70,7 @@ def uva(user):
 
 
     
-def atcoder(user):
+def cron_atcoder(user):
     if user is None or user == "":
         return
     atcoder_handle = Profile.objects.get(owner__username = user).atcoder
@@ -99,7 +99,7 @@ def atcoder(user):
 
 
 
-def codechef(user):
+def cron_codechef(user):
     if user is None or user == "":
         return
     codechef_handle = Profile.objects.get(owner__username=user).codechef
@@ -125,7 +125,7 @@ def codechef(user):
         
 
 
-def spoj(user):
+def cron_spoj(user):
     if user is None or user == "":
         return
     spoj_handle = Profile.objects.get(owner__username = user).spoj
@@ -154,8 +154,29 @@ def spoj(user):
 def updater():
     for ele in User.objects.all():
         print(ele.username)
-        codeforces(ele.username)
-        uva(ele.username)
-        atcoder(ele.username)
-        codechef(ele.username)
-        spoj(ele.username)
+        cron_codeforces(ele.username)
+        cron_cron_uva(ele.username)
+        cron_atcoder(ele.username)
+        cron_codechef(ele.username)
+        cron_spoj(ele.username)
+
+def codechef_list(user):
+    if user is None or user == "":
+        return
+    codechef_handle = Profile.objects.get(owner__username=user).codechef
+    if codechef_handle is None:
+        return
+    url = 'https://www.codechef.com/users/'+str(codechef_handle)
+    res = requests.get(url)
+    soup = bs4.BeautifulSoup(res.content,'html.parser')
+    problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
+    if problems_solved.find('h5').text == 'Fully Solved (0)':
+        return []
+    prob_list = set()
+    for ele in problems_solved.find('article').find_all('a'):
+        #testing purposes
+        if not Problem.objects.filter(prob_id=ele.text,platform='C').exists():
+            continue
+        prob_list.add(prob_id)
+    return prob_list
+        

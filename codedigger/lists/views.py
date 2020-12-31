@@ -11,7 +11,10 @@ from .serializers import (
 from django.db.models import Q
 from .permissions import IsOwner
 from .solved_update import codeforces,uva,atcoder,codechef,spoj
-from .cron import updater
+from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,cron_uva,codechef_list
+from django.core.paginator import Paginator
+
+
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -103,4 +106,45 @@ class updateLadderview(views.APIView):
                 codechef(self.request.user.username,prob_id)
             if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
                 spoj(self.request.user.username,prob_id)
+        return response.Response(data={'status' : 'ok'})
+
+class updateListView(views.APIView):
+    def get(self,request,*args,**kwargs):
+        list_slug = self.request.GET.get('slug')
+        page = self.request.GET.get('page')
+        if list_slug is None or list_slug == "" :
+            return response.Response(data={'status' : 'No list provided'})
+        if page is None or page == "":
+            return response.Response(data={'status' : 'No page provided'})
+        curr_list = List.objects.get(slug=list_slug)
+        #set page size here and in the serializer list waala
+        page_size = 2
+        paginator = Paginator(curr_list.problem.all(),page_size)
+        qs = paginator.page(page)  
+        check = {'S' : set(),'U' : 0,'C' : set(),'F' : 0,'A' : 0}
+        for prob in qs:
+            platform = prob.platform
+            if not Solved.objects.filter(user=self.request.user,problem__prob_id=prob.prob_id).exists():
+                if platform == 'S' or platform == 'C':
+                    check[platform].add(prob.prob_id)
+                else:
+                    check[platform] += 1
+        print(check)
+        if check['F'] > 0:
+            cron_codeforces(self.request.user.username) 
+        if check['U'] > 0:
+            cron_uva(self.request.user.username)
+        if check['A'] > 0:
+            cron_atcoder(self.request.user.username)
+        if len(check['S']) > 0:
+            for item in check['S']:
+                spoj(self.request.user.username,item)
+        if len(check['C']) > 0:
+            list1 = codechef_list(self.request.user.username)
+            list2 = check['C']
+            final = set((list1) & (list2))
+            for ele in final:
+                prob = Problem.objects.get(prob_id=ele,platform='C')
+                user = self.request.user
+                Solved.objects.create(user=user,problem=prob)
         return response.Response(data={'status' : 'ok'})
