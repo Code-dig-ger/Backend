@@ -11,6 +11,7 @@ from .serializers import (
 from django.db.models import Q
 from .permissions import IsOwner
 from .solved_update import codeforces,uva,atcoder,codechef,spoj
+from .cron import updater
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -102,5 +103,4 @@ class updateLadderview(views.APIView):
                 codechef(self.request.user.username,prob_id)
             if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
                 spoj(self.request.user.username,prob_id)
-        
         return response.Response(data={'status' : 'ok'})

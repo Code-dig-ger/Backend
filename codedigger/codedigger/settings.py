@@ -186,6 +186,8 @@ CRONJOBS = [
    # ('0 20 * * *', 'problem.cron.update_uva'), # Everyday 20:00
     ('30 16 * * 3', 'codeforces.cron.codeforces_update_contest'), # Every week on Wednesday at 1:00
    # ('0 0 * * *' , 'codeforces.cron.codeforces_update_problems') # Every day at 00:00 
+   
+   # (Set time for lists updation ,'lists.cron.updater')
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

@@ -9,55 +9,6 @@ from lists.models import Solved
 from user.models import Profile,User
 from problem.models import Problem
 
-
-def codechef(user,prob_id):
-    if user is None or user == "":
-        return
-    if Solved.objects.filter(problem__prob_id=prob_id,user__username=user).exists():
-        return
-    codechef_handle = Profile.objects.get(owner__username=user).codechef
-    if codechef_handle is None:
-        return
-    url = 'https://www.codechef.com/users/'+str(codechef_handle)
-    res = requests.get(url)
-    soup = bs4.BeautifulSoup(res.content,'html.parser')
-    problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
-    if problems_solved.find('h5').text == 'Fully Solved (0)':
-        return
-    probset = set([])
-    for ele in problems_solved.find('article').find_all('a'):
-        probset.add(ele.text)
-    if prob_id in probset:
-        print("Adding " + prob_id)
-        user = User.objects.get(username=user)
-        #testing purposes
-        if not Problem.objects.filter(prob_id=prob_id,platform='C').exists():
-            return
-        prob = Problem.objects.get(prob_id=prob_id)
-        Solved.objects.create(user=user,problem=prob)
-    
-        
-
-
-def spoj(user,prob_id):
-    if user is None or user == "":
-        return
-    if Solved.objects.filter(problem__prob_id=prob_id,user__username=user).exists():
-        return
-    spoj_handle = Profile.objects.get(owner__username = user).spoj
-    if spoj_handle == None:
-        return
-    url = 'https://www.spoj.com/status/'+ str(prob_id) + ',' + str(spoj_handle)
-    res = requests.get(url)
-    soup = bs4.BeautifulSoup(res.content,'html.parser')
-    status = soup.find('td' , {'status' : '15'})
-    if status is not None:
-        print(str(prob_id))
-        prob = Problem.objects.get(prob_id=prob_id,platform='S')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
-
-
 def codeforces(user):
     if user is None or user == "":
         return
@@ -146,3 +97,65 @@ def atcoder(user):
         curr_user = User.objects.get(username=user)
         Solved.objects.create(user=curr_user,problem=prob)
 
+
+
+def codechef(user):
+    if user is None or user == "":
+        return
+    codechef_handle = Profile.objects.get(owner__username=user).codechef
+    if codechef_handle is None:
+        return
+    url = 'https://www.codechef.com/users/'+str(codechef_handle)
+    res = requests.get(url)
+    soup = bs4.BeautifulSoup(res.content,'html.parser')
+    problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
+    if problems_solved.find('h5').text == 'Fully Solved (0)':
+        return
+    for ele in problems_solved.find('article').find_all('a'):
+        #testing purposes
+        print(ele.text)
+        if not Problem.objects.filter(prob_id=ele.text,platform='C').exists():
+            continue
+        if Solved.objects.filter(problem__prob_id=ele.text,user__username=user).exists():
+            continue
+        user = User.objects.get(username=user)
+        prob = Problem.objects.get(prob_id=ele.text,platform='C')
+        Solved.objects.create(user=user,problem=prob)
+    
+        
+
+
+def spoj(user):
+    if user is None or user == "":
+        return
+    spoj_handle = Profile.objects.get(owner__username = user).spoj
+    if spoj_handle == None:
+        return
+    url = 'https://www.spoj.com/users/'+spoj_handle
+    res = requests.get(url)
+    soup = bs4.BeautifulSoup(res.content,'html.parser')
+    problems = soup.find('table' , {'class' : 'table table-condensed'})
+    if problems is None:
+        return
+    for ele in problems.find_all('td'):
+        if ele.text == "":
+            continue
+        print(ele.text)
+        #testing
+        if not Problem.objects.filter(prob_id=ele.text,platform='S').exists():
+            continue
+        if Solved.objects.filter(problem__prob_id=ele.text,user__username=user).exists():
+            continue
+        curr_user = User.objects.get(username=user)
+        prob = Problem.objects.get(prob_id = ele.text,platform='S')
+        Solved.objects.create(user=curr_user,problem=prob)
+
+
+def updater():
+    for ele in User.objects.all():
+        print(ele.username)
+        codeforces(ele.username)
+        uva(ele.username)
+        atcoder(ele.username)
+        codechef(ele.username)
+        spoj(ele.username)
