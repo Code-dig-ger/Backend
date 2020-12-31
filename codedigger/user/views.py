@@ -69,7 +69,7 @@ class RegisterView(generics.GenericAPIView):
 
 
         absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
-        email_body = 'Hi' + user.username + '. Use link below to verify your email \n' + absurl
+        email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
         data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
         Util.send_email(data)
         return Response(user_data,status = status.HTTP_201_CREATED)
@@ -98,12 +98,24 @@ class VerifyEmail(views.APIView):
 
 class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+
     def post(self,request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data,context = {'current_site' : get_current_site(request).domain})
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
 
-
+class SendVerificationMail(views.APIView):
+    def get(self,request,*args, **kwargs):
+        email = self.request.GET.get('email')
+        user = User.objects.get(email=email)
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relative_link = reverse('email-verify')
+        absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+        data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+        Util.send_email(data)
+        return Response({'status' : 'A Verification Email has been sent'},status = status.HTTP_200_OK)
 
 
 class ProfileGetView(ListAPIView):

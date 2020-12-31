@@ -9,7 +9,8 @@ from .views import (
      RequestPasswordResetEmail,
      SetNewPasswordAPIView,
      UserProfileGetView,
-     ChangePassword
+     ChangePassword,
+     SendVerificationMail
 )
 # Friend Related View
 from .views import SendFriendRequest, RemoveFriend, AcceptFriendRequest, FriendsShowView
@@ -22,6 +23,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 urlpatterns = [
     path('register/',RegisterView.as_view(),name = "register"),
     path('email-verify/',VerifyEmail.as_view(),name = "email-verify"),
+    path('send-email/',SendVerificationMail.as_view(),name='send-email'),
     path('profile/',ProfileGetView.as_view(),name = "profile"),
     path('profile/<str:owner_id__username>',ProfileUpdateView.as_view(),name = "profile"),
     path('profile/<str:owner_id__username>/',UserProfileGetView.as_view(),name = "userProfile"),

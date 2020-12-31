@@ -51,13 +51,13 @@ INSTALLED_APPS = [
     'user',
     'codeforces',
     'problem',
+    'lists',
 
     #Third Party
     'rest_framework',
     'corsheaders',
     'drf_yasg',
     'django_crontab',
-    'lists'
 ]
 
 SWAGGER_SETTINGS = {

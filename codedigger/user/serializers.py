@@ -7,7 +7,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str,force_str,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
-
+from django.urls import reverse
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import Util
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68,min_length=6,write_only=True)
@@ -77,7 +79,15 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user.is_active:
                 raise AuthenticationFailed('Account disabled. contact admin')
             if not user.is_verified:
-                raise AuthenticationFailed('Email is not verified')
+                email = user.email
+                token = RefreshToken.for_user(user).access_token
+                current_site = self.context.get('current_site')
+                relative_link = reverse('email-verify')
+                absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+                email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+                data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+                Util.send_email(data)
+                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
@@ -93,7 +103,15 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user.is_active:
                 raise AuthenticationFailed('Account disabled. contact admin')
             if not user.is_verified:
-                raise AuthenticationFailed('Email is not verified')
+                email = user.email
+                token = RefreshToken.for_user(user).access_token
+                current_site = self.context.get('current_site')
+                relative_link = reverse('email-verify')
+                absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+                email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+                data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+                Util.send_email(data)
+                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
