@@ -239,6 +239,24 @@ class UserProfileGetView(generics.GenericAPIView):
             }
         }
 
+        if request.user.is_authenticated :
+            if request.user.username == username:
+                data['about_user'] = 'Logged In User Itself'
+            else :
+                # Check for friends 
+                if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                    data['about_user'] = 'Friends'
+                elif UserFriends.objects.filter(status = True , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                    data['about_user'] = 'Friends'
+                elif UserFriends.objects.filter(status = False , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                    data['about_user'] = 'Request Sent'
+                elif UserFriends.objects.filter(status = False , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                    data['about_user'] = 'Request Received'
+                else :
+                    data['about_user'] = 'Stalking'
+        else :
+            data['about_user'] = 'Not Authenticated'
+
         try :
             codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
         except CodeforcesUser.DoesNotExist :
@@ -258,16 +276,16 @@ class UserProfileGetView(generics.GenericAPIView):
                 data['codeforces'] = codeforces_data 
                 data['codeforces']['contestRank'] = []
 
-        if profile.atcoder != "":
+        if profile.atcoder != "" and profile.atcoder != None:
             data['atcoder'] = get_atcoder_profile(profile.atcoder)
 
-        if profile.uva_handle != "":
+        if profile.uva_handle != "" and profile.uva_handle != None:
             data['uva'] = get_uva_profile(profile.uva_id , profile.uva_handle)
-
-        if profile.spoj != "":
+ 
+        if profile.spoj != "" and profile.spoj != None:
             data['spoj'] = get_spoj_profile(profile.spoj)
 
-        if profile.codechef != "":
+        if profile.codechef != "" and profile.codechef != None:
             data['codechef'] = get_codechef_profile(profile.codechef)
 
         return Response({'status' : 'OK' , 'result' : data})
