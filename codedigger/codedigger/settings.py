@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'user',
     'codeforces',
     'problem',
+    'blog',
 
     #Third Party
     'rest_framework',
