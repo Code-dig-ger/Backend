@@ -38,8 +38,11 @@ def get_atcoder_profile(handle):
 
     if grp!=None and 'unrated' in grp[0] :
         data['rank'] = 'unrated'
+    elif soup.find('div' , {'class' : 'col-md-3 col-sm-12'}).find('b') == None:
+        data['rank'] = '20 Kyu'
     else :
         data['rank'] = soup.find('div' , {'class' : 'col-md-3 col-sm-12'}).find('b').text
+
     del grp
     if data['rank'] != 'unrated': 
         details = soup.findAll('table' , {'class' : 'dl-table'})[1].findAll('tr')

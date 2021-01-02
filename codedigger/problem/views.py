@@ -34,10 +34,6 @@ class StatusAPIView(
             qs = qs.filter(tags__icontains = tags)
         return qs
 
-SolvedInContest = None
-Upsolved = None 
-Wrong = None
-
 class UpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
@@ -48,24 +44,30 @@ class UpsolveContestAPIView(
     #passed_id = None 
 
     #running queries and stuff
-    def get_queryset(self):
-        global SolvedInContest 
-        global Upsolved 
-        global Wrong
-        handle = Profile.objects.get(owner =self.request.user).codeforces
-        virtual = self.request.GET.get('virtual')
+    def get(self , request):
+        handle = Profile.objects.get(owner = self.request.user).codeforces
+        if handle == "" or handle == None :
+            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'})
+
+
+        
+        virtual = request.GET.get('virtual')
+
         RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
+
+        data = {
+            'wrong'  : Wrong , 
+            'solved' : SolvedInContest , 
+            'upsolved' : Upsolved , 
+        }
+
         if virtual == 'true':
             RContest = RContest.union(VContest)
-        c = contest.objects.filter(contestId__in = list(RContest))
-        return c
 
-    def get_serializer_context(self,**kwargs):
-        data = super().get_serializer_context(**kwargs)
-        data['wrong'] = Wrong
-        data['solved'] = SolvedInContest
-        data['upsolved'] = Upsolved
-        return data
+        c = contest.objects.filter(contestId__in = list(RContest))
+
+        return Response({'status' : 'OK' , 'result' : UpsolveContestSerializer(c, many =True, context = data).data})
+
 
 class CCUpsolveContestAPIView(
     mixins.CreateModelMixin,
@@ -80,7 +82,7 @@ class CCUpsolveContestAPIView(
 
         handle = Profile.objects.get(owner =self.request.user).codechef
 
-        if handle == "" :
+        if handle == "" or handle == None:
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' })
 
         Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle)
@@ -116,7 +118,7 @@ class ATUpsolveContestAPIView(
 
         handle = Profile.objects.get(owner =self.request.user).atcoder
 
-        if handle == "" :
+        if handle == "" or handle == None:
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' })
 
         contests_details , all_contest , solved , wrong = atcoder_status(handle)
