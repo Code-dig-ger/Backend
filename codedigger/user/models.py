@@ -37,6 +37,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now = True)
+    friends = models.ManyToManyField('self', through = 'UserFriends', through_fields = ('from_user' , 'to_user') , symmetrical = False , related_name="friends_of")
     auth_provider = models.CharField(
         max_length=255, blank=False,
         null=False, default='email')
@@ -81,4 +82,19 @@ class Profile(models.Model):
     def create_Profile(sender, instance, created, **kwargs):
         if created:
             Profile.objects.create(owner=instance)
+
+
+class UserFriends(models.Model):
+
+    STATUS = ((True, 'Friends'), (False, 'Requested'))
+
+    from_user = models.ForeignKey(User, on_delete = models.CASCADE ,related_name="from_user")
+    to_user = models.ForeignKey(User, on_delete = models.CASCADE ,related_name="to_user")
+    status = models.BooleanField(choices = STATUS)
+
+    def __str__(self):
+        if self.status :
+            return str(self.from_user) + " is friend of " + str(self.to_user) 
+        else :
+            return str(self.from_user) + " is requested to become friend of " + str(self.to_user) 
     

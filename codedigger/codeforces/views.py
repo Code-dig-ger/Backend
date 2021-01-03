@@ -6,6 +6,7 @@ from .models import user,country,organization,contest
 from .serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
 from user.serializers import GuruSerializer
 from problem.serializers import ProbSerializer
+<<<<<<< HEAD
 import json,requests
 from django.http import JsonResponse
 from user.models import Profile
@@ -156,6 +157,10 @@ class MentorProblemAPIView(
                 problems_data.append(  { 'index':problem['index']  , 'contestId':problem['contestId']  }           )
 
         return problems_data
+=======
+from problem.models import Problem
+import json
+>>>>>>> 1758ebb02bbb5c61120a7cd376e073f4cb57b504
 
 
 class UsersAPIView(
@@ -248,13 +253,3 @@ class ContestAPIView(
         if contestId is not None:
             qs = qs.filter(contestId = contestId)
         return qs
-
-
-
-
-
-
-
-
-
-

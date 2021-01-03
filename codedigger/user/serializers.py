@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
-from .models import User,Profile
+from .models import User,Profile, UserFriends
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed,ValidationError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -68,9 +68,9 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=255,min_length=3,read_only=True)
+    email = serializers.EmailField(max_length=255,read_only=True)
     password = serializers.CharField(max_length = 68,min_length = 6,write_only=True)
-    username = serializers.CharField(max_length = 68)
+    username = serializers.CharField(max_length = 100)
     tokens = serializers.SerializerMethodField()
     first_time_login = serializers.SerializerMethodField()
 
@@ -238,3 +238,52 @@ class SetNewPasswordSerializer(serializers.Serializer):
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
         return super().validate(attrs)
+
+
+# Friends Serializer Starts
+
+class SendFriendRequestSerializer(serializers.Serializer):
+
+    to_user = serializers.CharField(max_length = 100)
+
+    class Meta :
+        fields = ['to_user']
+
+class RemoveFriendSerializer(serializers.Serializer):
+
+    user = serializers.CharField(max_length = 100)
+
+    class Meta :
+        fields = ['user']
+
+class AcceptFriendRequestSerializer(serializers.Serializer):
+
+    from_user = serializers.CharField(max_length = 100)
+
+    class Meta :
+        fields = ['from_user']
+
+class FriendsShowSerializer(serializers.Serializer):
+
+    username = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    def get_username(self , obj):
+
+        if self.context.get('by_to_user') :
+            return obj.to_user.username
+        else :
+            return obj.from_user.username
+
+    def get_name(self , obj):
+
+        if self.context.get('by_to_user') :
+            return Profile.objects.get(owner = obj.to_user).name
+        else :
+            return Profile.objects.get(owner = obj.from_user).username
+
+    class Meta :
+        model = UserFriends
+        fields = ['username']
+
+# Friends Serializer Ends
