@@ -29,18 +29,24 @@ class SolveProblemsAPIView(
 
         tags = request.data.get('tags')
         if request.data.get('mentors')==True:
-            problems_list = MentorProblemAPIView.get(self,request)
+            problems_list = MentorProblemAPIView.get(self,request).data
             final_list=[]
-            for problem in problems_list:
+            #print(problems_list)
+            for problem in problems_list['result']:
                 qs = Problem.objects.filter(contest_id=problem['contestId'] , index = problem['index'] )
                 problem_added=qs.filter(tags__icontains=tags)
                 if len(problem_added)!=0:
                     final_list.append(problem_added[0])
 
-            return JsonResponse({'status':'OK' , 'problems_list':final_list  })
+            # Logic -- If less than 20 problem send them 
+            # Else Only 20  
+            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(final_list, many = True).data})
         else:
-            problems_list = Problem.objects.filter(tags__icontains=tags)
-            return JsonResponse({'status':'OK' , 'problems_list':problems_list  })
+            # Logic -- If less than 20 problem send them 
+            # Else Only 20 
+            # Shuffle   
+            problems_list = Problem.objects.filter(tags__icontains=tags).order_by('?')
+            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
 
         
 class StatusAPIView(

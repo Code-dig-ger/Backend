@@ -155,7 +155,7 @@ class MentorProblemAPIView(
                     rating = problem["rating"]
                 problems_data.append(  { 'index':problem['index']  , 'contestId':problem['contestId']  }           )
 
-        return problems_data
+        return Response({'status' : 'OK' , 'result' : problems_data})
 
 from problem.models import Problem
 import json
