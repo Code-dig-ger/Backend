@@ -10,7 +10,7 @@ def get_atcoder_profile(handle):
         'status' : 'FAILED',
         'handle' : handle, 
         'url' : url,
-        'rating' : 'UnRated', 
+        'rating' : 'Unrated', 
         'rank' : '20 Kyu',
         'color' : '#000000',
         'maxRating' : 'NA',
