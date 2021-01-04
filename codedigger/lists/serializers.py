@@ -6,14 +6,15 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.response import Response
+from itertools import chain
 
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
 
     def get_description(self,obj):
-        name = self.context.get("name")
-        qs = ListInfo.objects.filter(p_list__name = name,problem = obj)
+        slug = self.context.get("slug")
+        qs = ListInfo.objects.filter(p_list__slug = slug,problem = obj)
         if qs.exists():
             for ele in qs.values('description'):
                 return ele['description']
@@ -29,7 +30,7 @@ class ProblemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Problem
-        fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','description','solved')
+        fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','description','solved',)
 
 class GetSerializer(serializers.ModelSerializer):
 
@@ -47,7 +48,7 @@ def change_limit_list(x):
     global limit_list
     limit_list = x
 
-list_page_size = 2
+list_page_size = 6
 class RetrieveSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     problem = serializers.SerializerMethodField()
@@ -63,20 +64,20 @@ class RetrieveSerializer(serializers.ModelSerializer):
 
     def get_problem(self,attrs):
         user = self.context.get('user')
-        name = attrs.name
+        slug = attrs.slug
         page = self.context.get('page')
         page_size = list_page_size
-        paginator = Paginator(attrs.problem.all(),page_size)
+        paginator = Paginator(attrs.problem.all().order_by('rating'),page_size)
         cnt = int(attrs.problem.all().count()/page_size)
         if attrs.problem.all().count() % page_size != 0:
             cnt += 1
         change_limit_list(cnt)
         if page == None:
             qs = paginator.page(1)
-            return ProblemSerializer(qs,many = True,context = {"name" : name,"user" : user}).data
+            return ProblemSerializer(qs,many = True,context = {"slug" : slug,"user" : user}).data
         else:
             qs = paginator.page(int(page))
-            return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+            return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
 
     def get_page(self,obj):
         page = self.context.get('page')
@@ -96,7 +97,11 @@ class RetrieveSerializer(serializers.ModelSerializer):
     def get_next_page(self,obj):
         page = self.context.get('page')
         if page is None:
-            return 2
+            page = get_limit_list()
+            if page == 1:
+                return None
+            else:
+                return 2
         else:
             if int(page) ==get_limit_list():
                 return None
@@ -106,7 +111,6 @@ class RetrieveSerializer(serializers.ModelSerializer):
         model = List
         fields = ('id','user','name','description','problem','page','next_page','prev_page','slug',)
         change_limit_list(None)
-    
 
 class GetLadderSerializer(serializers.ModelSerializer):
 
@@ -143,7 +147,7 @@ def change_page(x):
     curr_page = x
 
 
-ladder_page_size = 1
+ladder_page_size = 6
 
 class LadderRetrieveSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -162,9 +166,9 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         user = self.context.get('user')
         page = self.context.get('page')
         logged_in = self.context.get('logged_in')
-        name = attrs.name
+        slug = attrs.slug
         page_size = ladder_page_size
-        qs = attrs.problem.all()
+        qs = attrs.problem.all().order_by('rating')
         if logged_in:
             spoj = Profile.objects.get(owner__username = user).spoj
             uva = Profile.objects.get(owner__username = user).uva_handle
@@ -205,11 +209,11 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                             if not solve.exists():
                                 change_page(page)
                                 change_curr_prob(ele.prob_id)
-                                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                                return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                         page += 1
                 else:
                     qs = paginator.page(int(page))
-                    return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                    return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
             else:
                 paginator = Paginator(final,page_size)
                 cnt = (int)(final.count()/ladder_page_size)
@@ -226,11 +230,11 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                                 change_page(page)
                                 print(ele.prob_id)
                                 change_curr_prob(ele.prob_id)
-                                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                                return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                         page += 1
                 else:
                     qs = paginator.page(int(page))
-                    return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                    return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
         else:
             paginator = Paginator(qs,page_size)
             cnt = (int)(qs.count()/ladder_page_size)
@@ -240,10 +244,10 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
             if page == None:
                 page = 1
                 qs = paginator.page(int(page))
-                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
             else:
                 qs = paginator.page(int(page))
-                return ProblemSerializer(qs,many=True,context = {"name" : name,"user" : user}).data
+                return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
 
     
     def get_page(self,obj):

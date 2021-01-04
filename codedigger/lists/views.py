@@ -97,11 +97,17 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
 class updateLadderview(views.APIView):
     def get(self,request,*args, **kwargs):
         prob_id = self.request.GET.get('prob_id')
-        if prob_id is None:
+        if prob_id == None:
             codeforces(self.request.user.username)
             uva(self.request.user.username)
             atcoder(self.request.user.username)
         else:
+            if Problem.objects.filter(prob_id=prob_id,platform='F').exists():
+                codeforces(self.request.user.username)
+            if Problem.objects.filter(prob_id=prob_id,platform='U').exists():
+                uva(self.request.user.username)
+            if Problem.objects.filter(prob_id=prob_id,platform='A').exists():
+                atcoder(self.request.user.username)
             if Problem.objects.filter(prob_id=prob_id,platform='C').exists():
                 codechef(self.request.user.username,prob_id)
             if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
@@ -118,7 +124,7 @@ class updateListView(views.APIView):
             return response.Response(data={'status' : 'No page provided'})
         curr_list = List.objects.get(slug=list_slug)
         #set page size here and in the serializer list waala
-        page_size = 2
+        page_size = 6
         paginator = Paginator(curr_list.problem.all(),page_size)
         qs = paginator.page(page)  
         check = {'S' : set(),'U' : 0,'C' : set(),'F' : 0,'A' : 0}

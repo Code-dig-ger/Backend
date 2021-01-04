@@ -127,7 +127,7 @@ def required(value):
 
 def check_cf(value):
     if value is None:
-        raise serializers.ValidationError('This fiels is required')
+        raise serializers.ValidationError('This field is required')
     if not check_handle_cf(value):
         raise serializers.ValidationError('The given handle does not exist')
 
@@ -153,10 +153,10 @@ def check_uva_handle(value):
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField(validators=[required])
     codeforces = serializers.CharField(validators=[check_cf])
-    spoj = serializers.CharField(validators=[check_spoj],allow_blank = True)
-    codechef = serializers.CharField(validators=[check_codechef],allow_blank = True)
-    atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True)
-    uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True)
+    spoj = serializers.CharField(validators=[check_spoj],allow_blank = True,allow_null=True)
+    codechef = serializers.CharField(validators=[check_codechef],allow_blank = True,allow_null=True)
+    atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True,allow_null=True)
+    uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True,allow_null=True)
 
 
     class Meta:

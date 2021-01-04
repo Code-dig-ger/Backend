@@ -104,6 +104,13 @@ class LoginApiView(generics.GenericAPIView):
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
 
+class CheckAuthView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,*args, **kwargs):
+        return Response({'status' : 'ok'},status=status.HTTP_200_OK)
+
+
 class SendVerificationMail(views.APIView):
     def get(self,request,*args, **kwargs):
         email = self.request.GET.get('email')

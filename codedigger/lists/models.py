@@ -12,7 +12,7 @@ TYPE_CHOICES = (
 
 class List(models.Model):
     owner = models.ForeignKey(to=User,on_delete=models.CASCADE)
-    problem = models.ManyToManyField(Problem,through= 'ListInfo',through_fields=('p_list','problem'),related_name='problem')
+    problem = models.ManyToManyField(Problem,through= 'ListInfo',through_fields=('p_list','problem',),related_name='problem')
     name = models.CharField(max_length=100,default=" ")
     description = models.TextField(max_length=400,blank=True,null=True)
     isAdmin = models.BooleanField(default=False)
