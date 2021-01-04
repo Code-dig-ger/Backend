@@ -184,8 +184,12 @@ CRONJOBS = [
    # ('0 22 * * *', 'problem.cron.update_codechef'), # Everyday 22:00
    # ('0 21 * * *', 'problem.cron.update_atcoder'),  # Everyday 21:00
    # ('0 20 * * *', 'problem.cron.update_uva'), # Everyday 20:00
-    ('30 16 * * 3', 'codeforces.cron.codeforces_update_contest'), # Every week on Wednesday at 1:00
+    # ('30 16 * * 3', 'codeforces.cron.codeforces_update_contest'), # Every week on Wednesday at 1:00
    # ('0 0 * * *' , 'codeforces.cron.codeforces_update_problems') # Every day at 00:00 
+
+    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every day at 00:00 
+
+
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

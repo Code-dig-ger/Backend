@@ -12,19 +12,24 @@ from user.models import Profile
 
 
 def sendMailToUsers(rating_changes):
-	users=Profile.objects.all() 			#TODO
+	users=Profile.objects.all()			
 	for rating_change in rating_changes:
-		if rating_change['handle'] in users: #TODO
+		user = users.filter(codeforces=rating_change['handle'])
+		if user.exists():
 			subject = 'Codeforces Rating Updated'
-			message = 'Your rating is updated'
-			recepient = 'shshankchugh@gmail.com'  #TODO
-			send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+			message = 'Your rating is updated to ' + str(rating_change['newRating']) + ' from '+ str(rating_change['oldRating'])
+			recepient = [user[0].owner.email]   
+			
+			send_mail(subject, message, EMAIL_HOST_USER, recepient, fail_silently = False)
 			
 
 
 def ratingChangeReminder():
-	contests=requests.get('https://codeforces.com/api/contest.list').json()
-	
+	res=requests.get('https://codeforces.com/api/contest.list')
+
+	if res.status_code != 200 :
+		return 
+	contests=res.json()
 	if contests['status']!='OK':
 		return
 
@@ -32,17 +37,42 @@ def ratingChangeReminder():
 
 	for contest in contests:
 		id = str(contest['id'])
-		rating_changes = requests.get("https://codeforces.com/api/contest.ratingChanges?contestId="+id).json()
-		if rating_changes['status']=='OK':  #Problem
-			with open('data.txt', 'a') as file:  #TODO
-				data = file.read().replace('\n','')
+		
+		res = requests.get("https://codeforces.com/api/contest.ratingChanges?contestId="+id)
+		if res.status_code == 200 :
+			rating_changes = res.json()
+			if rating_changes['status']=='OK':  
+				with open('data.txt', 'r') as file:  
+					data = file.read().replace('\n','')
+					
+					
 				if id not in data:
-					file.append(id+' ')
+					with open('data.txt', 'a+') as file:
+						file.write(id+' ')
+
 					sendMailToUsers(rating_changes['result'])
 				else:
 					break
+			
+			else:
+				with open('data.txt', 'r') as file:  
+					data = file.read().replace('\n','')
+					
+					if id not in data:
+						continue
+					else:
+						break
+
+	
 		else:
-			continue
+			with open('data.txt', 'r') as file:  
+				data = file.read().replace('\n','')
+				
+				if id not in data:
+					continue
+				else:
+					break
+			 
 
 def rating_to_difficulty(rating):
 	if rating <= 1100 : 
