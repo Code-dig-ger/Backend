@@ -14,7 +14,7 @@ from user.models import Profile
 def sendMailToUsers(rating_changes):
 	users=Profile.objects.all() 			#TODO
 	for rating_change in rating_changes:
-		if rating_change['handle'] in users:
+		if rating_change['handle'] in users: #TODO
 			subject = 'Codeforces Rating Updated'
 			message = 'Your rating is updated'
 			recepient = 'shshankchugh@gmail.com'  #TODO
@@ -23,14 +23,14 @@ def sendMailToUsers(rating_changes):
 
 
 def ratingChangeReminder():
-	contests=data('https://codeforces.com/api/contest.list')['result']
+	contests=requests.get('https://codeforces.com/api/contest.list').json()['result']
 
 	for contest in contests:
 		id = str(contest['contestId'])
 		rating_changes = data("https://codeforces.com/api/contest.ratingChanges?contestId="+id)
 		if rating_changes['status']=='OK':
-			with open('data.txt', 'a') as file:
-    			data = file.read().replace('\n', '')
+			with open('data.txt', 'a') as file:  #TODO
+				data = file.read().replace('\n','')
 				if id not in data:
 					file.append(id+' ')
 					sendMailToUsers(rating_changes)
