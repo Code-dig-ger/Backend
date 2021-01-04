@@ -39,13 +39,14 @@ class SolveProblemsAPIView(
                     final_list.append(problem_added[0])
 
             # Logic -- If less than 20 problem send them 
+            final_list = final_list[:20]
             # Else Only 20  
             return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(final_list, many = True).data})
         else:
             # Logic -- If less than 20 problem send them 
             # Else Only 20 
             # Shuffle   
-            problems_list = Problem.objects.filter(tags__icontains=tags).order_by('?')
+            problems_list = Problem.objects.filter(tags__icontains=tags).order_by('?')[:20]
             return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
 
         
