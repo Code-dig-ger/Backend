@@ -9,19 +9,12 @@ from problem.serializers import ProbSerializer
 import json,requests
 from django.http import JsonResponse
 from user.models import Profile
-
+from .cron import ratingChangeReminder
 
 def data(URL):
     return requests.get(URL).json()
 
-class GetContestsAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView,
-    ):
-    def post(self,request):
-        fetched_data = data("https://codeforces.com/api/contest.list")['result']
-        for contest_ in fetched_data:  
-            contest.objects.create( Type='R' ,name = contest_['name'] ,contestId=contest_['id'] ,duration=contest_['durationSeconds'] , startTime=contest_['startTimeSeconds'] )
+
 
 class MentorAPIView(
     mixins.CreateModelMixin,
@@ -53,7 +46,9 @@ class MentorContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = GuruSerializer
+
     
     def get(self,request):
         #TODO get gurus from DB
@@ -102,7 +97,9 @@ class MentorProblemAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = GuruSerializer
+
     
     def get(self,request):
         
@@ -251,3 +248,9 @@ class ContestAPIView(
         if contestId is not None:
             qs = qs.filter(contestId = contestId)
         return qs
+
+    
+def testing(request):
+
+    ratingChangeReminder()
+    return JsonResponse({'data':1})

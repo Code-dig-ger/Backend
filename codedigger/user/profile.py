@@ -10,7 +10,7 @@ def get_atcoder_profile(handle):
         'status' : 'FAILED',
         'handle' : handle, 
         'url' : url,
-        'rating' : 'UnRated', 
+        'rating' : 'Unrated', 
         'rank' : '20 Kyu',
         'color' : '#000000',
         'maxRating' : 'NA',
@@ -50,7 +50,7 @@ def get_atcoder_profile(handle):
         data['rank'] = soup.find('div' , {'class' : 'col-md-3 col-sm-12'}).find('b').text
 
     del grp
-    if data['rating'] != 'unrated': 
+    if data['rating'] != 'UnRated': 
         details = soup.findAll('table' , {'class' : 'dl-table'})[1].findAll('tr')
         data['worldRank'] = details[0].find('td').text[:-2]
         data['rating'] = details[1].find('span').text
