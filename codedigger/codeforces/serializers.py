@@ -114,7 +114,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user.objects.filter(rating__gt = obj.rating , organization = obj.organization).count()+1
 
     def get_contestRank(self, obj):
-        qs = user_contest_rank.objects.filter(user = obj).order_by('worldRank')[:5]
+        qs = user_contest_rank.objects.filter(user = obj).order_by('worldRank')[:3]
         return contestRankSerializer(qs , many = True ).data
 
     class Meta:
