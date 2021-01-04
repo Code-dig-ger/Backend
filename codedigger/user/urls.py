@@ -34,15 +34,12 @@ urlpatterns = [
          name="request-reset-email"),
     path('password-reset/<uidb64>/<token>/',
          PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
-<<<<<<< HEAD
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),
          name='password-reset-complete'), 
     path('password-change',ChangePassword.as_view(),name='password-change'),
     path('check-auth/',CheckAuthView.as_view(),name='check-auth'),
-=======
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),name='password-reset-complete'),
 
->>>>>>> 6d654b7a64711b9868e623782cce2b3130ea413b
     # Friends Related Path Start
     path('user/send-request' , SendFriendRequest.as_view() , name='Send_Friend_Request'),
     path('user/remove-friend' , RemoveFriend.as_view() , name='Remove_Friend'),

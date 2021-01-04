@@ -6,7 +6,7 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.response import Response
-from itertools import chain
+from .solved_update import *
 
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
@@ -48,6 +48,17 @@ def change_limit_list(x):
     global limit_list
     limit_list = x
 
+
+curr_page_list = 1
+
+def get_curr_page_list():
+    global curr_page_list
+    return curr_page_list
+
+def change_curr_page_list(x):
+    global curr_page_list
+    curr_page_list = x
+
 list_page_size = 6
 class RetrieveSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -59,6 +70,19 @@ class RetrieveSerializer(serializers.ModelSerializer):
 
     def get_user(self,attrs):
         user = self.context.get('user')
+        for prob in attrs.problem.all():
+            if Solved.objects.filter(user__username=user,problem=prob).exists():
+                continue
+            if prob.platform == 'F':
+                codeforces(user)
+            elif prob.platform == 'A':
+                atcoder(user)
+            elif prob.platform == 'U':
+                uva(user)
+            elif prob.platform == 'S':
+                spoj(user,prob.prob_id)
+            elif prob.platform == 'C':
+                codechef(user,prob.prob_id) 
         return user
 
 
@@ -73,8 +97,15 @@ class RetrieveSerializer(serializers.ModelSerializer):
             cnt += 1
         change_limit_list(cnt)
         if page == None:
-            qs = paginator.page(1)
-            return ProblemSerializer(qs,many = True,context = {"slug" : slug,"user" : user}).data
+            page = 1
+            while page <= get_limit_list():
+                qs = paginator.page(page)
+                for ele in qs:
+                    solve = Solved.objects.filter(user__username=user,problem=ele)
+                    if not solve.exists():
+                        change_curr_page_list(page)
+                        return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
+                page += 1
         else:
             qs = paginator.page(int(page))
             return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
@@ -82,13 +113,17 @@ class RetrieveSerializer(serializers.ModelSerializer):
     def get_page(self,obj):
         page = self.context.get('page')
         if page is None:
-            return 1
+            return get_curr_page_list()
         return int(page)
     
     def get_prev_page(self,obj):
         page = self.context.get('page')
         if page is None:
-            return None
+            page = get_curr_page_list()
+            if page == 1:
+                return None
+            return page-1
+
         else:
             if int(page) == 1:
                 return None
@@ -97,11 +132,11 @@ class RetrieveSerializer(serializers.ModelSerializer):
     def get_next_page(self,obj):
         page = self.context.get('page')
         if page is None:
-            page = get_limit_list()
-            if page == 1:
+            page = get_curr_page_list()
+            if page == get_limit_list():
                 return None
             else:
-                return 2
+                return page + 1
         else:
             if int(page) ==get_limit_list():
                 return None
@@ -160,6 +195,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
 
     def get_user(self,attrs):
         user = self.context.get('user')
+        for prob in attrs.problem.all():
+            if Solved.objects.filter(user__username=user,problem=prob).exists():
+                continue
+            if prob.platform == 'F':
+                codeforces(user)
+            elif prob.platform == 'A':
+                atcoder(user)
+            elif prob.platform == 'U':
+                uva(user)
+            elif prob.platform == 'S':
+                spoj(user,prob.prob_id)
+            elif prob.platform == 'C':
+                codechef(user,prob.prob_id) 
         return user
 
     def get_problem(self,attrs):

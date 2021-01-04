@@ -7,14 +7,11 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str,force_str,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
-<<<<<<< HEAD
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import Util
-=======
 import requests,json
 
->>>>>>> 6d654b7a64711b9868e623782cce2b3130ea413b
 
 
 class GuruSerializer(serializers.ModelSerializer):
