@@ -51,11 +51,8 @@ INSTALLED_APPS = [
     'user',
     'codeforces',
     'problem',
-<<<<<<< HEAD
     'lists',
-=======
     'blog',
->>>>>>> 6d654b7a64711b9868e623782cce2b3130ea413b
 
     #Third Party
     'rest_framework',
