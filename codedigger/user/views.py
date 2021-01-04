@@ -221,72 +221,75 @@ class UserProfileGetView(generics.GenericAPIView):
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
 
-        data = {
-            'codeforces' : {
-                'error' : ermsg.format('Codeforces')
-            },
-            'codechef' : {
-                'error' : ermsg.format('Codechef')
-            },
-            'atcoder' : {
-                'error' : ermsg.format('Atcoder')
-            },
-            'uva' : {
-                'error' : ermsg.format('UVa')
-            },
-            'spoj' : {
-                'error' : ermsg.format('Spoj')
-            }
-        }
+        data = {}
 
-        if request.user.is_authenticated :
-            if request.user.username == username:
-                data['about_user'] = 'Logged In User Itself'
-            else :
-                # Check for friends 
-                if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
-                    data['about_user'] = 'Friends'
-                elif UserFriends.objects.filter(status = True , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
-                    data['about_user'] = 'Friends'
-                elif UserFriends.objects.filter(status = False , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
-                    data['about_user'] = 'Request Sent'
-                elif UserFriends.objects.filter(status = False , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
-                    data['about_user'] = 'Request Received'
+        if request.GET.get('platform') == None: 
+            # Send Profile 
+            data = ProfileSerializer(profile).data
+            data['username'] = user.username
+            data['email'] = user.email
+            if request.user.is_authenticated :
+                if request.user.username == username:
+                    data['about_user'] = 'Logged In User Itself'
                 else :
-                    data['about_user'] = 'Stalking'
-        else :
-            data['about_user'] = 'Not Authenticated'
+                    # Check for friends 
+                    if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = True , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = False , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Request Sent'
+                    elif UserFriends.objects.filter(status = False , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Request Received'
+                    else :
+                        data['about_user'] = 'Stalking'
+            else :
+                data['about_user'] = 'Not Authenticated'
 
-        try :
-            codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
-        except CodeforcesUser.DoesNotExist :
-            codeforces_user = None
 
-        if profile.codeforces != "":
+        elif request.GET.get('platform') == "codeforces" :
+
+            try :
+                codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
+            except CodeforcesUser.DoesNotExist :
+                codeforces_user = None
+
             codeforces_user , codeforces_data = get_codeforces_profile(profile.codeforces , codeforces_user)
             if codeforces_user != None :
-                data['codeforces'] = CodeforcesUserSerializer(codeforces_user).data
-                data['codeforces']['status'] = codeforces_data['status'] 
-                if codeforces_data['status'] == 'OK' : 
-                    data['codeforces']['contribution'] = codeforces_data['contribution']
-                    data['codeforces']['avatar'] = codeforces_data['avatar']
-                    data['codeforces']['lastOnlineTimeSeconds'] = codeforces_data['lastOnlineTimeSeconds']
-                    data['codeforces']['friendOfCount'] = codeforces_data['friendOfCount'] 
+                data = CodeforcesUserSerializer(codeforces_user).data
+                data['status'] = codeforces_data['status'] 
+                data['contribution'] = codeforces_data['contribution']
+                data['avatar'] = codeforces_data['avatar']
+                data['lastOnlineTimeSeconds'] = codeforces_data['lastOnlineTimeSeconds']
+                data['friendOfCount'] = codeforces_data['friendOfCount'] 
             else :
-                data['codeforces'] = codeforces_data 
-                data['codeforces']['contestRank'] = []
+                data = codeforces_data 
 
-        if profile.atcoder != "" and profile.atcoder != None:
-            data['atcoder'] = get_atcoder_profile(profile.atcoder)
+        elif request.GET.get('platform') == "codechef" :
+            if profile.codechef != "" and profile.codechef != None:
+                data = get_codechef_profile(profile.codechef)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('codechef')})
 
-        if profile.uva_handle != "" and profile.uva_handle != None:
-            data['uva'] = get_uva_profile(profile.uva_id , profile.uva_handle)
- 
-        if profile.spoj != "" and profile.spoj != None:
-            data['spoj'] = get_spoj_profile(profile.spoj)
+        elif request.GET.get('platform') == "atcoder" :
+            if profile.atcoder != "" and profile.atcoder != None:
+                data = get_atcoder_profile(profile.atcoder)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('atcoder')})
 
-        if profile.codechef != "" and profile.codechef != None:
-            data['codechef'] = get_codechef_profile(profile.codechef)
+        elif request.GET.get('platform') == "uva" :
+            if profile.uva_handle != "" and profile.uva_handle != None:
+                data = get_uva_profile(profile.uva_id , profile.uva_handle)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('uva')})
+
+        elif request.GET.get('platform') == "spoj" :
+            if profile.spoj != "" and profile.spoj != None:
+                data = get_spoj_profile(profile.spoj)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('spoj')})
+        else :
+            return Response({'status' : 'FAILED' , 'error' : 'Invalid GET Request'})
 
         return Response({'status' : 'OK' , 'result' : data})
         
