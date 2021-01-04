@@ -23,17 +23,22 @@ def sendMailToUsers(rating_changes):
 
 
 def ratingChangeReminder():
-	contests=requests.get('https://codeforces.com/api/contest.list').json()['result']
+	contests=requests.get('https://codeforces.com/api/contest.list').json()
+	
+	if contests['status']!='OK':
+		return
+
+	contests = contests['result']
 
 	for contest in contests:
-		id = str(contest['contestId'])
-		rating_changes = data("https://codeforces.com/api/contest.ratingChanges?contestId="+id)
-		if rating_changes['status']=='OK':
+		id = str(contest['id'])
+		rating_changes = requests.get("https://codeforces.com/api/contest.ratingChanges?contestId="+id).json()
+		if rating_changes['status']=='OK':  #Problem
 			with open('data.txt', 'a') as file:  #TODO
 				data = file.read().replace('\n','')
 				if id not in data:
 					file.append(id+' ')
-					sendMailToUsers(rating_changes)
+					sendMailToUsers(rating_changes['result'])
 				else:
 					break
 		else:
