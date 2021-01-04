@@ -7,13 +7,19 @@ from codeforces.models import organization , country
 def get_atcoder_profile(handle):
     url = "https://atcoder.jp/users/"+handle
     data = {
+        'status' : 'FAILED',
         'handle' : handle, 
         'url' : url,
-        'rank' : 'unrated', 
-        'status' : 'FAILED'
+        'rating' : 'UnRated', 
+        'rank' : '20 Kyu',
+        'color' : '#000000',
+        'maxRating' : 'NA',
+        'maxRank' : '20 Kyu',
+        'maxColor' : '#000000',
+        'worldRank' : 'NA',
+        'solvedCount' : 'NA',
+        'contestRank' : []
     }
-    data['contestRank'] = []
-    data['solvedCount'] = 0
     res = requests.get(url)
     if res.status_code != 200 :
         return data
@@ -37,11 +43,14 @@ def get_atcoder_profile(handle):
         data['color'] = ColorCode[grp[0]]
 
     if grp!=None and 'unrated' in grp[0] :
-        data['rank'] = 'unrated'
+        data['rating'] = 'UnRated'
+    elif soup.find('div' , {'class' : 'col-md-3 col-sm-12'}).find('b') == None:
+        data['rank'] = '20 Kyu'
     else :
         data['rank'] = soup.find('div' , {'class' : 'col-md-3 col-sm-12'}).find('b').text
+
     del grp
-    if data['rank'] != 'unrated': 
+    if data['rating'] != 'unrated': 
         details = soup.findAll('table' , {'class' : 'dl-table'})[1].findAll('tr')
         data['worldRank'] = details[0].find('td').text[:-2]
         data['rating'] = details[1].find('span').text
@@ -49,6 +58,8 @@ def get_atcoder_profile(handle):
         data['maxColor'] = ColorCode[details[2].findAll('span')[0].get('class')[0]]
         data['maxRank'] = details[2].findAll('span')[2].text
         del details
+    
+    # Contests Rank
     url = "https://atcoder.jp/users/" + handle+ "/history"
     res = requests.get(url)
 
@@ -69,10 +80,12 @@ def get_atcoder_profile(handle):
             contest_detail['url'] = base_url + contest.findAll('td')[1].find('a')['href']
             contest_detail['code'] = contest.findAll('td')[1].find('a')['href'].split('/')[-1]
             contest_detail['standing_url'] = base_url + contest.findAll('td')[2].find('a')['href']
-            contest_detail['worldRank'] = contest.findAll('td')[2].find('a').text
-            contests_details.append(contest_detail)
+            rnk = contest.findAll('td')[2].find('a').text
+            if rnk.isdigit() :
+                contest_detail['worldRank'] = int(rnk)
+                contests_details.append(contest_detail)
         del contests
-        data['contestRank'] = contests_details 
+        data['contestRank'] = sorted(contests_details, key = lambda i: i['worldRank'])[:3]
         del contests_details
         
     url = "https://kenkoooo.com/atcoder/atcoder-api/results?user="+handle
@@ -92,12 +105,12 @@ def get_spoj_profile(handle):
     url = "https://www.spoj.com/users/" + handle
     res = requests.get(url)
     data = {
-        'worldRank' : 0,
-        'points' : 0,
-        'solvedCount' : 0 , 
+        'status' : 'FAILED',
         'handle' : handle ,
         'url' : url , 
-        'status' : 'FAILED'
+        'worldRank' : 'NA',
+        'solvedCount' : 'NA' , 
+        'points' : 'NA',
     }
     if res.status_code != 200:
         return data
@@ -125,12 +138,12 @@ def get_uva_profile(uva_id , handle):
     url = "https://uhunt.onlinejudge.org/api/ranklist/"+ str(uva_id) +"/0/0"
     res = requests.get(url)
     data = {
+        'status' : 'FAILED',
         'handle' : handle ,
         'uva_id' : uva_id , 
         'url' : 'https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=19&page=show_authorstats&userid=' + str(uva_id),
-        'worldRank' : 0,
-        'solvedCount' : 0,
-        'status' : 'FAILED'
+        'worldRank' : 'NA',
+        'solvedCount' : 'NA',
     }
     if res.status_code != 200 :
         return
@@ -176,20 +189,20 @@ def get_codechef_profile(handle):
     
     url = "https://www.codechef.com/users/" + handle
     data = {
+        'status' : 'FAILED',
         'handle' : handle, 
         'name' : '',
         'url': url,
-        'rating' : 0, 
-        'maxRating': 0,
-        'rank' : 0,
-        'maxRank' : 0,
+        'rating' : 'UnRated', 
+        'maxRating': 'NA',
+        'rank' : 'NA',
+        'maxRank' : 'NA',
         'color' : '#000000',
         'maxColor' : '#000000',
-        'worldRank' : 0,
-        'countryRank' : 0 ,
-        'solvedCount' : 0 ,
+        'worldRank' : 'NA',
+        'countryRank' : 'NA',
+        'solvedCount' : 'NA',
         'contestRank' : [],
-        'status' : 'FAILED'
     }
     
     res = requests.get(url)
@@ -226,14 +239,50 @@ def get_codechef_profile(handle):
         del s 
         del finding_rating
     
+    lunch = []
+    cook = []
+    challenge = []
+    overall = []
+
     for contest in contest_details :
-        data['contestRank'].append({
-            'name' : contest['name'],
-            'code' : contest['code'],
-            'standingUrl' : 'https://www.codechef.com/rankings/{}?order=asc&search={}&sortBy=rank'.format(contest['code'] , handle),
-            'url' :  'https://www.codechef.com/' + contest['code'], 
-            'rank' : contest['rank']
-        })
+        if contest['rank'].isdigit() :
+            overall.append({
+                'name' : contest['name'],
+                'code' : contest['code'],
+                'standingUrl' : 'https://www.codechef.com/rankings/{}?order=asc&search={}&sortBy=rank'.format(contest['code'] , handle),
+                'url' :  'https://www.codechef.com/' + contest['code'], 
+                'rank' : int(contest['rank'])
+            })
+            if 'Challenge' in contest['name'] :
+                challenge.append({
+                    'name' : contest['name'],
+                    'code' : contest['code'],
+                    'standingUrl' : 'https://www.codechef.com/rankings/{}?order=asc&search={}&sortBy=rank'.format(contest['code'] , handle),
+                    'url' :  'https://www.codechef.com/' + contest['code'], 
+                    'rank' : int(contest['rank'])
+                })
+            elif 'Cook' in contest['name'] :
+                cook.append({
+                    'name' : contest['name'],
+                    'code' : contest['code'],
+                    'standingUrl' : 'https://www.codechef.com/rankings/{}?order=asc&search={}&sortBy=rank'.format(contest['code'] , handle),
+                    'url' :  'https://www.codechef.com/' + contest['code'], 
+                    'rank' : int(contest['rank'])
+                })
+            elif 'Lunchtime' in contest['name'] :
+                lunch.append({
+                    'name' : contest['name'],
+                    'code' : contest['code'],
+                    'standingUrl' : 'https://www.codechef.com/rankings/{}?order=asc&search={}&sortBy=rank'.format(contest['code'] , handle),
+                    'url' :  'https://www.codechef.com/' + contest['code'], 
+                    'rank' : int(contest['rank'])
+                })
+
+
+    data['contestRank'] = sorted(overall, key = lambda i: i['rank'])[:3]
+    data['lunchtimeRank'] = sorted(lunch , key = lambda i: i['rank'])[:3]
+    data['cook-offRank'] = sorted(cook , key = lambda i: i['rank'])[:3]
+    data['longChallengeRank'] = sorted(challenge , key = lambda i: i['rank'])[:3]
 
     problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
 
@@ -254,7 +303,24 @@ def get_codeforces_profile(handle , codeforces_user=None) :
     extra_data = {
         'handle' : handle ,
         'url' : profileurl , 
-        'status' : 'FAILED'
+        'name' : '',
+        'rating' : 'UnRated',
+        'rank' : 'NA',
+        'maxRating' : 'NA',
+        'maxRank' : 'NA',
+        'country' : None,
+        'organization' : None,
+        'photoUrl' : None,
+        'totalUsers' : 'NA',
+        'worldRank' : 'NA',
+        'countryRank' : 'NA',
+        'organizationRank' : 'NA',
+        'contestRank' : [],
+        'status' : 'FAILED',
+        'contribution' : 'NA',
+        'avatar' : None,
+        'lastOnlineTimeSeconds' : 0,
+        'friendOfCount' : 'NA', 
     }
 
     if res.status_code != 200 :
@@ -266,7 +332,6 @@ def get_codeforces_profile(handle , codeforces_user=None) :
         return (codeforces_user, extra_data) 
 
     extra_data['status'] = 'OK'
-
     extra_data['contribution'] = d['result'][0]['contribution']
     extra_data['photoUrl'] = d['result'][0]['titlePhoto'][2:]
     extra_data['avatar'] = d['result'][0]['avatar'][2:]
@@ -283,7 +348,7 @@ def get_codeforces_profile(handle , codeforces_user=None) :
     extra_data["name"] = name
 
     if 'rating' not in d['result'][0] : 
-        extra_data['rating'] = 'unrated'
+        extra_data['rating'] = 'UnRated'
         return (codeforces_user, extra_data) 
     elif codeforces_user == None :
         
@@ -294,11 +359,11 @@ def get_codeforces_profile(handle , codeforces_user=None) :
 
         if 'country' in d['result'][0] :
 
-            extra_data['country'] =  d['result'][0]['country'] 
+            extra_data['country'] = { 'name' : d['result'][0]['country'] }
 
         if 'organization' in d['result'][0] :
 
-            extra_data['organization']  =  d['result'][0]['organization'] 
+            extra_data['organization']  =  { 'name' : d['result'][0]['organization'] }
 
         return (codeforces_user, extra_data) 
     else :

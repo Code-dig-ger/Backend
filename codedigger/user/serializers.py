@@ -7,9 +7,45 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str,force_str,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
+<<<<<<< HEAD
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import Util
+=======
+import requests,json
+
+>>>>>>> 6d654b7a64711b9868e623782cce2b3130ea413b
+
+
+class GuruSerializer(serializers.ModelSerializer):
+    guru = serializers.CharField(max_length=300)
+    class Meta:
+        model = Profile
+        fields = ['guru']
+    
+    def validate(self,attrs):
+
+        handle = attrs.get('guru' ,'')
+        
+        if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
+            raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
+        return attrs
+    
+    def add(self , instance , validated_data):
+        
+        if (validated_data.get('guru')+' ') in instance.gurus:
+            raise ValueError((validated_data.get('guru'))+"is already present in list")
+        instance.gurus = instance.gurus+validated_data.get('guru')+' '
+        instance.save()
+        return instance
+    
+    def delete(self,instance,data):
+
+        instance.gurus = instance.gurus.replace(data['guru']+' ', '')
+        instance.save()
+        return instance
+       
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68,min_length=6,write_only=True)

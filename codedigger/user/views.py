@@ -253,10 +253,10 @@ class UserProfileGetView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
 
-    def get(self , request , owner_id__username):
+    def get(self , request , username):
 
         try :
-            user = User.objects.get(username = owner_id__username)
+            user = User.objects.get(username = username)
         except User.DoesNotExist : 
             return Response({'status' : 'FAILED' , 'error' : 'Requested User doesn\'t exists in our database. Register Now! :)'})
 
@@ -267,53 +267,75 @@ class UserProfileGetView(generics.GenericAPIView):
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
 
-        data = {
-            'codeforces' : {
-                'error' : ermsg.format('Codeforces')
-            },
-            'codechef' : {
-                'error' : ermsg.format('Codechef')
-            },
-            'atcoder' : {
-                'error' : ermsg.format('Atcoder')
-            },
-            'uva' : {
-                'error' : ermsg.format('UVa')
-            },
-            'spoj' : {
-                'error' : ermsg.format('Spoj')
-            }
-        }
+        data = {}
 
-        try :
-            codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
-        except CodeforcesUser.DoesNotExist :
-            codeforces_user = None
+        if request.GET.get('platform') == None: 
+            # Send Profile 
+            data = ProfileSerializer(profile).data
+            data['username'] = user.username
+            data['email'] = user.email
+            if request.user.is_authenticated :
+                if request.user.username == username:
+                    data['about_user'] = 'Logged In User Itself'
+                else :
+                    # Check for friends 
+                    if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = True , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = False , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Request Sent'
+                    elif UserFriends.objects.filter(status = False , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Request Received'
+                    else :
+                        data['about_user'] = 'Stalking'
+            else :
+                data['about_user'] = 'Not Authenticated'
 
-        if profile.codeforces != "":
+
+        elif request.GET.get('platform') == "codeforces" :
+
+            try :
+                codeforces_user = CodeforcesUser.objects.get(handle = profile.codeforces)
+            except CodeforcesUser.DoesNotExist :
+                codeforces_user = None
+
             codeforces_user , codeforces_data = get_codeforces_profile(profile.codeforces , codeforces_user)
             if codeforces_user != None :
-                data['codeforces'] = CodeforcesUserSerializer(codeforces_user).data
-                data['codeforces']['contribution'] = codeforces_data['contribution']
-                data['codeforces']['avatar'] = codeforces_data['avatar']
-                data['codeforces']['lastOnlineTimeSeconds'] = codeforces_data['lastOnlineTimeSeconds']
-                data['codeforces']['friendOfCount'] = codeforces_data['friendOfCount'] 
-                data['codeforces']['status'] = codeforces_data['status'] 
+                data = CodeforcesUserSerializer(codeforces_user).data
+                data['status'] = codeforces_data['status'] 
+                data['contribution'] = codeforces_data['contribution']
+                data['avatar'] = codeforces_data['avatar']
+                data['lastOnlineTimeSeconds'] = codeforces_data['lastOnlineTimeSeconds']
+                data['friendOfCount'] = codeforces_data['friendOfCount'] 
             else :
-                data['codeforces'] = codeforces_data 
-                data['codeforces']['contestRank'] = []
+                data = codeforces_data 
 
-        if profile.atcoder != "":
-            data['atcoder'] = get_atcoder_profile(profile.atcoder)
+        elif request.GET.get('platform') == "codechef" :
+            if profile.codechef != "" and profile.codechef != None:
+                data = get_codechef_profile(profile.codechef)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('codechef')})
 
-        if profile.uva_handle != "":
-            data['uva'] = get_uva_profile(profile.uva_id , profile.uva_handle)
+        elif request.GET.get('platform') == "atcoder" :
+            if profile.atcoder != "" and profile.atcoder != None:
+                data = get_atcoder_profile(profile.atcoder)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('atcoder')})
 
-        if profile.spoj != "":
-            data['spoj'] = get_spoj_profile(profile.spoj)
+        elif request.GET.get('platform') == "uva" :
+            if profile.uva_handle != "" and profile.uva_handle != None:
+                data = get_uva_profile(profile.uva_id , profile.uva_handle)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('uva')})
 
-        if profile.codechef != "":
-            data['codechef'] = get_codechef_profile(profile.codechef)
+        elif request.GET.get('platform') == "spoj" :
+            if profile.spoj != "" and profile.spoj != None:
+                data = get_spoj_profile(profile.spoj)
+            else :
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('spoj')})
+        else :
+            return Response({'status' : 'FAILED' , 'error' : 'Invalid GET Request'})
 
         return Response({'status' : 'OK' , 'result' : data})
         
@@ -330,8 +352,14 @@ class SendFriendRequest(generics.GenericAPIView):
         to_user = request.data["to_user"]
 
         # Check this username is Valid or Not 
+
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         try: 
             to_user = User.objects.get(username = to_user , is_verified = True)
+            if to_user.codeforces == "" or to_user.codeforces == None :
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
         except User.DoesNotExist :
             return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
 
@@ -364,11 +392,16 @@ class RemoveFriend(generics.GenericAPIView):
 
     def post(self, request):
 
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         user = request.data["user"]
 
         # Check this username is Valid or Not 
         try: 
             user = User.objects.get(username = user , is_verified = True)
+            if to_user.codeforces == "" or to_user.codeforces == None :
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
         except User.DoesNotExist :
             return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
 
@@ -397,11 +430,16 @@ class AcceptFriendRequest(generics.GenericAPIView):
 
     def put(self, request):
 
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         from_user = request.data["from_user"]
 
         # Check this username is Valid or Not 
         try: 
             from_user = User.objects.get(username = from_user , is_verified = True)
+            if to_user.codeforces == "" or to_user.codeforces == None :
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
         except User.DoesNotExist :
             return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
 
@@ -423,6 +461,9 @@ class FriendsShowView(generics.GenericAPIView):
 
     def get(self , request):
 
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         friendsbyrequest = UserFriends.objects.filter(status = True , from_user = request.user)
         friendsbyaccept  = UserFriends.objects.filter(status = True , to_user = request.user)
 
@@ -438,6 +479,10 @@ class FriendRequestShowView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self , request):
+
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         friendsbyaccept  = UserFriends.objects.filter(status = False , to_user = request.user)
         friendsbyaccept = FriendsShowSerializer(friendsbyaccept , context = {'by_to_user':False} , many = True).data
         return Response({'status' : 'OK' , 'result' : friendsbyaccept})
@@ -448,6 +493,10 @@ class RequestSendShowView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self , request):
+
+        if request.user.codeforces == "" or request.user.codeforces == None :
+            return Response({'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+
         friendsbyrequest = UserFriends.objects.filter(status = False , from_user = request.user)
         friendsbyrequest = FriendsShowSerializer(friendsbyrequest , context = {'by_to_user':True} , many = True).data
         return Response({'status' : 'OK' , 'result' : friendsbyrequest})

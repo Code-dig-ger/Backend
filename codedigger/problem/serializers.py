@@ -106,8 +106,16 @@ class CCUpsolveContestSerializer(serializers.ModelSerializer):
             'platform',
             'difficulty',
             'editorial',
-            'status'
+             'status'
         ]
+
+class SolveProblemsSerializer(serializers.ModelSerializer): 
+    tags = serializers.ListField()
+    mentors=serializers.BooleanField()
+    class Meta:
+        model = Problem
+        fields = ['tags','mentors']
+           
 
 class AtcoderProblemSerializer(serializers.ModelSerializer):
 
