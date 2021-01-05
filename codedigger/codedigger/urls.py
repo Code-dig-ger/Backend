@@ -24,11 +24,8 @@ urlpatterns = [
     path('social_auth/', include(('social_auth.urls', 'social_auth'),namespace="social_auth")),
     path('problems/',include('problem.urls')),
     path('codeforces/',include('codeforces.urls')),
-<<<<<<< HEAD
     path('lists/',include('lists.urls')),
-=======
     path('blog/' , include('blog.urls')),
->>>>>>> 079491b30113bfc3d436be8fdab44665c0a3a746
     path('', schema_view.with_ui('swagger',
                                  cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
