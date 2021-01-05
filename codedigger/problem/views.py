@@ -25,18 +25,23 @@ class SolveProblemsAPIView(
 
     # permission_classes = [permissions.IsAuthenticated]
     serializer_class = SolveProblemsSerializer
-    def post(self ,request):
+    def get(self ,request):
 
-        tags = request.data.get('tags')
-        if request.data.get('mentors')==True:
+        tags = request.GET.get('tags').split(',')
+        if request.GET.get('mentors')=='true':
             problems_list = MentorProblemAPIView.get(self,request).data
             final_list=[]
-            #print(problems_list)
+            print(problems_list,'Lfg')
             for problem in problems_list['result']:
                 qs = Problem.objects.filter(contest_id=problem['contestId'] , index = problem['index'] )
-                problem_added=qs.filter(tags__icontains=tags)
-                if len(problem_added)!=0:
-                    final_list.append(problem_added[0])
+                
+                for tag in tags:
+                    problem_added=qs.filter(tags__icontains=tag)
+                    if problem_added.exists():
+                        final_list.append(problem_added[0])
+                        break
+                
+               
 
             # Logic -- If less than 20 problem send them 
             final_list = final_list[:20]
@@ -46,7 +51,13 @@ class SolveProblemsAPIView(
             # Logic -- If less than 20 problem send them 
             # Else Only 20 
             # Shuffle   
-            problems_list = Problem.objects.filter(tags__icontains=tags).order_by('?')[:20]
+
+            q = Q()
+            print(tags)
+            for tag in tags:
+                q|=Q(tags__icontains=tag)
+
+            problems_list = Problem.objects.filter(q).order_by('?')[:20]
             return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
 
         
