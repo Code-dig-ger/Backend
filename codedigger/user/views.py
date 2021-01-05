@@ -1,6 +1,15 @@
 from django.shortcuts import render
 from rest_framework import generics,status,permissions,views
-from .serializers import RegisterSerializer,ProfileSerializer,EmailVerificationSerializer,LoginSerializer,RequestPasswordResetEmailSeriliazer,RequestPasswordResetEmailSeriliazer,ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer
+from .serializers import (
+    RegisterSerializer,
+    ProfileSerializer,
+    EmailVerificationSerializer,
+    LoginSerializer,
+    RequestPasswordResetEmailSeriliazer,
+    RequestPasswordResetEmailSeriliazer,
+    ResetPasswordEmailRequestSerializer,
+    SetNewPasswordSerializer,
+)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User,Profile
@@ -13,7 +22,7 @@ from .permissions import IsOwner
 from rest_framework.generics import RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.generics import UpdateAPIView,ListAPIView
+from rest_framework.generics import UpdateAPIView,ListAPIView,ListCreateAPIView
 from .renderers import UserRenderer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
@@ -24,6 +33,7 @@ from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from .handle_validator import get_uva
+from django.contrib.auth import authenticate
 
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
@@ -58,8 +68,8 @@ class RegisterView(generics.GenericAPIView):
         relative_link = reverse('email-verify')
 
 
-        absurl = 'http://' + current_site + relative_link + "?token=" + str(token)
-        email_body = 'Hi' + user.username + '. Use link below to verify your email \n' + absurl
+        absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
         data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
         Util.send_email(data)
         return Response(user_data,status = status.HTTP_201_CREATED)
@@ -88,12 +98,31 @@ class VerifyEmail(views.APIView):
 
 class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+
     def post(self,request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data,context = {'current_site' : get_current_site(request).domain})
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
 
+class CheckAuthView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get(self,request,*args, **kwargs):
+        return Response({'status' : 'ok'},status=status.HTTP_200_OK)
+
+
+class SendVerificationMail(views.APIView):
+    def get(self,request,*args, **kwargs):
+        email = self.request.GET.get('email')
+        user = User.objects.get(email=email)
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relative_link = reverse('email-verify')
+        absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+        data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+        Util.send_email(data)
+        return Response({'status' : 'A Verification Email has been sent'},status = status.HTTP_200_OK)
 
 
 class ProfileGetView(ListAPIView):
@@ -126,6 +155,23 @@ class ProfileUpdateView(UpdateAPIView):
             pass
         return serializer.save(uva_id = get_uva(uva))
 
+class ChangePassword(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        old_pass = self.request.GET.get('old_pass')
+        new_pass = self.request.GET.get('new_pass')
+        print(str(old_pass) + " " + str(new_pass))
+        user = authenticate(username=self.request.user.username,password=old_pass)
+        if new_pass == old_pass:
+            return Response({'status' : "The new password is same as the old password"})
+        if len(new_pass) < 6:
+            return Response({'status' : "The password is too short, should be of minimum length 6"})
+        if user is None:
+            return Response({'status' : "Wrong Password"})
+        user.set_password(new_pass)
+        user.save()
+        return Response({'status' : "Password Change Complete"})
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
@@ -145,7 +191,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
             redirect_url = request.data.get('redirect_url', '')
-            absurl = 'http://'+current_site + relativeLink
+            absurl = 'https://'+current_site + relativeLink
             email_body = 'Hello, \n Use link below to reset your password  \n' + \
                 absurl+"?redirect_url="+redirect_url
             data = {'email_body': email_body, 'to_email': user.email,

@@ -7,6 +7,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_bytes,smart_str,force_str,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_decode
 from .handle_validator import *
+from django.urls import reverse
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import Util
 import requests,json
 
 
@@ -109,7 +112,15 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user.is_active:
                 raise AuthenticationFailed('Account disabled. contact admin')
             if not user.is_verified:
-                raise AuthenticationFailed('Email is not verified')
+                email = user.email
+                token = RefreshToken.for_user(user).access_token
+                current_site = self.context.get('current_site')
+                relative_link = reverse('email-verify')
+                absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+                email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+                data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+                Util.send_email(data)
+                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
@@ -125,7 +136,15 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user.is_active:
                 raise AuthenticationFailed('Account disabled. contact admin')
             if not user.is_verified:
-                raise AuthenticationFailed('Email is not verified')
+                email = user.email
+                token = RefreshToken.for_user(user).access_token
+                current_site = self.context.get('current_site')
+                relative_link = reverse('email-verify')
+                absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+                email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
+                data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+                Util.send_email(data)
+                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
@@ -141,7 +160,7 @@ def required(value):
 
 def check_cf(value):
     if value is None:
-        raise serializers.ValidationError('This fiels is required')
+        raise serializers.ValidationError('This field is required')
     if not check_handle_cf(value):
         raise serializers.ValidationError('The given handle does not exist')
 
@@ -167,30 +186,17 @@ def check_uva_handle(value):
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField(validators=[required])
     codeforces = serializers.CharField(validators=[check_cf])
-    spoj = serializers.CharField(validators=[check_spoj],allow_blank = True)
-    codechef = serializers.CharField(validators=[check_codechef],allow_blank = True)
-    atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True)
-    uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True)
-    password = serializers.CharField(max_length = 68,min_length = 6,write_only=True)
-
-    def validate(self,attrs):
-        username = self.context.get('user')
-        password = attrs.get('password')
-        if password.strip() is None:
-            return super().validate(attrs)
-        qs = User.objects.filter(username=username).first()
-        qs.set_password(password)
-        qs.save()
-        return super().validate(attrs)
+    spoj = serializers.CharField(validators=[check_spoj],allow_blank = True,allow_null=True)
+    codechef = serializers.CharField(validators=[check_codechef],allow_blank = True,allow_null=True)
+    atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True,allow_null=True)
+    uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True,allow_null=True)
 
 
     class Meta:
         model = Profile
-        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle','password']
+        fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle',]
 
 
-    
-    
 
 
 class RequestPasswordResetEmailSeriliazer(serializers.Serializer):

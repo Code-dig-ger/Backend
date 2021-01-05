@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'user',
     'codeforces',
     'problem',
+    'lists',
     'blog',
 
     #Third Party
@@ -174,7 +175,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=90),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
 
@@ -186,6 +187,8 @@ CRONJOBS = [
    # ('0 20 * * *', 'problem.cron.update_uva'), # Everyday 20:00
     # ('30 16 * * 3', 'codeforces.cron.codeforces_update_contest'), # Every week on Wednesday at 1:00
    # ('0 0 * * *' , 'codeforces.cron.codeforces_update_problems') # Every day at 00:00 
+   
+   # (Set time for lists updation ,'lists.cron.updater')
 
     ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every 10th minute 
 
