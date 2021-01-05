@@ -25,6 +25,7 @@ def sendMailToUsers(rating_changes):
 
 
 def ratingChangeReminder():
+
 	res=requests.get('https://codeforces.com/api/contest.list')
 
 	if res.status_code != 200 :
@@ -32,6 +33,11 @@ def ratingChangeReminder():
 	contests=res.json()
 	if contests['status']!='OK':
 		return
+
+	subject = 'Codeforces Rating Reminder Started (Status OK)'
+	message = 'This is automated message from Codedigger which tells that your codeforces rating reminder has started'
+	recepient = 'shivamsinghal1012@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	contests = contests['result']
 
