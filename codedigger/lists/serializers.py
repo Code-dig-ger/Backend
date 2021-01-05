@@ -38,6 +38,18 @@ class GetSerializer(serializers.ModelSerializer):
         model = List
         fields = ('id','name','description','slug')
 
+
+completed_list = False
+
+def get_completed_list():
+    global completed_list
+    return completed_list
+
+def change_completed_list(x):
+    global completed_list
+    completed_list = x
+
+
 limit_list = None
 
 def get_limit_list():
@@ -66,23 +78,14 @@ class RetrieveSerializer(serializers.ModelSerializer):
     page = serializers.SerializerMethodField()
     prev_page = serializers.SerializerMethodField()
     next_page = serializers.SerializerMethodField()
+    completed = serializers.SerializerMethodField()
 
+
+    def get_completed(self,attrs):
+        return get_completed_list()
 
     def get_user(self,attrs):
         user = self.context.get('user')
-        for prob in attrs.problem.all():
-            if Solved.objects.filter(user__username=user,problem=prob).exists():
-                continue
-            if prob.platform == 'F':
-                codeforces(user)
-            elif prob.platform == 'A':
-                atcoder(user)
-            elif prob.platform == 'U':
-                uva(user)
-            elif prob.platform == 'S':
-                spoj(user,prob.prob_id)
-            elif prob.platform == 'C':
-                codechef(user,prob.prob_id) 
         return user
 
 
@@ -97,6 +100,19 @@ class RetrieveSerializer(serializers.ModelSerializer):
             cnt += 1
         change_limit_list(cnt)
         if page == None:
+            for prob in attrs.problem.all():
+                if Solved.objects.filter(user__username=user,problem=prob).exists():
+                    continue
+                if prob.platform == 'F':
+                    codeforces(user)
+                elif prob.platform == 'A':
+                    atcoder(user)
+                elif prob.platform == 'U':
+                    uva(user)
+                elif prob.platform == 'S':
+                    spoj(user,prob.prob_id)
+                elif prob.platform == 'C':
+                    codechef(user,prob.prob_id) 
             page = 1
             while page <= get_limit_list():
                 qs = paginator.page(page)
@@ -106,6 +122,11 @@ class RetrieveSerializer(serializers.ModelSerializer):
                         change_curr_page_list(page)
                         return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                 page += 1
+            change_completed_list(True)
+            change_curr_page_list(1)
+            qs = paginator.page(1)
+            return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
+            
         else:
             qs = paginator.page(int(page))
             return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
@@ -144,14 +165,25 @@ class RetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','user','name','description','problem','page','next_page','prev_page','slug',)
+        fields = ('id','user','name','description','problem','page','next_page','prev_page','completed','slug',)
         change_limit_list(None)
+        change_completed_list(False)
 
 class GetLadderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
         fields = ('id','name','description','slug',)
+
+completed_ladder = False
+
+def get_completed_ladder():
+    global completed_ladder
+    return completed_ladder
+
+def change_completed_ladder(x):
+    global completed_ladder
+    completed_ladder = x
 
 curr_prob = None
 def get_curr_prob():
@@ -191,23 +223,14 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
     prev_page = serializers.SerializerMethodField()
     next_page = serializers.SerializerMethodField()
     curr_prob = serializers.SerializerMethodField()
+    completed = serializers.SerializerMethodField()
 
+
+    def get_completed(self,attrs):
+        return get_completed_ladder()
 
     def get_user(self,attrs):
         user = self.context.get('user')
-        for prob in attrs.problem.all():
-            if Solved.objects.filter(user__username=user,problem=prob).exists():
-                continue
-            if prob.platform == 'F':
-                codeforces(user)
-            elif prob.platform == 'A':
-                atcoder(user)
-            elif prob.platform == 'U':
-                uva(user)
-            elif prob.platform == 'S':
-                spoj(user,prob.prob_id)
-            elif prob.platform == 'C':
-                codechef(user,prob.prob_id) 
         return user
 
     def get_problem(self,attrs):
@@ -218,19 +241,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         page_size = ladder_page_size
         qs = attrs.problem.all().order_by('rating')
         if logged_in:
-            spoj = Profile.objects.get(owner__username = user).spoj
-            uva = Profile.objects.get(owner__username = user).uva_handle
-            codeforces = Profile.objects.get(owner__username = user).codeforces
-            codechef = Profile.objects.get(owner__username = user).codechef
-            atcoder = Profile.objects.get(owner__username = user).atcoder
+            tspoj = Profile.objects.get(owner__username = user).spoj
+            tuva = Profile.objects.get(owner__username = user).uva_handle
+            tcodeforces = Profile.objects.get(owner__username = user).codeforces
+            tcodechef = Profile.objects.get(owner__username = user).codechef
+            tatcoder = Profile.objects.get(owner__username = user).atcoder
             temp = []
-            if spoj is None:
+            if tspoj is None:
                 temp.append('S')
-            if uva is None:
+            if tuva is None:
                 temp.append('U')
-            if atcoder is None:
+            if tatcoder is None:
                 temp.append('A')
-            if codechef is None:
+            if tcodechef is None:
                 temp.append('C')
             final = None
             prev = None
@@ -249,6 +272,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                     cnt += 1
                 change_ladder(cnt)
                 if page == None:
+                    for prob in attrs.problem.all():
+                        if Solved.objects.filter(user__username=user,problem=prob).exists():
+                            continue
+                        if prob.platform == 'F':
+                            codeforces(user)
+                        elif prob.platform == 'A':
+                            atcoder(user)
+                        elif prob.platform == 'U':
+                            uva(user)
+                        elif prob.platform == 'S':
+                            spoj(user,prob.prob_id)
+                        elif prob.platform == 'C':
+                            codechef(user,prob.prob_id) 
                     page = 1
                     while page <= get_ladder():
                         qs = paginator.page(page)
@@ -259,6 +295,10 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                                 change_curr_prob(ele.prob_id)
                                 return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                         page += 1
+                    change_completed_ladder(True)
+                    change_page(1)
+                    qs = paginator.page(1)
+                    return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                 else:
                     qs = paginator.page(int(page))
                     return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
@@ -269,6 +309,19 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                     cnt += 1
                 change_ladder(cnt)
                 if page == None:
+                    for prob in attrs.problem.all():
+                        if Solved.objects.filter(user__username=user,problem=prob).exists():
+                            continue
+                        if prob.platform == 'F':
+                            codeforces(user)
+                        elif prob.platform == 'A':
+                            atcoder(user)
+                        elif prob.platform == 'U':
+                            uva(user)
+                        elif prob.platform == 'S':
+                            spoj(user,prob.prob_id)
+                        elif prob.platform == 'C':
+                            codechef(user,prob.prob_id) 
                     page = 1
                     while page <= get_ladder():
                         qs = paginator.page(page)
@@ -280,6 +333,10 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
                                 change_curr_prob(ele.prob_id)
                                 return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                         page += 1
+                    change_completed_ladder(True)
+                    change_page(1)
+                    qs = paginator.page(1)
+                    return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
                 else:
                     qs = paginator.page(int(page))
                     return ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : user}).data
@@ -336,7 +393,8 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','user','name','description','problem','curr_prob','page','next_page','prev_page','slug',)
+        fields = ('id','user','name','description','problem','curr_prob','page','next_page','prev_page','completed','slug',)
         change_ladder(None)
         change_page(1)
         change_curr_prob(None)
+        change_completed_ladder(False)
