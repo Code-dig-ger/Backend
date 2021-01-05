@@ -150,4 +150,7 @@ dmypy.json
 # profiling data
 .prof
 
+# Extras
+codedigger/data.txt
+
 # End of https://www.toptal.com/developers/gitignore/api/django
