@@ -1,16 +1,66 @@
-from django.http import HttpResponse
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import generics,mixins,permissions 
-from .models import Problem
-from .serializers import ProbSerializer
+from rest_framework import generics,mixins,permissions,status
+
+# Django Models Stuff
+from .models import Problem , atcoder_contest
+from user.models import Profile
+from codeforces.models import contest ,user_contest_rank
+from django.db.models import Q
+
+# Serializer and Extra Utils Function
+
+from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer , AtcoderUpsolveContestSerializer,SolveProblemsSerializer
+from .utils import codeforces_status , codechef_status , atcoder_status
 import json
+from django.http import JsonResponse
+from codeforces.views import MentorProblemAPIView
 
-from .cron import update_spoj , update_atcoder , update_uva , update_codechef
-from codeforces.cron import update_codeforces
 
 
+class SolveProblemsAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,generics.GenericAPIView
+    ):
+
+    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SolveProblemsSerializer
+    def get(self ,request):
+
+        tags = request.GET.get('tags').split(',')
+        if request.GET.get('mentors')=='true':
+            problems_list = MentorProblemAPIView.get(self,request).data
+            final_list=[]
+            print(problems_list,'Lfg')
+            for problem in problems_list['result']:
+                qs = Problem.objects.filter(contest_id=problem['contestId'] , index = problem['index'] )
+                
+                for tag in tags:
+                    problem_added=qs.filter(tags__icontains=tag)
+                    if problem_added.exists():
+                        final_list.append(problem_added[0])
+                        break
+                
+               
+
+            # Logic -- If less than 20 problem send them 
+            final_list = final_list[:20]
+            # Else Only 20  
+            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(final_list, many = True).data})
+        else:
+            # Logic -- If less than 20 problem send them 
+            # Else Only 20 
+            # Shuffle   
+
+            q = Q()
+            
+            for tag in tags:
+                q|=Q(tags__icontains=tag)
+
+            problems_list = Problem.objects.filter(q).order_by('?')[:20]
+            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
+
+        
 class StatusAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
@@ -32,24 +82,105 @@ class StatusAPIView(
             qs = qs.filter(tags__icontains = tags)
         return qs
 
-def testing_spoj(request):
-    update_spoj()
-    return HttpResponse("OKAY")
+class UpsolveContestAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+    permission_classes = [permissions.IsAuthenticated]
+    #authentication_classes = [SessionAuthentication]
+    serializer_class = UpsolveContestSerializer
+    #passed_id = None 
 
-def testing_uva(request):
-    update_uva()
-    return HttpResponse("OKAY")
+    #running queries and stuff
+    def get(self , request):
+        handle = Profile.objects.get(owner = self.request.user).codeforces
+        if handle == "" or handle == None :
+            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'})
 
-def testing_atcoder(request):
-    update_atcoder()
-    return HttpResponse("OKAY")
 
-def testing_codeforces(request):
-    update_codeforces()
-    return HttpResponse("OKAY")
+        
+        virtual = request.GET.get('virtual')
 
-def testing_codechef(request):
-    update_codechef()
-    return HttpResponse("OKAY")
+        RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
 
-       
+        data = {
+            'wrong'  : Wrong , 
+            'solved' : SolvedInContest , 
+            'upsolved' : Upsolved , 
+        }
+
+        if virtual == 'true':
+            RContest = RContest.union(VContest)
+
+        c = contest.objects.filter(contestId__in = list(RContest))
+
+        return Response({'status' : 'OK' , 'result' : UpsolveContestSerializer(c, many =True, context = data).data})
+
+
+class CCUpsolveContestAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+    permission_classes = [permissions.IsAuthenticated]
+    #authentication_classes = [SessionAuthentication]
+    serializer_class = CCUpsolveContestSerializer
+    #passed_id = None 
+
+    def get(self , request):
+
+        handle = Profile.objects.get(owner =self.request.user).codechef
+
+        if handle == "" or handle == None:
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' })
+
+        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle)
+
+        data = {
+            'solved'  : SolvedInContest,
+            'upsolved' : Upsolved
+        }
+
+        user_contest_details = []
+
+        for contest in Contest :
+            qs = Problem.objects.filter(Q(contest_id = contest) | Q(index = contest))
+            if qs.count() > 0 :
+                user_contest_details.append({
+                    'contestId' : contest,
+                    'name' :  ContestName[contest],
+                    'problems' :CCUpsolveContestSerializer(qs , many =True , context = data).data 
+                })
+
+        return Response({'status' : 'OK' , 'result' : user_contest_details})
+
+class ATUpsolveContestAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+    permission_classes = [permissions.IsAuthenticated]
+    #authentication_classes = [SessionAuthentication]
+    serializer_class = AtcoderUpsolveContestSerializer
+    #passed_id = None 
+
+    def get(self , request):
+
+        handle = Profile.objects.get(owner =self.request.user).atcoder
+
+        if handle == "" or handle == None:
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' })
+
+        contests_details , all_contest , solved , wrong = atcoder_status(handle)
+
+        practice = request.GET.get('practice')
+        
+        if practice == 'true':
+            contests_details = contests_details.union(all_contest)
+
+        data = {
+            'solved'  : solved,
+            'wrong' : wrong
+        }
+
+        qs = atcoder_contest.objects.filter(contestId__in = contests_details)
+
+        return Response({'status' : 'OK' , 'result' : AtcoderUpsolveContestSerializer(qs , many = True , context = data).data})
