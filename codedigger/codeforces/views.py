@@ -10,7 +10,7 @@ import json,requests
 from django.http import JsonResponse
 from user.models import Profile
 from .cron import ratingChangeReminder
-
+from django.db.models import Q
 def data(URL):
     return requests.get(URL).json()
 
@@ -53,7 +53,7 @@ class MentorContestAPIView(
     def get(self,request):
 
         gym=request.GET.get('gym')
-        div = request.GET.get('div')
+        divs = request.GET.get('divs')
         mentor=request.GET.get('mentor')
 
         #TODO get gurus from DB
@@ -75,15 +75,22 @@ class MentorContestAPIView(
             if gym=='false':
                 contests = contest.objects.filter( Type='Regular')
             else:
-                contests= contest.objects.filter()
+                contests= contest.objects.all()
+            if divs!=None:
+                divs = divs.split(',')
+                q = Q()
+                for div in divs:
+                    q|=Q(name__icontains=div)
+                
+                contests = contests.filter(q)
             
-            contest_data=[]
+            contests_data=[]
             for contest_ in contests:
                 if contest_['contestId'] not in student_contests:
-                    contest_data.append(contest_['contestId'])
+                    contests_data.append(contest_['contestId'])
 
 
-            return JsonResponse(  { 'status':'OK' , 'contests_data': contests_data  ) 
+            return JsonResponse(  { 'status':'OK' , 'contests_data': contests_data } ) 
 
         #else iterate over gurus , to get relevant contestIds 
         guru_contests=set()

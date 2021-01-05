@@ -53,7 +53,7 @@ class SolveProblemsAPIView(
             # Shuffle   
 
             q = Q()
-            print(tags)
+            
             for tag in tags:
                 q|=Q(tags__icontains=tag)
 
