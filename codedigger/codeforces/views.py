@@ -51,8 +51,13 @@ class MentorContestAPIView(
 
     
     def get(self,request):
+
+        # gym=request.get.GET('gym')
+        # div = request.GET.get('div')
+        # mentor=request.GET.get('mentor')
+
         #TODO get gurus from DB
-        gurus = [ 'Ashishgup','coder_pulkit_c']
+        gurus = [ 'coder_pulkit_c']
 
         #TODO get user handle
         student = "Shashank_Chugh"
@@ -60,36 +65,33 @@ class MentorContestAPIView(
         #fetch student data from api
         submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
         
-        guru_contests={}
+        guru_contests=set()
         student_contests=set()
-
+    
         #student submissions in set
         for submission in submissions_student:
-            if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
+            if (submission['verdict']=='OK'):
                 student_contests.add(submission["problem"]["contestId"])
 
         #iterate over gurus , to get relevant contestIds 
         for guru in gurus:
+
             fetched_data = data("https://codeforces.com/api/user.status?handle="+guru)
-        
             submissions_guru = fetched_data["result"]
+
             for submission in submissions_guru:
+                
                 if 'contestId' not in submission['problem']:
                     continue
-                if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
-                  
-                    if (str(submission["problem"]["contestId"]) not in guru_contests)   :
-                        guru_contests[str(submission["problem"]["contestId"])] =1
-                    else:
-                        guru_contests[str(submission["problem"]["contestId"])]+=1
+
+                if (submission['author']['participantType']!='PRACTICE') & (submission['verdict']=='OK'):
+                    guru_contests.add(submission["problem"]["contestId"])
         
-        guru_contests = sorted(guru_contests.items(), key=lambda x: x[1], reverse=True)
-        print(guru_contests)
         contest_list=[]
         for contest in guru_contests:
-            contest_list.append(contest[0])
-
-
+            if contest not in student_contests:
+                contest_list.append(contest)
+        
         context = { 'status':'OK' , 'contest_list':contest_list}
         return JsonResponse( context )
 
