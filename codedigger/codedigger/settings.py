@@ -190,7 +190,7 @@ CRONJOBS = [
    
    # (Set time for lists updation ,'lists.cron.updater')
 
-    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every day at 00:00 
+    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every 10th minute 
 
 
 ]

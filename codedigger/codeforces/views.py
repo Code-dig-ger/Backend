@@ -10,6 +10,8 @@ import json,requests
 from django.http import JsonResponse
 from user.models import Profile
 from .cron import ratingChangeReminder
+from django.db.models import Q
+
 
 def data(URL):
     return requests.get(URL).json()
@@ -51,46 +53,69 @@ class MentorContestAPIView(
 
     
     def get(self,request):
-        #TODO get gurus from DB
-        gurus = [ 'Ashishgup','coder_pulkit_c']
 
+        gym=request.GET.get('gym')
+        divs = request.GET.get('divs')
+        mentor=request.GET.get('mentor')
+
+        #TODO get gurus from DB
+        gurus = [ 'coder_pulkit_c']
+ 
         #TODO get user handle
         student = "Shashank_Chugh"
 
         #fetch student data from api
         submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
-        
-        guru_contests={}
-        student_contests=set()
-
+    
         #student submissions in set
+        student_contests=set()
         for submission in submissions_student:
-            if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
+            if (submission['verdict']=='OK'):
                 student_contests.add(submission["problem"]["contestId"])
-
-        #iterate over gurus , to get relevant contestIds 
-        for guru in gurus:
-            fetched_data = data("https://codeforces.com/api/user.status?handle="+guru)
         
-            submissions_guru = fetched_data["result"]
-            for submission in submissions_guru:
-                if 'contestId' not in submission['problem']:
-                    continue
-                if (submission['author']['participantType']!='PRACTICE') &  (submission["problem"]["contestId"] <100000) & (submission['verdict']=='OK'):
-                  
-                    if (str(submission["problem"]["contestId"]) not in guru_contests)   :
-                        guru_contests[str(submission["problem"]["contestId"])] =1
-                    else:
-                        guru_contests[str(submission["problem"]["contestId"])]+=1
-        
-        guru_contests = sorted(guru_contests.items(), key=lambda x: x[1], reverse=True)
-        print(guru_contests)
-        contest_list=[]
-        for contest in guru_contests:
-            contest_list.append(contest[0])
 
+        if mentor=='false':
+            q = Q()
+            for contestId in student_contests:
+                q|=Q(contestId=contestId)
+            contest_qs=contest.objects.exclude(q)
 
-        context = { 'status':'OK' , 'contest_list':contest_list}
+        else:
+            guru_contests=set()
+            for guru in gurus:
+
+                fetched_data = data("https://codeforces.com/api/user.status?handle="+guru)
+                submissions_guru = fetched_data["result"]
+
+                for submission in submissions_guru:
+                    
+                    if 'contestId' not in submission['problem']:
+                        continue
+
+                    if (submission['author']['participantType']!='PRACTICE') & (submission['verdict']=='OK'):
+                        guru_contests.add(submission["problem"]["contestId"])
+            
+            #Select contest Ids which are not in student set
+            contest_list=[]
+            for contest_ in guru_contests:
+                if contest_ not in student_contests:
+                    contest_list.append(contest_)
+            
+            
+            contest_qs = contest.objects.filter(contestId__in=contest_list)
+
+        if gym == 'false':
+            contest_qs=contest_qs.filter(Type='Regular')
+
+        if divs!=None:
+            divs = divs.split(',')
+            q = Q()
+            for div in divs:
+                q|=Q(name__icontains=div)
+                
+            contest_qs = contest_qs.filter(q).order_by('?')[:20]
+
+        context = { 'status':'OK', 'contest_qs':ContestSerializer(contest_qs,many=True).data }
         return JsonResponse( context )
 
 class MentorProblemAPIView(

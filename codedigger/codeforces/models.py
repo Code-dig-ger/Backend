@@ -22,6 +22,7 @@ class contest(models.Model):
 	duration = models.IntegerField(blank = True , null = True)
 	startTime = models.IntegerField(blank = True , null = True)
 	Type = models.CharField(max_length=1, choices=TYPE)
+	isUpdated = models.BooleanField(default = False)
 
 	def __str__(self):
 		return self.name
