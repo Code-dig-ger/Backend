@@ -34,50 +34,59 @@ def ratingChangeReminder():
 	if contests['status']!='OK':
 		return
 
-	subject = 'Codeforces Rating Reminder Started (Status OK)'
-	message = 'This is automated message from Codedigger which tells that your codeforces rating reminder has started'
-	recepient = 'shivamsinghal1012@gmail.com'
-	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-
 	contests = contests['result']
 
-	for contest in contests:
-		id = str(contest['id'])
+	for codeforces_contest in contests:
+		id = str(codeforces_contest['id'])
 		
 		res = requests.get("https://codeforces.com/api/contest.ratingChanges?contestId="+id)
+		
 		if res.status_code == 200 :
+			
 			rating_changes = res.json()
-			if rating_changes['status']=='OK':  
-				with open('data.txt', 'r') as file:  
-					data = file.read().replace('\n','')
-					
-					
-				if id not in data:
-					with open('data.txt', 'a+') as file:
-						file.write(id+' ')
+			
+			if rating_changes['status']=='OK':
 
+				new_contest,created = contest.objects.get_or_create(
+					contestId = str(codeforces_contest['id']) , 
+					defaults = {
+						'Type' : 'R',
+						'name' : codeforces_contest['name'],
+						'duration' : codeforces_contest['durationSeconds'],
+					}
+				)
+				if 'startTimeSeconds' in codeforces_contest:
+					new_contest.startTime = codeforces_contest['startTimeSeconds']
+
+				new_contest.save()
+					
+				if not new_contest.isUpdated:
+					new_contest.isUpdated = True
+					new_contest.save()
 					sendMailToUsers(rating_changes['result'])
 				else:
 					break
 			
 			else:
-				with open('data.txt', 'r') as file:  
-					data = file.read().replace('\n','')
-					
-					if id not in data:
-						continue
-					else:
-						break
+				check_contest = contest.objects.filter(contestId = id)
+
+				if not check_contest.exists() : 
+					continue
+				elif check_contest[0].isUpdated :
+					break
+				else :
+					continue
 
 	
 		else:
-			with open('data.txt', 'r') as file:  
-				data = file.read().replace('\n','')
-				
-				if id not in data:
-					continue
-				else:
-					break
+			check_contest = contest.objects.filter(contestId = id)
+
+			if not check_contest.exists() : 
+				continue
+			elif check_contest[0].isUpdated :
+				break
+			else :
+				continue
 			 
 
 def rating_to_difficulty(rating):
