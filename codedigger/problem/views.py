@@ -15,7 +15,7 @@ from .utils import codeforces_status , codechef_status , atcoder_status
 import json
 from django.http import JsonResponse
 from codeforces.views import MentorProblemAPIView
-
+import random
 
 
 class SolveProblemsAPIView(
@@ -27,38 +27,45 @@ class SolveProblemsAPIView(
     serializer_class = SolveProblemsSerializer
     def get(self ,request):
 
-        tags = request.GET.get('tags').split(',')
+        tags = request.GET.get('tags')
+        platforms = request.GET.get('platform')
+        difficulty = request.GET.get('difficulty')
+        range_l = request.GET.get('range_l')
+        range_r = request.Get.get('range_r')
+
+        if tags is not None:
+            tags=tags.split(',')
+
+        if platforms is not None:
+            platforms=platforms.split(',')
+        
+        if difficulty is not None:
+            difficulty=difficulty.split(',')
+       
         if request.GET.get('mentors')=='true':
             problems_list = MentorProblemAPIView.get(self,request).data
-            final_list=[]
-            print(problems_list,'Lfg')
-            for problem in problems_list['result']:
-                qs = Problem.objects.filter(contest_id=problem['contestId'] , index = problem['index'] )
-                
-                for tag in tags:
-                    problem_added=qs.filter(tags__icontains=tag)
-                    if problem_added.exists():
-                        final_list.append(problem_added[0])
-                        break
-                
-               
-
-            # Logic -- If less than 20 problem send them 
-            final_list = final_list[:20]
-            # Else Only 20  
-            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(final_list, many = True).data})
+            problem_qs = Problem.objects.filter( contestId__in =problem_list['contestId'] , index__in=problem_list['index']     )
         else:
-            # Logic -- If less than 20 problem send them 
-            # Else Only 20 
-            # Shuffle   
+            problem_qs = Problem.objects.all()
 
-            q = Q()
-            
-            for tag in tags:
-                q|=Q(tags__icontains=tag)
+        if platform is not None:
+            problem_qs = problem_qs.filter( platform__in=platforms)
 
-            problems_list = Problem.objects.filter(q).order_by('?')[:20]
-            return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
+        if difficulty is not None:
+            problem_qs = problem_qs.filter( difficulty__in = difficulty )
+
+        if range_l is not None:
+            problem_qs = problem_qs.filter(rating_lt=int(range_l) )
+        
+        if range_r is not None:
+            problem_qs = problem_qs.filter(rating_rt=int(range_r))
+
+        q = Q()
+        for tag in tags:
+            q|=Q(tags__icontains=tag) 
+
+        problems_list = Problem.objects.filter(q).order_by('?')[:20]
+        return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
 
         
 class StatusAPIView(
