@@ -13,6 +13,7 @@ from .serializers import (
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User,Profile
+from lists.models import Solved
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -114,6 +115,8 @@ class CheckAuthView(views.APIView):
 class SendVerificationMail(views.APIView):
     def get(self,request,*args, **kwargs):
         email = self.request.GET.get('email')
+        if email is None:
+            return Response({'status' : 'Email not provided'},status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.get(email=email)
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
@@ -151,6 +154,30 @@ class ProfileUpdateView(UpdateAPIView):
 
     def perform_update(self,serializer):
         uva = self.request.data['uva_handle']
+        spoj = self.request.data['spoj']
+        codechef = self.request.data['codechef']
+        codeforces = self.request.data['codeforces']
+        atcoder = self.request.data['atcoder']
+        if codeforces is not None:
+            if not Profile.objects.filter(codeforces=codeforces,owner__username=self.request.user.username).exists():
+                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='F'):
+                    ele.delete()
+        if codechef is not None:
+            if not Profile.objects.filter(codechef=codechef,owner__username=self.request.user.username).exists():
+                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='C'):
+                    ele.delete()
+        if spoj is not None:
+            if not Profile.objects.filter(spoj=spoj,owner__username=self.request.user.username).exists():
+                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='S'):
+                    ele.delete()
+        if atcoder is not None:
+            if not Profile.objects.filter(atcoder=atcoder,owner__username=self.request.user.username).exists():
+                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='A'):
+                    ele.delete()
+        if uva is not None:
+            if not Profile.objects.filter(uva_handle=uva,owner__username=self.request.user.username).exists():
+                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='U'):
+                    ele.delete()
         if not uva.strip():
             pass
         return serializer.save(uva_id = get_uva(uva))
@@ -158,20 +185,22 @@ class ProfileUpdateView(UpdateAPIView):
 class ChangePassword(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self,request,*args,**kwargs):
+    def post(self,request,*args,**kwargs):
         old_pass = self.request.GET.get('old_pass')
         new_pass = self.request.GET.get('new_pass')
         print(str(old_pass) + " " + str(new_pass))
+        if old_pass is None or new_pass is None:
+            return Response({'status' : 'Either the old or new password was not provided'},status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(username=self.request.user.username,password=old_pass)
         if new_pass == old_pass:
-            return Response({'status' : "The new password is same as the old password"})
+            return Response({'status' : "The new password is same as the old password"},status=status.HTTP_400_BAD_REQUEST)
         if len(new_pass) < 6:
-            return Response({'status' : "The password is too short, should be of minimum length 6"})
+            return Response({'status' : "The password is too short, should be of minimum length 6"},status=status.HTTP_400_BAD_REQUEST)
         if user is None:
-            return Response({'status' : "Wrong Password"})
+            return Response({'status' : "Wrong Password"},status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_pass)
         user.save()
-        return Response({'status' : "Password Change Complete"})
+        return Response({'status' : "Password Change Complete"},status=status.HTTP_200_OK)
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
