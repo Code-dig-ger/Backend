@@ -31,8 +31,9 @@ class SolveProblemsAPIView(
         platforms = request.GET.get('platform')
         difficulty = request.GET.get('difficulty')
         range_l = request.GET.get('range_l')
-        range_r = request.Get.get('range_r')
-
+        range_r = request.GET.get('range_r')
+        search = request.GET.get('search')
+        
         if tags is not None:
             tags=tags.split(',')
 
