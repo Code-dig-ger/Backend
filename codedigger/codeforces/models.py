@@ -25,18 +25,18 @@ class contest(models.Model):
 	isUpdated = models.BooleanField(default = False)
 
 	def __str__(self):
-		return self.name
+		return self.contestId
     
 class user(models.Model):
 	name = models.CharField(max_length=100 , blank=True, null=True,)
-	handle = models.CharField(max_length=50)
+	handle = models.CharField(max_length=50 , unique = True,db_index=True)
 	rating = models.IntegerField(blank = True , null = True)
 	maxRating = models.IntegerField(blank = True , null = True)
-	rank = models.CharField(max_length=50)
-	maxRank = models.CharField(max_length=50)
+	rank = models.CharField(max_length=50 , blank = True , null = True)
+	maxRank = models.CharField(max_length=50 , blank = True , null = True)
 	country = models.ForeignKey(country , on_delete=models.SET_NULL, blank=True, null=True,)
 	organization = models.ForeignKey(organization , on_delete=models.SET_NULL, blank=True, null=True,)
-	photoUrl = models.CharField(max_length=100)
+	photoUrl = models.CharField(max_length=100 , blank = True , null = True)
 	contestRank = models.ManyToManyField(
         contest,
         through='user_contest_rank',
@@ -44,7 +44,7 @@ class user(models.Model):
     )
 
 	def __str__(self):
-		return self.name
+		return self.handle
 
 class user_contest_rank(models.Model):
 	user = models.ForeignKey(user , on_delete=models.CASCADE)
@@ -52,4 +52,5 @@ class user_contest_rank(models.Model):
 	worldRank = models.IntegerField(blank = True , null = True)
 
 	def __str__(self):
-		return self.user.name + self.contest.name
+		return str(self.user.handle) + ' is participated in ' + str(self.contest.contestId)
+ 
