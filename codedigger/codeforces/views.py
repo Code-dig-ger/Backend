@@ -9,8 +9,9 @@ from problem.serializers import ProbSerializer
 import json,requests
 from django.http import JsonResponse
 from user.models import Profile
-from .cron import ratingChangeReminder
 from django.db.models import Q
+
+from django.template.loader import render_to_string
 
 
 def data(URL):
@@ -273,9 +274,3 @@ class ContestAPIView(
         if contestId is not None:
             qs = qs.filter(contestId = contestId)
         return qs
-
-    
-def testing(request):
-
-    ratingChangeReminder()
-    return JsonResponse({'data':1})

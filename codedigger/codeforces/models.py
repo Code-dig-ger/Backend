@@ -29,14 +29,14 @@ class contest(models.Model):
     
 class user(models.Model):
 	name = models.CharField(max_length=100 , blank=True, null=True,)
-	handle = models.CharField(max_length=50)
+	handle = models.CharField(max_length=50 , unique = True,db_index=True)
 	rating = models.IntegerField(blank = True , null = True)
 	maxRating = models.IntegerField(blank = True , null = True)
-	rank = models.CharField(max_length=50)
-	maxRank = models.CharField(max_length=50)
+	rank = models.CharField(max_length=50 , blank = True , null = True)
+	maxRank = models.CharField(max_length=50 , blank = True , null = True)
 	country = models.ForeignKey(country , on_delete=models.SET_NULL, blank=True, null=True,)
 	organization = models.ForeignKey(organization , on_delete=models.SET_NULL, blank=True, null=True,)
-	photoUrl = models.CharField(max_length=100)
+	photoUrl = models.CharField(max_length=100 , blank = True , null = True)
 	contestRank = models.ManyToManyField(
         contest,
         through='user_contest_rank',
