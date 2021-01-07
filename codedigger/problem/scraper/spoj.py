@@ -63,10 +63,8 @@ def scraper():
         for td in soup.find_all("td", {"align" : "left"}):
             index = ""
             contest_id = ""
-            rating = ""
             anchor = td.find("a")
             text = anchor.text
-            print(text)
             href = anchor['href']
             id = href[10:]
             urlprob = default + href
@@ -83,7 +81,7 @@ def scraper():
                     if holder.find_all("a") and holder:
                         for a in holder.find_all("a"):
                             tags.append(a.text[1:])
-                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)
 
     #challenge problems
     i = 0
@@ -99,10 +97,8 @@ def scraper():
         for td in soup.find_all("td", {"align" : "left"}):
             index = ""
             contest_id = ""
-            rating = ""
             anchor = td.find("a")
             text = anchor.text
-            print(text)
             href = anchor['href']
             id = href[10:]
             urlprob = default + href
@@ -118,7 +114,7 @@ def scraper():
                     if holder.find_all("a") and holder:
                         for a in holder.find_all("a"):
                             tags.append(a.text[1:])
-                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)
             
 
     # #partial problems
@@ -135,10 +131,8 @@ def scraper():
         for td in soup.find_all("td", {"align" : "left"}):
             index = ""
             contest_id = ""
-            rating = ""
             anchor = td.find("a")
             text = anchor.text
-            print(text)
             href = anchor['href']
             id = href[10:]
             urlprob = default + href
@@ -154,7 +148,7 @@ def scraper():
                     if holder.find_all("a") and holder:
                         for a in holder.find_all("a"):
                             tags.append(a.text[1:])
-                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)
             
 
     # #tutorial problems
@@ -171,10 +165,8 @@ def scraper():
         for td in soup.find_all("td", {"align" : "left"}):
             index = ""
             contest_id = ""
-            rating = ""
             anchor = td.find("a")
             text = anchor.text
-            print(text)
             href = anchor['href']
             id = href[10:]
             urlprob = default + href
@@ -190,7 +182,7 @@ def scraper():
                     if holder.find_all("a") and holder:
                         for a in holder.find_all("a"):
                             tags.append(a.text[1:])
-                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)
             
 
     # #basics problems
@@ -207,10 +199,8 @@ def scraper():
         for td in soup.find_all("td", {"align" : "left"}):
             index = ""
             contest_id = ""
-            rating = ""
             anchor = td.find("a")
             text = anchor.text
-            print(text)
             href = anchor['href']
             id = href[10:]
             urlprob = default + href
@@ -226,7 +216,7 @@ def scraper():
                     if holder.find_all("a") and holder:
                         for a in holder.find_all("a"):
                             tags.append(a.text[1:])
-                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+                Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)
             
 
     #riddle problems
@@ -237,10 +227,8 @@ def scraper():
     for td in soup.find_all("td", {"align" : "left"}):
         index = ""
         contest_id = ""
-        rating = ""
         anchor = td.find("a")
         text = anchor.text
-        print(text)
         href = anchor['href']
         id = href[10:]
         urlprob = default + href
@@ -256,4 +244,4 @@ def scraper():
                 if holder.find_all("a") and holder:
                     for a in holder.find_all("a"):
                         tags.append(a.text[1:])
-            Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index)
+            Problem.objects.create(name=text,prob_id=id,url = default+href,tags = tags,contest_id=contest_id,platform=platform,index=index)

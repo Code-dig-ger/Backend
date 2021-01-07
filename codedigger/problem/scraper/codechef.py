@@ -154,7 +154,6 @@ def codeChefScraper():
             continue
         soup = BeautifulSoup(r.content, 'html5lib')
         problemRow = soup.findAll('tr', class_="problemrow")
-        print(level)
         for pr in problemRow:
             data = pr.findAll('td')
             if level == 'school/':
@@ -169,13 +168,12 @@ def codeChefScraper():
             prob_id = data[1].text
             index = ""
             contest_id = ""
-            rating = ""
             tags = []
             try:
                 p = Problem.objects.get(prob_id = prob_id, platform = platform)
             except Problem.DoesNotExist:
                 p = None
             if (not p):
-                Problem.objects.create(name=name,prob_id=prob_id,url = url,tags = tags,contest_id=contest_id,rating=rating,platform=platform,index=index,difficulty=difficulty)           
+                Problem.objects.create(name=name,prob_id=prob_id,url = url,tags = tags,contest_id=contest_id,platform=platform,index=index,difficulty=difficulty)           
     tagsScraper()   
     contestIdScraper()
