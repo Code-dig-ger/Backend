@@ -23,9 +23,17 @@ class GuruSerializer(serializers.ModelSerializer):
     def validate(self,attrs):
 
         handle = attrs.get('guru' ,'')
-        
-        if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
+        res = requests.get('https://codeforces.com/api/user.info?handles='+ handle)
+
+       
+        if res.status_code!=200:
             raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
+        res=res.json()
+
+        if res['status']!="OK":
+            raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
 
         return attrs
     
@@ -39,7 +47,7 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def delete(self,instance,data):
 
-        instance.gurus = instance.gurus.replace(data['guru']+' ', '')
+        instance.gurus = instance.gurus.replace(' '+data['guru']+' ', ' ')
         instance.save()
         return instance
        
