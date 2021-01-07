@@ -17,16 +17,18 @@ from .serializers import contestRankSerializer
 from .utils import rating_to_rank, rating_to_color, islegendary 
 
 
-def sendMailToUsers(rating_changes):
+def sendMailToUsers(rating_changes , new_contest):
 	users=Profile.objects.all()			
 	for rating_change in rating_changes:
-		user = users.filter(codeforces__iexact=rating_change['handle'])
-		if user.exists():
-
+		
+		user_profile = users.filter(codeforces__iexact=rating_change['handle'])		
+		if user_profile.exists():
+			codeforces_user = user.objects.filter(handle = rating_change['handle'])
 			cdata = None
-			ucr = user_contest_rank.objects.filter(user__handle = rating_change['handle'] , contest__contestId = rating_change['contestId'])
-			if ucr.exists():
-				cdata = contestRankSerializer(ucr[0]).data
+			if codeforces_user.exists():
+				ucr = user_contest_rank.objects.filter(user = codeforces_user[0], contest = new_contest)
+				if ucr.exists():
+					cdata = contestRankSerializer(ucr[0]).data
 
 			rating_change['oldRank'] = rating_to_rank(rating_change['oldRating'])
 			rating_change['newRank'] = rating_to_rank(rating_change['newRating'])
@@ -38,9 +40,9 @@ def sendMailToUsers(rating_changes):
 			subject = 'Codeforces Rating Updated'
 			html_message = render_to_string('codeforces/rating_reminder.html', {'rating_change': rating_change , 'cdata' : cdata})
 			plain_message = strip_tags(html_message)
-			recepient = [user[0].owner.email]   
+			recepient = [user_profile[0].owner.email]   
 
-			send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = False)
+			send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
 
 def save_user(newUser, codeforces_user):
 	name = ""
@@ -76,21 +78,6 @@ def update_contest_data(data , new_contest):
 		rank = participant['rank']
 		contest_user,created = user.objects.get_or_create(handle = user_handle)
 
-		if created : 
-			url = "https://codeforces.com/api/user.info?handles="+user_handle
-			res = requests.get(url)
-			if res.status_code == 200 :
-				codeforces_user = res.json()
-				if codeforces_user['status'] == 'OK':
-					save_user(contest_user , codeforces_user['result'][0])
-		else :
-			contest_user.rating = participant['newRating']
-			if contest_user.maxRating != None :
-				contest_user.maxRating = max(contest_user.maxRating, contest_user.rating)
-			else :
-				contest_user.maxRating = contest_user.rating
-			contest_user.save()
-
 		ucr,created = user_contest_rank.objects.get_or_create(user = contest_user , 
 															contest = new_contest)
 		ucr.worldRank = rank
@@ -107,7 +94,7 @@ def ratingChangeReminder():
 		return
 
 	contests = contests['result']
-	limit = 3
+	limit = 1
 
 	for codeforces_contest in contests:
 		id = str(codeforces_contest['id'])
@@ -137,7 +124,7 @@ def ratingChangeReminder():
 					new_contest.isUpdated = True
 					new_contest.save()
 					update_contest_data(rating_changes['result'] , new_contest)
-					sendMailToUsers(rating_changes['result'])
+					sendMailToUsers(rating_changes['result'] , new_contest)
 				elif limit:
 					limit-=1
 				else :
