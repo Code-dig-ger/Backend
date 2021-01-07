@@ -32,27 +32,23 @@ class SolveProblemsAPIView(
         difficulty = request.GET.get('difficulty')
         range_l = request.GET.get('range_l')
         range_r = request.GET.get('range_r')
-        search = request.GET.get('search')
+        searches = request.GET.get('search')
+        mentors=request.GET.get('mentors')
         
-        if tags is not None:
-            tags=tags.split(',')
-
-        if platforms is not None:
-            platforms=platforms.split(',')
-        
-        if difficulty is not None:
-            difficulty=difficulty.split(',')
-       
-        if request.GET.get('mentors')=='true':
+        if mentors=='true':
             problems_list = MentorProblemAPIView.get(self,request).data
-            problem_qs = Problem.objects.filter( contestId__in =problem_list['contestId'] , index__in=problem_list['index']     )
+            print(problems_list)
+            problem_qs = Problem.objects.filter( contest_id__in =problems_list['contestId'] , index__in=problems_list['index']     )
+
         else:
             problem_qs = Problem.objects.all()
 
-        if platform is not None:
+        if platforms is not None:
+            platforms=platforms.split(',')
             problem_qs = problem_qs.filter( platform__in=platforms)
 
         if difficulty is not None:
+            difficulty=difficulty.split(',')
             problem_qs = problem_qs.filter( difficulty__in = difficulty )
 
         if range_l is not None:
@@ -61,11 +57,25 @@ class SolveProblemsAPIView(
         if range_r is not None:
             problem_qs = problem_qs.filter(rating_rt=int(range_r))
 
-        q = Q()
-        for tag in tags:
-            q|=Q(tags__icontains=tag) 
+        if searches is not None:
+            searches=searches.split(',')
+            for search in searches:
+                q = Q()
+                q|=Q(  name__icontains = search)
+                q|=Q(  prob_id__icontains = search)
+                q|=Q(  url__icontains = search)
+                q|=Q(  tags__icontains = search)
+                q|=Q(  contest_id__icontains = search )
 
-        problems_list = Problem.objects.filter(q).order_by('?')[:20]
+            problem_qs = problem_qs.filter(q)
+
+        if tags is not None:
+            tags=tags.split(',')
+            q = Q()
+            for tag in tags:
+                q|=Q(tags__icontains=tag) 
+
+        problem_qs = problem_qs.filter(q).order_by('?')[:20]
         return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
 
         
