@@ -153,7 +153,7 @@ class ProfileUpdateView(UpdateAPIView):
 
     def perform_update(self,serializer):
         uva = self.request.data['uva_handle']
-        if not uva.strip():
+        if not uva:
             pass
         return serializer.save(uva_id = get_uva(uva))
 
