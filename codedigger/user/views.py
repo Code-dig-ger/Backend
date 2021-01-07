@@ -33,9 +33,8 @@ from django.urls import reverse
 from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
-from .handle_validator import get_uva
 from django.contrib.auth import authenticate
-
+from .handle_validator import *
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
 from codeforces.models import user as CodeforcesUser
@@ -154,30 +153,6 @@ class ProfileUpdateView(UpdateAPIView):
 
     def perform_update(self,serializer):
         uva = self.request.data['uva_handle']
-        spoj = self.request.data['spoj']
-        codechef = self.request.data['codechef']
-        codeforces = self.request.data['codeforces']
-        atcoder = self.request.data['atcoder']
-        if codeforces is not None:
-            if not Profile.objects.filter(codeforces=codeforces,owner__username=self.request.user.username).exists():
-                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='F'):
-                    ele.delete()
-        if codechef is not None:
-            if not Profile.objects.filter(codechef=codechef,owner__username=self.request.user.username).exists():
-                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='C'):
-                    ele.delete()
-        if spoj is not None:
-            if not Profile.objects.filter(spoj=spoj,owner__username=self.request.user.username).exists():
-                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='S'):
-                    ele.delete()
-        if atcoder is not None:
-            if not Profile.objects.filter(atcoder=atcoder,owner__username=self.request.user.username).exists():
-                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='A'):
-                    ele.delete()
-        if uva is not None:
-            if not Profile.objects.filter(uva_handle=uva,owner__username=self.request.user.username).exists():
-                for ele in Solved.objects.filter(user__username=self.request.user.username,problem__platform='U'):
-                    ele.delete()
         if not uva.strip():
             pass
         return serializer.save(uva_id = get_uva(uva))

@@ -36,7 +36,7 @@ urlpatterns = [
          PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),
          name='password-reset-complete'), 
-    path('password-change',ChangePassword.as_view(),name='password-change'),
+    path('password-change/',ChangePassword.as_view(),name='password-change'),
     path('check-auth/',CheckAuthView.as_view(),name='check-auth'),
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),name='password-reset-complete'),
 
