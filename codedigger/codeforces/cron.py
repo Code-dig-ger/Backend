@@ -78,8 +78,24 @@ def update_contest_data(data , new_contest):
 		rank = participant['rank']
 		contest_user,created = user.objects.get_or_create(handle = user_handle)
 
-		ucr,created = user_contest_rank.objects.get_or_create(user = contest_user , 
+		ucr,ucr_created = user_contest_rank.objects.get_or_create(user = contest_user , 
 															contest = new_contest)
+		if created : 
+			url = "https://codeforces.com/api/user.info?handles="+user_handle
+			res = requests.get(url)
+
+			if res.status_code == 200:
+				data = res.json()
+				if data['status'] == 'OK':
+					save_user(contest_user , data['result'])
+		else :
+			contest_user.rating = participant['newRating']
+			if contest_user.maxRating :
+				contest_user.maxRating = max(contest_user.maxRating , contest_user.rating)
+			else :
+				contest_user.maxRating = contest_user.rating
+			contest_user.save()
+
 		ucr.worldRank = rank
 		ucr.save()
 
