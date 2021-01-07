@@ -59,10 +59,10 @@ class MentorContestAPIView(
         mentor=request.GET.get('mentor')
 
         #TODO get gurus from DB
-        gurus = [ 'coder_pulkit_c']
+        gurus = Profile.objects.filter(owner=self.request.user).gurus
  
         #TODO get user handle
-        student = "Shashank_Chugh"
+        student = Profile.objects.filter(owner=self.request.user).codeforces
 
         #fetch student data from api
         submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
@@ -128,11 +128,11 @@ class MentorProblemAPIView(
     
     def get(self,request):
         
-        #TODO get gurus from DB
-        gurus = ['coder_pulkit_c']
+        #Mentors from Profile
+        gurus = Profile.objects.filter(owner=self.request.user).gurus
 
-        #TODO get user handle
-        student = "Shashank_Chugh"
+        #User handle from Profile
+        student = Profile.objects.filter(owner=self.request.user).codeforces
 
        
         #fetch student submissions from api
@@ -142,9 +142,7 @@ class MentorProblemAPIView(
         guru_solved_set = set()
         guru_solved_list = []
 
-
-        #TODO filter using tags
-
+        
         for guru in gurus:
             fetched_data =data("https://codeforces.com/api/user.status?handle="+guru)
             if fetched_data['status']!='OK':
