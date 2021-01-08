@@ -398,3 +398,37 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
         change_page(1)
         change_curr_prob(None)
         change_completed_ladder(False)
+
+
+
+class GetUserlistSerializer(serializers.ModelSerializer):
+
+    slug = serializers.SlugField(read_only=True)
+
+    class Meta:
+        model = List
+        fields = ('id','name','description','slug','public')
+
+
+class ProblemUserlisterializer(serializers.ModelSerializer):
+    solved = serializers.SerializerMethodField()
+
+    def get_solved(self,obj):
+        user = self.context.get("user")
+        solve = Solved.objects.filter(user__username=user,problem = obj)
+        return solve.exists()
+
+    class Meta:
+        model = Problem
+        fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','solved',)
+
+class EditUserlistSerializer(serializers.ModelSerializer):
+    problem = serializers.SerializerMethodField()
+
+    def get_problem(self,attrs):
+        user = self.context.get('user')
+        return ProblemSerializer(attrs.problem.all(),many=True,context = {"user" : user}).data
+
+    class Meta:
+        model = List
+        fields = ('id','name','description','problem','slug','public')
