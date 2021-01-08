@@ -3,12 +3,16 @@ import bs4
 
 
 def check_handle_cf(handle):
+    if handle is None:
+        return True
     req = requests.get(' https://codeforces.com/api/user.info?handles=' + handle)
     if req.status_code == 200:
         return True
     return False
 
 def check_handle_spoj(user):
+    if user is None:
+        return True
     url = 'https://www.spoj.com/users/'+user
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
@@ -16,6 +20,8 @@ def check_handle_spoj(user):
     return False if profile == None else True
 
 def check_handle_codechef(user):
+    if user is None:
+        return True
     url = 'https://codechef.com/users/' + user
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
@@ -25,6 +31,8 @@ def check_handle_codechef(user):
     return True
 
 def check_handle_atcoder(user):
+    if user is None:
+        return True
     url = 'https://atcoder.jp/users/' + user
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
@@ -34,9 +42,13 @@ def check_handle_atcoder(user):
     return True
 
 def check_handle_uva(handle):
+    if handle is None:
+        return True
     req = requests.get(' https://uhunt.onlinejudge.org/api/uname2uid/' + handle)
     return req.text != '0'
 
 def get_uva(handle):
+    if handle is None:
+        return None
     req = requests.get(' https://uhunt.onlinejudge.org/api/uname2uid/' + handle)
     return req.text
