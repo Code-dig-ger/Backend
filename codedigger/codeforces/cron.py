@@ -42,8 +42,7 @@ def sendMailToUsers(rating_changes , new_contest):
 			recepient = [user_profile[0].owner.email]   
 
 			try :
-				PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))+'\\templates\\rating_reminder.html'
-				html_message = render_to_string(PROJECT_ROOT, {'rating_change': rating_change , 'cdata' : cdata})
+				html_message = render_to_string('codeforces/rating_reminder.html', {'rating_change': rating_change , 'cdata' : cdata})
 				plain_message = strip_tags(html_message)
 				send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
 			except TemplateDoesNotExist:
