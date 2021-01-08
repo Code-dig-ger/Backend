@@ -17,6 +17,8 @@ from django.utils.html import strip_tags
 
 from .serializers import contestRankSerializer
 from .utils import rating_to_rank, rating_to_color, islegendary 
+from django.template import Context, Template
+from .email.rating_reminder import get_rating_reminder_string
 
 def sendMailToUsers(rating_changes , new_contest):
 	users=Profile.objects.all()			
@@ -41,20 +43,11 @@ def sendMailToUsers(rating_changes , new_contest):
 			subject = 'Codeforces Rating Updated'
 			recepient = [user_profile[0].owner.email]   
 
-			try :
-				html_message = render_to_string('codeforces/rating_reminder.html', {'rating_change': rating_change , 'cdata' : cdata})
-				plain_message = strip_tags(html_message)
-				send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
-			except TemplateDoesNotExist:
-				subject = 'Codeforces Rating Update Template Error'
-				message = 'Again we got template does not exists error ! F**K'
-				recepient = 'shivamsinghal1012@gmail.com'
-				send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-			except : 
-				subject = 'Codeforces Rating Update Template Error'
-				message = 'BC! Kuch or hi error hai'
-				recepient = 'shivamsinghal1012@gmail.com'
-				send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+			template = Template(get_rating_reminder_string())
+			context = Context({'rating_change': rating_change , 'cdata' : cdata})
+			html_message = template.render(context)
+			plain_message = strip_tags(html_message)
+			send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
 
 def save_user(newUser, codeforces_user):
 	name = ""
