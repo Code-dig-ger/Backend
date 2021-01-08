@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 
@@ -11,11 +12,11 @@ from .models import organization , country , user , contest , user_contest_rank
 from user.models import Profile
 
 from django.template.loader import render_to_string
+from django.template.loader import TemplateDoesNotExist
 from django.utils.html import strip_tags
 
 from .serializers import contestRankSerializer
 from .utils import rating_to_rank, rating_to_color, islegendary 
-
 
 def sendMailToUsers(rating_changes , new_contest):
 	users=Profile.objects.all()			
@@ -38,11 +39,23 @@ def sendMailToUsers(rating_changes , new_contest):
 			rating_change['isnewlegendary'] = islegendary(rating_change['newRating'])
 
 			subject = 'Codeforces Rating Updated'
-			html_message = render_to_string('codeforces/rating_reminder.html', {'rating_change': rating_change , 'cdata' : cdata})
-			plain_message = strip_tags(html_message)
 			recepient = [user_profile[0].owner.email]   
 
-			send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
+			try :
+				PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))+'\\templates\\rating_reminder.html'
+				html_message = render_to_string(PROJECT_ROOT, {'rating_change': rating_change , 'cdata' : cdata})
+				plain_message = strip_tags(html_message)
+				send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
+			except TemplateDoesNotExist:
+				subject = 'Codeforces Rating Update Template Error'
+				message = 'Again we got template does not exists error ! F**K'
+				recepient = 'shivamsinghal1012@gmail.com'
+				send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+			except : 
+				subject = 'Codeforces Rating Update Template Error'
+				message = 'BC! Kuch or hi error hai'
+				recepient = 'shivamsinghal1012@gmail.com'
+				send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 def save_user(newUser, codeforces_user):
 	name = ""
@@ -87,7 +100,7 @@ def update_contest_data(data , new_contest):
 			if res.status_code == 200:
 				data = res.json()
 				if data['status'] == 'OK':
-					save_user(contest_user , data['result'])
+					save_user(contest_user , data['result'][0])
 		else :
 			contest_user.rating = participant['newRating']
 			if contest_user.maxRating :
