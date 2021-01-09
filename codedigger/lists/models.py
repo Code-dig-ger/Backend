@@ -25,16 +25,15 @@ class List(models.Model):
         return self.name
     
     def save(self,**kwargs):
-        print(self.id)
         strtime = "".join(str(time.time()).split("."))
         if not self.isAdmin:
             self.type_list = '1'
             if len(self.name) > 30:
-                string = "%s-%s" % (self.name[:30],self.id)
+                string = "%s-%s" % (self.name[:30],self.owner.id)
                 self.slug = slugify(string)
                 super(List,self).save()
             else:
-                string = "%s-%s" % (self.name,self.id)
+                string = "%s-%s" % (self.name,self.owner.id)
                 self.slug = slugify(string)
                 super(List,self).save()
         else:

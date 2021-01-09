@@ -403,7 +403,21 @@ class LadderRetrieveSerializer(serializers.ModelSerializer):
 
 class GetUserlistSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = List
+        fields = ('id','name','description','slug','public')
+
+class CreateUserlistSerializer(serializers.ModelSerializer):
+
     slug = serializers.SlugField(read_only=True)
+    name = serializers.CharField(required=True)
+
+    def validate_name(self,value):
+        user = self.context.get('user')
+        if List.objects.filter(name=value,owner__username=user).exists():
+            raise serializers.ValidationError('List with the name and user already exists')
+        return value
+
 
     class Meta:
         model = List

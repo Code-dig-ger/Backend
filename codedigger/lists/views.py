@@ -8,7 +8,8 @@ from .serializers import (
     LadderRetrieveSerializer,
     RetrieveSerializer,
     GetUserlistSerializer,
-    EditUserlistSerializer
+    EditUserlistSerializer,
+    CreateUserlistSerializer
 )
 from django.db.models import Q
 from .permissions import IsOwner
@@ -169,7 +170,12 @@ class UserlistGetView(generics.ListAPIView):
 
 class UserlistCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = GetUserlistSerializer
+    serializer_class = CreateUserlistSerializer
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
 
     def perform_create(self,serializer):
         return serializer.save(owner=self.request.user)
@@ -180,8 +186,8 @@ class UserlistAddProblemView(views.APIView):
 
     def post(self,request,*args, **kwargs):
         data = request.data
-        prob_id = data['prob_id']
-        slug = data['slug']
+        prob_id = data.get('prob_id',None)
+        slug = data.get('slug',None)
         if prob_id is None or slug is None:
             return response.Response({"status" : "prob_id or slug or both not provided"},status=status.HTTP_400_BAD_REQUEST)
         if not List.objects.filter(slug = slug).exists():
@@ -191,9 +197,9 @@ class UserlistAddProblemView(views.APIView):
         curr_list = List.objects.get(slug=slug)
         curr_prob = Problem.objects.get(prob_id=prob_id)
         if curr_list.problem.filter(prob_id=prob_id).exists():
-            return response.Response({"status" : "Problem with the given prob_id already exists with the list"},status=status.HTTP_400_BAD_REQUEST)
+            return response.Response({"status" : "Problem with the given prob_id already exists within the list"},status=status.HTTP_400_BAD_REQUEST)
         curr_list.problem.add(curr_prob)
-        return response.Response(status = status.HTTP_200_OK)
+        return response.Response({"status" : "Given problem has been added to the list"},status = status.HTTP_200_OK)
 
 
 class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
@@ -207,5 +213,17 @@ class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
         data['user'] = self.request.user.username
         return data
 
-    def update(self,request,*args, **kwargs):
-        return super().update(self,request,args,**kwargs)
+    def update(self,request,**kwargs):
+        data = request.data
+        if data.get('prob_id',None):
+            for ele in data.get('prob_id',None):
+                if not Problem.objects.filter(prob_id = ele).exists():
+                    return response.Response({"status" : "Problem with the prob_id " + ele + " does not exist"},status=status.HTTP_400_BAD_REQUEST) 
+                if not List.objects.filter(slug = data['slug']).exists():
+                    return response.Response({"status" : "List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
+                curr_prob = Problem.objects.get(prob_id=ele)
+                curr_list = List.objects.get(slug=data['slug'])
+                if not curr_list.problem.filter(prob_id=ele).exists():
+                    return response.Response({"status" : "Problem with the given prob_id " + ele + " does not exists within the list"},status=status.HTTP_400_BAD_REQUEST) 
+                curr_list.problem.remove(curr_prob)
+        return super().update(request,**kwargs)
