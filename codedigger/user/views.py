@@ -6,7 +6,6 @@ from .serializers import (
     EmailVerificationSerializer,
     LoginSerializer,
     RequestPasswordResetEmailSeriliazer,
-    RequestPasswordResetEmailSeriliazer,
     ResetPasswordEmailRequestSerializer,
     SetNewPasswordSerializer,
 )
