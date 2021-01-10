@@ -6,7 +6,6 @@ from .serializers import (
     EmailVerificationSerializer,
     LoginSerializer,
     RequestPasswordResetEmailSeriliazer,
-    RequestPasswordResetEmailSeriliazer,
     ResetPasswordEmailRequestSerializer,
     SetNewPasswordSerializer,
 )
@@ -113,7 +112,7 @@ class CheckAuthView(views.APIView):
 
 class SendVerificationMail(views.APIView):
     def get(self,request,*args, **kwargs):
-        email = self.request.GET.get('email')
+        email = request.data.get('email',None)
         if email is None:
             return Response({'status' : 'Email not provided'},status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.get(email=email)
@@ -161,9 +160,9 @@ class ChangePassword(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self,request,*args,**kwargs):
-        old_pass = self.request.GET.get('old_pass')
-        new_pass = self.request.GET.get('new_pass')
-        print(str(old_pass) + " " + str(new_pass))
+        data = request.data
+        old_pass = data.get('old_pass',None)
+        new_pass = data.get('new_pass',None)
         if old_pass is None or new_pass is None:
             return Response({'status' : 'Either the old or new password was not provided'},status=status.HTTP_400_BAD_REQUEST)
         user = authenticate(username=self.request.user.username,password=old_pass)
