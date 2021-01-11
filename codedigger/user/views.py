@@ -214,6 +214,9 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
+            print("hello" + str(id))
+            if not User.objects.filter(id=id).exists():
+                return Response({"status" : "UIDB Token is invalid"},status=status.HTTP_400_BAD_REQUEST)
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
