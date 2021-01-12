@@ -11,43 +11,43 @@ def update_spoj():
     #checking if cronjobs has started , you will get a mail
     subject = 'SPOJ Scraping Started'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
     scraper()
     subject = 'SPOJ Scraping Finished'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 def update_atcoder():
     subject = 'Atcoder Problem Update Process Started'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
     update_atcoder_problems()
     subject = 'Atcoder Problem Update Process Finished'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 def update_uva():
     subject = 'UVa Problem Update Process Started'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
     update_uva_problems()
     subject = 'UVa Problem Update Process Finished'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 def update_codechef():
     subject = 'Codechef Update Process Started'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
     codeChefScraper()
     subject = 'Codechef Update Process Finished'
     message = 'Hope you are enjoying our Problems'
-    recepient = 'shivamsinghal1012@gmail.com'
+    recepient = 'testing.codedigger@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)

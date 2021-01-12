@@ -297,8 +297,3 @@ class ContestAPIView(
         if contestId is not None:
             qs = qs.filter(contestId = contestId)
         return qs
-
-from .cron import ratingChangeReminder
-def testing(request):
-    ratingChangeReminder()
-    return JsonResponse({'status' : 'OK'})

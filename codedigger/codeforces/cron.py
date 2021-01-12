@@ -21,9 +21,13 @@ from django.template import Context, Template
 from .email.rating_reminder import get_rating_reminder_string
 
 def sendMailToUsers(rating_changes , new_contest):
-	users=Profile.objects.all()			
+	users=Profile.objects.all()		
+	subject = 'Sending Mail for Rating Change '+ rating_changes[0]['contestName']
+	message = 'Hope you are enjoying our Problems'
+	recepient = 'testing.codedigger@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)	
+	
 	for rating_change in rating_changes:
-		
 		user_profile = users.filter(codeforces__iexact=rating_change['handle'])		
 		if user_profile.exists():
 			codeforces_user = user.objects.filter(handle = rating_change['handle'])
@@ -201,7 +205,7 @@ def codeforces_update_users():
 
 	subject = 'Codeforces update Users Started (Status OK)'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
-	recepient = 'shivamsinghal1012@gmail.com'
+	recepient = 'testing.codedigger@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	for codeforces_user in data["result"]:
@@ -211,7 +215,7 @@ def codeforces_update_users():
 
 	subject = 'Codeforces update Users Finished (All users are updated)'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has finished'
-	recepient = 'shivamsinghal1012@gmail.com'
+	recepient = 'testing.codedigger@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	del data
@@ -221,7 +225,7 @@ def codeforces_update_problems():
 
 	subject = 'Codeforces update Problems Started'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
-	recepient = 'shivamsinghal1012@gmail.com'
+	recepient = 'testing.codedigger@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 
@@ -236,6 +240,8 @@ def codeforces_update_problems():
 
 	if(data["status"] != 'OK') :
 		return 
+
+	# TODO Skip Starting Contest Around 1000
 
 	for codeforces_contest in data['result'] : 
 
@@ -259,20 +265,17 @@ def codeforces_update_problems():
 			new_contest.save()
 
 		for contest_problem in data['result']['problems']:
-			new_problem = Problem()
+			prob_id = str(contest_problem['contestId']) + contest_problem['index']
+			new_problem,created = Problem.objects.get_or_create(prob_id = prob_id , platform = 'F')
 			new_problem.name = contest_problem['name']
 			new_problem.contest_id = contest_problem['contestId']
-			new_problem.prob_id = str(contest_problem['contestId']) + contest_problem['index']
 			new_problem.url = "https://codeforces.com/contest/"+ str(contest_problem['contestId'])+"/problem/"+contest_problem['index']
-			new_problem.platform = 'F'  
 			new_problem.index = contest_problem['index']
 			new_problem.tags = contest_problem['tags']
 			if 'rating' in contest_problem : 
 				new_problem.rating = contest_problem['rating']
 				new_problem.difficulty = rating_to_difficulty(int(contest_problem['rating']))
-
-			if len(Problem.objects.filter(prob_id = str(contest_problem['contestId']) + contest_problem['index'])) == 0: 
-				new_problem.save()
+			new_problem.save()
 	
 	url = "https://codeforces.com/api/contest.list?gym=true"
 	res = requests.get(url)
@@ -284,6 +287,8 @@ def codeforces_update_problems():
 
 	if(data["status"] != 'OK') :
 		return 
+
+	# TODO Skip Starting Contest Around 1000
 
 	for codeforces_contest in data['result'] : 
 
@@ -309,24 +314,21 @@ def codeforces_update_problems():
 			new_contest.save()
 
 		for contest_problem in data['result']['problems']:
-			new_problem = Problem()
+			prob_id = str(contest_problem['contestId']) + contest_problem['index']
+			new_problem,created = Problem.objects.get_or_create(prob_id = prob_id , platform = 'F')
 			new_problem.name = contest_problem['name']
 			new_problem.contest_id = contest_problem['contestId']
-			new_problem.prob_id = str(contest_problem['contestId']) + contest_problem['index']
 			new_problem.url = "https://codeforces.com/gym/"+ str(contest_problem['contestId'])+"/problem/"+contest_problem['index']
-			new_problem.platform = 'F'  
 			new_problem.index = contest_problem['index']
 			new_problem.tags = contest_problem['tags']
 			if 'rating' in contest_problem : 
 				new_problem.rating = contest_problem['rating']
 				new_problem.difficulty = rating_to_difficulty(int(contest_problem['rating']))
-
-			if len(Problem.objects.filter(prob_id = str(contest_problem['contestId']) + contest_problem['index'])) == 0: 
-				new_problem.save()
+			new_problem.save()
 
 	subject = 'Codeforces update Problem Finished'
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has finished'
-	recepient = 'shivamsinghal1012@gmail.com'
+	recepient = 'testing.codedigger@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	del data
@@ -344,6 +346,15 @@ def codeforces_update_contest():
 	if(data["status"] != 'OK') :
 		return 
 
+	subject = 'Codeforces Update Contest (User Contest Rank) Started'
+	message = 'Hope you are enjoying our Problems'
+	recepient = 'testing.codedigger@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+	
+	data["result"].reverse()
+
+	#TODO Don't Check Previous Contest # Skip 1000
+	
 	for codeforces_contest in data["result"]:
 
 		url = "https://codeforces.com/api/contest.ratingChanges?contestId=" + str(codeforces_contest['id'])
@@ -372,6 +383,11 @@ def codeforces_update_contest():
 		if len(user_contest_rank.objects.filter(contest = new_contest)) == len(data['result']) :
 			continue
 		update_contest_data(data['result'] , new_contest)
+
+	subject = 'Codeforces Update Contest (User Contest Rank) Finished'
+	message = 'Hope you are enjoying our Problems'
+	recepient = 'testing.codedigger@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 	del data
 	return
