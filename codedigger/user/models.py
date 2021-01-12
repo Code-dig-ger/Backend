@@ -73,7 +73,7 @@ class Profile(models.Model):
     uva_id = models.CharField(max_length=50,null = True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True,null = True,blank=True)
     updated_at = models.DateTimeField(auto_now = True,null = True,blank=True)
-    gurus = models.CharField(max_length=300 ,default="",blank=True)
+    gurus = models.CharField(max_length=300 ,default=",",blank=True)
 
     def __str__(self):
         return str(self.owner) + "'s Profile"

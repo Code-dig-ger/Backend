@@ -27,7 +27,7 @@ class MentorAPIView(
     serializer_class = GuruSerializer
 
     def get(self,request):
-        return JsonResponse({'gurus':Profile.objects.get(owner=self.request.user).gurus})
+        return JsonResponse({'gurus':Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]    })
 
     def put(self,request):
         
@@ -52,7 +52,6 @@ class MentorContestAPIView(
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = GuruSerializer
 
-    
     def get(self,request):
 
         gym=request.GET.get('gym')
@@ -60,13 +59,22 @@ class MentorContestAPIView(
         mentor=request.GET.get('mentor')
 
         #TODO get gurus from DB
-        gurus = [ 'coder_pulkit_c']
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
  
         #TODO get user handle
-        student = "Shashank_Chugh"
+        student = Profile.objects.get(owner=self.request.user).codeforces
 
         #fetch student data from api
-        submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
+
+        res=requests.get("https://codeforces.com/api/user.status?handle="+student)
+
+        if res.status_code!=200:
+            return JsonResponse({'status':'FAILED'}) 
+        res=res.json()
+        
+        if res['status']!="OK":
+            return JsonResponse({'status':'FAILED'}) 
+        submissions_student = res["result"]
     
         #student submissions in set
         student_contests=set()
@@ -85,8 +93,14 @@ class MentorContestAPIView(
             guru_contests=set()
             for guru in gurus:
 
-                fetched_data = data("https://codeforces.com/api/user.status?handle="+guru)
-                submissions_guru = fetched_data["result"]
+                res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+                if res.status_code!=200:
+                    return JsonResponse({'status':'FAILED'}) 
+                res=res.json()
+                if res['status']!="OK":
+                    return JsonResponse({'status':'FAILED'})
+
+                submissions_guru =  res['result']
 
                 for submission in submissions_guru:
                     
@@ -115,7 +129,6 @@ class MentorContestAPIView(
                 q|=Q(name__icontains=div)
                 
             contest_qs = contest_qs.filter(q).order_by('?')[:20]
-
         context = { 'status':'OK', 'contest_qs':ContestSerializer(contest_qs,many=True).data }
         return JsonResponse( context )
 
@@ -129,29 +142,39 @@ class MentorProblemAPIView(
     
     def get(self,request):
         
-        #TODO get gurus from DB
-        gurus = ['coder_pulkit_c']
+        #Mentors from Profile
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split()[1:-1]
 
-        #TODO get user handle
-        student = "Shashank_Chugh"
+        #User handle from Profile
+        student = Profile.objects.get(owner=self.request.user).codeforces
 
        
         #fetch student submissions from api
-        submissions_student = data("https://codeforces.com/api/user.status?handle="+student)["result"]
+
+        res = requests.get("https://codeforces.com/api/user.status?handle="+student)
+        if res.status_code!=200:
+            return JsonResponse({'status':'FAILED'}) 
+        res=res.json()
+        if res['status']!="OK":
+            return JsonResponse({'status':'FAILED'})
+
+        submissions_student = res["result"]
 
         student_solved_set = set()
         guru_solved_set = set()
         guru_solved_list = []
 
-
-        #TODO filter using tags
-
+        
         for guru in gurus:
-            fetched_data =data("https://codeforces.com/api/user.status?handle="+guru)
-            if fetched_data['status']!='OK':
-                return HttpResponse("ERROR")
 
-            submissions_guru = fetched_data["result"]
+            res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+            if res.status_code!=200:
+                return JsonResponse({'status':'FAILED'}) 
+            res=res.json()
+            if res['status']!="OK":
+                return JsonResponse({'status':'FAILED'})
+            
+            submissions_guru = res["result"]
             for submission in submissions_guru:
                 if str(submission["problem"]['contestId'])+submission["problem"]['index'] in guru_solved_set:
                     continue 

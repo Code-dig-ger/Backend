@@ -24,23 +24,34 @@ class GuruSerializer(serializers.ModelSerializer):
     def validate(self,attrs):
 
         handle = attrs.get('guru' ,'')
-        
-        if requests.get('https://codeforces.com/api/user.info?handles='+ handle ).json()['status']=='FAILED':
+        res = requests.get('https://codeforces.com/api/user.info?handles='+ handle)
+
+       
+        if res.status_code!=200:
             raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
+        res=res.json()
+
+        if res['status']!="OK":
+            raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
+
 
         return attrs
     
     def add(self , instance , validated_data):
         
-        if (validated_data.get('guru')+' ') in instance.gurus:
-            raise ValueError((validated_data.get('guru'))+"is already present in list")
-        instance.gurus = instance.gurus+validated_data.get('guru')+' '
+        if (',' + validated_data.get('guru')+',') in instance.gurus:
+            raise ValueError((validated_data.get('guru'))+" is already present in list")
+        instance.gurus = instance.gurus+validated_data.get('guru')+','
         instance.save()
         return instance
     
     def delete(self,instance,data):
 
-        instance.gurus = instance.gurus.replace(data['guru']+' ', '')
+        if (',' + data.get('guru')+',') not in instance.gurus:
+            raise ValueError((data.get('guru'))+" is not present in list")
+
+        instance.gurus = instance.gurus.replace(','+data['guru']+',', ',')
         instance.save()
         return instance
        
