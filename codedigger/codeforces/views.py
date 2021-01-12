@@ -27,7 +27,7 @@ class MentorAPIView(
     serializer_class = GuruSerializer
 
     def get(self,request):
-        return JsonResponse({'gurus':Profile.objects.get(owner=self.request.user).gurus})
+        return JsonResponse({'gurus':Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]    })
 
     def put(self,request):
         
