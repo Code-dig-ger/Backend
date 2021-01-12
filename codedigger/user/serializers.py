@@ -319,7 +319,7 @@ class FriendsShowSerializer(serializers.Serializer):
         if self.context.get('by_to_user') :
             return Profile.objects.get(owner = obj.to_user).name
         else :
-            return Profile.objects.get(owner = obj.from_user).username
+            return Profile.objects.get(owner = obj.from_user).name
 
     class Meta :
         model = UserFriends
