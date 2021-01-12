@@ -59,7 +59,7 @@ class MentorContestAPIView(
         mentor=request.GET.get('mentor')
 
         #TODO get gurus from DB
-        gurus = Profile.objects.get(owner=self.request.user).gurus.strip().split(' ')
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
  
         #TODO get user handle
         student = Profile.objects.get(owner=self.request.user).codeforces
@@ -143,7 +143,7 @@ class MentorProblemAPIView(
     def get(self,request):
         
         #Mentors from Profile
-        gurus = Profile.objects.get(owner=self.request.user).gurus
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split()[1:-1]
 
         #User handle from Profile
         student = Profile.objects.get(owner=self.request.user).codeforces
