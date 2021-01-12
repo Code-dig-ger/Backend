@@ -39,7 +39,7 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def add(self , instance , validated_data):
         
-        if (validated_data.get('guru')+' ') in instance.gurus:
+        if (' ' + validated_data.get('guru')+' ') in instance.gurus:
             raise ValueError((validated_data.get('guru'))+"is already present in list")
         instance.gurus = instance.gurus+validated_data.get('guru')+' '
         instance.save()
