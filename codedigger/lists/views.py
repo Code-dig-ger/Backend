@@ -1,4 +1,4 @@
-from rest_framework import generics,status,permissions,views,response
+from rest_framework import generics,status,permissions,views,response,mixins
 from .models import ListInfo,Solved,List
 from problem.models import Problem
 from user.models import User,Profile
@@ -6,7 +6,10 @@ from .serializers import (
     GetLadderSerializer,
     GetSerializer,
     LadderRetrieveSerializer,
-    RetrieveSerializer
+    RetrieveSerializer,
+    GetUserlistSerializer,
+    EditUserlistSerializer,
+    CreateUserlistSerializer
 )
 from django.db.models import Q
 from .permissions import IsOwner
@@ -19,13 +22,13 @@ from django.core.paginator import Paginator
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True))
 
 
 class TopicWiseRetrieveView(generics.RetrieveAPIView):
     serializer_class = RetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True))
     lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
@@ -38,13 +41,13 @@ class TopicWiseRetrieveView(generics.RetrieveAPIView):
 class TopicwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True))
 
 
 class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     serializer_class = LadderRetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True))
     lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
@@ -58,13 +61,13 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 class LevelwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True))
 
 
 class LevelwiseRetrieveView(generics.RetrieveAPIView):
     serializer_class = RetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True))
     lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
@@ -77,13 +80,13 @@ class LevelwiseRetrieveView(generics.RetrieveAPIView):
 class LevelwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True))
 
 
 class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     serializer_class = LadderRetrieveSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True))
     lookup_field = "slug"
 
     def get_serializer_context(self,**kwargs):
@@ -154,3 +157,73 @@ class updateListView(views.APIView):
                 user = self.request.user
                 Solved.objects.create(user=user,problem=prob)
         return response.Response(data={'status' : 'ok'})
+
+
+class UserlistGetView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = GetUserlistSerializer
+    
+    def get_queryset(self):
+        qs = List.objects.filter(owner=self.request.user)
+        return qs
+    
+
+class UserlistCreateView(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CreateUserlistSerializer
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
+
+    def perform_create(self,serializer):
+        return serializer.save(owner=self.request.user)
+
+
+class UserlistAddProblemView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,*args, **kwargs):
+        data = request.data
+        prob_id = data.get('prob_id',None)
+        slug = data.get('slug',None)
+        if prob_id is None or slug is None:
+            return response.Response({"status" : "prob_id or slug or both not provided"},status=status.HTTP_400_BAD_REQUEST)
+        if not List.objects.filter(slug = slug).exists():
+            return response.Response({"status" : "List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
+        if not Problem.objects.filter(prob_id = prob_id).exists():
+            return response.Response({"status" : "Problem with the given prob_id does not exist"},status=status.HTTP_400_BAD_REQUEST)
+        curr_list = List.objects.get(slug=slug)
+        curr_prob = Problem.objects.get(prob_id=prob_id)
+        if curr_list.problem.filter(prob_id=prob_id).exists():
+            return response.Response({"status" : "Problem with the given prob_id already exists within the list"},status=status.HTTP_400_BAD_REQUEST)
+        curr_list.problem.add(curr_prob)
+        return response.Response({"status" : "Given problem has been added to the list"},status = status.HTTP_200_OK)
+
+
+class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = EditUserlistSerializer
+    queryset = List.objects.all()
+    lookup_field = 'slug'
+
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user.username
+        return data
+
+    def update(self,request,**kwargs):
+        data = request.data
+        if data.get('prob_id',None):
+            for ele in data.get('prob_id',None):
+                if not Problem.objects.filter(prob_id = ele).exists():
+                    return response.Response({"status" : "Problem with the prob_id " + ele + " does not exist"},status=status.HTTP_400_BAD_REQUEST) 
+                if not List.objects.filter(slug = data['slug']).exists():
+                    return response.Response({"status" : "List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
+                curr_prob = Problem.objects.get(prob_id=ele)
+                curr_list = List.objects.get(slug=data['slug'])
+                if not curr_list.problem.filter(prob_id=ele).exists():
+                    return response.Response({"status" : "Problem with the given prob_id " + ele + " does not exists within the list"},status=status.HTTP_400_BAD_REQUEST) 
+                curr_list.problem.remove(curr_prob)
+        return super().update(request,**kwargs)

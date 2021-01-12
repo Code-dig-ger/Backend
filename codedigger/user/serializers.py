@@ -11,6 +11,7 @@ from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import Util
 import requests,json
+from lists.models import Solved
 
 
 
@@ -162,50 +163,71 @@ class LoginSerializer(serializers.ModelSerializer):
         raise AuthenticationFailed('Invalid credentials. Try again')
         
 
-def required(value):
-    if value is None:
-        raise serializers.ValidationError('This field is required')
-
-def check_cf(value):
-    if value is None:
-        raise serializers.ValidationError('This field is required')
-    if not check_handle_cf(value):
-        raise serializers.ValidationError('The given handle does not exist')
-
-def check_spoj(value):
-    if value is not None and not check_handle_spoj(value):
-        raise serializers.ValidationError('The given handle does not exist')
-
-def check_codechef(value):
-    if value is not None and not check_handle_codechef(value):
-        raise serializers.ValidationError('The given handle does not exist')
-
-def check_atcoder(value):
-    if value is not None and not check_handle_atcoder(value):
-        raise serializers.ValidationError('The given handle does not exist')
-
-def check_uva_handle(value):
-    if value is not None and not check_handle_uva(value):
-        raise serializers.ValidationError('The given handle does not exist')
 
 
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(validators=[required])
-    codeforces = serializers.CharField(validators=[check_cf])
-    spoj = serializers.CharField(validators=[check_spoj],allow_blank = True,allow_null=True)
-    codechef = serializers.CharField(validators=[check_codechef],allow_blank = True,allow_null=True)
-    atcoder = serializers.CharField(validators=[check_atcoder],allow_blank = True,allow_null=True)
-    uva_handle = serializers.CharField(validators=[check_uva_handle],allow_blank = True,allow_null=True)
-
+    name = serializers.CharField()
+    codeforces = serializers.CharField()
+    spoj = serializers.CharField(allow_blank = True,allow_null=True)
+    codechef = serializers.CharField(allow_blank = True,allow_null=True)
+    atcoder = serializers.CharField(allow_blank = True,allow_null=True)
+    uva_handle = serializers.CharField(allow_blank = True,allow_null=True)
 
     class Meta:
         model = Profile
         fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle',]
 
+    def validate_codeforces(self,value):
+        user = self.context.get('user')
+        if value != Profile.objects.get(owner__username=user).codeforces:
+            if check_handle_cf(value):
+                for ele in Solved.objects.filter(user__username=user,problem__platform='F'):
+                    ele.delete()
+            else:
+                raise serializers.ValidationError('The given handle does not exist')
+        return value
 
-
+    def validate_codechef(self,value):
+        user = self.context.get('user')
+        if value != Profile.objects.get(owner__username=user).codechef:
+            if check_handle_codechef(value):
+                for ele in Solved.objects.filter(user__username=user,problem__platform='C'):
+                    ele.delete()
+            else:
+                raise serializers.ValidationError('The given handle does not exist')
+        return value
+    
+    def validate_atcoder(self,value):
+        user = self.context.get('user')
+        if value != Profile.objects.get(owner__username=user).atcoder:
+            if check_handle_atcoder(value):
+                for ele in Solved.objects.filter(user__username=user,problem__platform='A'):
+                    ele.delete()
+            else:
+                raise serializers.ValidationError('The given handle does not exist')
+        return value
+    
+    def validate_spoj(self,value):
+        user = self.context.get('user')
+        if value != Profile.objects.get(owner__username=user).spoj:
+            if check_handle_spoj(value):
+                for ele in Solved.objects.filter(user__username=user,problem__platform='S'):
+                    ele.delete()
+            else:
+                raise serializers.ValidationError('The given handle does not exist')
+        return value
+    
+    def validate_uva(self,value):
+        user = self.context.get('user')
+        if value != Profile.objects.get(owner__username=user).uva_handle:
+            if check_handle_uva(value):
+                for ele in Solved.objects.filter(user__username=user,problem__platform='U'):
+                    ele.delete()
+            else:
+                raise serializers.ValidationError('The given handle does not exist')
+        return value
 
 class RequestPasswordResetEmailSeriliazer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)

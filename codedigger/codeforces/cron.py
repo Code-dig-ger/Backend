@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 
@@ -11,11 +12,13 @@ from .models import organization , country , user , contest , user_contest_rank
 from user.models import Profile
 
 from django.template.loader import render_to_string
+from django.template.loader import TemplateDoesNotExist
 from django.utils.html import strip_tags
 
 from .serializers import contestRankSerializer
 from .utils import rating_to_rank, rating_to_color, islegendary 
-
+from django.template import Context, Template
+from .email.rating_reminder import get_rating_reminder_string
 
 def sendMailToUsers(rating_changes , new_contest):
 	users=Profile.objects.all()			
@@ -38,10 +41,12 @@ def sendMailToUsers(rating_changes , new_contest):
 			rating_change['isnewlegendary'] = islegendary(rating_change['newRating'])
 
 			subject = 'Codeforces Rating Updated'
-			html_message = render_to_string('codeforces/rating_reminder.html', {'rating_change': rating_change , 'cdata' : cdata})
-			plain_message = strip_tags(html_message)
 			recepient = [user_profile[0].owner.email]   
 
+			template = Template(get_rating_reminder_string())
+			context = Context({'rating_change': rating_change , 'cdata' : cdata})
+			html_message = template.render(context)
+			plain_message = strip_tags(html_message)
 			send_mail(subject, plain_message, EMAIL_HOST_USER, recepient, html_message=html_message, fail_silently = True)
 
 def save_user(newUser, codeforces_user):
@@ -87,7 +92,7 @@ def update_contest_data(data , new_contest):
 			if res.status_code == 200:
 				data = res.json()
 				if data['status'] == 'OK':
-					save_user(contest_user , data['result'])
+					save_user(contest_user , data['result'][0])
 		else :
 			contest_user.rating = participant['newRating']
 			if contest_user.maxRating :

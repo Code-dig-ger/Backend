@@ -19,6 +19,7 @@ class List(models.Model):
     isTopicWise = models.BooleanField(default=True)
     type_list = models.CharField(max_length=1,choices=TYPE_CHOICES,default='1')
     slug = models.SlugField(unique=True,max_length=35,blank=True)
+    public = models.BooleanField(default=False)    
 
     def __str__(self):
         return self.name
@@ -26,15 +27,17 @@ class List(models.Model):
     def save(self,**kwargs):
         strtime = "".join(str(time.time()).split("."))
         if not self.isAdmin:
-            if len(self.name) > 20:
-                string = "%s-%s-%s" % (self.name[:20],strtime[12:],self.owner.username[:2] + self.owner.username[-2:])
+            self.type_list = '1'
+            if len(self.name) > 30:
+                string = "%s-%s" % (self.name[:30],self.owner.id)
                 self.slug = slugify(string)
                 super(List,self).save()
             else:
-                string = "%s-%s-%s" % (self.name,strtime[12:],self.owner.username[:2] + self.owner.username[-2:])
+                string = "%s-%s" % (self.name,self.owner.id)
                 self.slug = slugify(string)
                 super(List,self).save()
         else:
+            self.public = True
             if len(self.name) > 30:
                 string = "%s" % (self.name[:30])
                 self.slug = slugify(string)
