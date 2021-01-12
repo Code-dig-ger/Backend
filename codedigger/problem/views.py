@@ -23,7 +23,7 @@ class SolveProblemsAPIView(
     generics.ListAPIView,generics.GenericAPIView
     ):
 
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = SolveProblemsSerializer
     def get(self ,request):
 
@@ -33,13 +33,18 @@ class SolveProblemsAPIView(
         range_l = request.GET.get('range_l')
         range_r = request.GET.get('range_r')
         searches = request.GET.get('search')
-        mentors=request.GET.get('mentors')
+        mentors=request.GET.get('mentor')
         
-        if mentors=='true':
-            problems_list = MentorProblemAPIView.get(self,request).data
-            print(problems_list)
-            problem_qs = Problem.objects.filter( contest_id__in =problems_list['contestId'] , index__in=problems_list['index']     )
-
+        if request.user.is_authenticated : 
+            if mentors=='true':
+                problems_list = MentorProblemAPIView.get(self,request).data['result']
+                problem_qs = Problem.objects.filter( prob_id__in = problems_list )
+            else :
+                problems_list = MentorProblemAPIView.get(self,request).data['result']
+                q = Q()
+                for prob_id in problems_list:
+                    q|=Q(prob_id=prob_id)
+                problem_qs = Problem.objects.exclude(q)
         else:
             problem_qs = Problem.objects.all()
 
@@ -52,10 +57,10 @@ class SolveProblemsAPIView(
             problem_qs = problem_qs.filter( difficulty__in = difficulty )
 
         if range_l is not None:
-            problem_qs = problem_qs.filter(rating_lt=int(range_l) )
+            problem_qs = problem_qs.filter(rating__gt=int(range_l) )
         
         if range_r is not None:
-            problem_qs = problem_qs.filter(rating_rt=int(range_r))
+            problem_qs = problem_qs.filter(rating__lt=int(range_r))
 
         if searches is not None:
             searches=searches.split(',')
@@ -74,31 +79,10 @@ class SolveProblemsAPIView(
             q = Q()
             for tag in tags:
                 q|=Q(tags__icontains=tag) 
+            problem_qs = problem_qs.filter(q)
 
-        problem_qs = problem_qs.filter(q).order_by('?')[:20]
-        return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problems_list, many = True).data  })
-
-        
-class StatusAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView,
-    ):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    #authentication_classes = [SessionAuthentication]
-    serializer_class = ProbSerializer
-    #passed_id = None 
-
-    #running queries and stuff
-    def get_queryset(self):
-
-        qs = Problem.objects.all()
-        prob = self.request.GET.get('prob_id')
-        tags = self.request.GET.get('tags')
-        if prob is not None:
-            qs = qs.filter(prob_id__icontains = prob)
-        if tags is not None:
-            qs = qs.filter(tags__icontains = tags)
-        return qs
+        problem_qs = problem_qs.order_by('?')[:20]
+        return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problem_qs, many = True).data  })
 
 class UpsolveContestAPIView(
     mixins.CreateModelMixin,
