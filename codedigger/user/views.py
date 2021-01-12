@@ -34,6 +34,9 @@ from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth import authenticate
 from .handle_validator import *
+import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
 from codeforces.models import user as CodeforcesUser
@@ -88,11 +91,11 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email' : 'Successfully activated'},status = status.HTTP_200_OK)
+            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=SuccessfullyActivated')
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'email' : 'Activation link expired'},status = status.HTTP_400_BAD_REQUEST)
+            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=ActivationLinkExpired')
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'email' : 'Invalid token, Request New One'},status = status.HTTP_400_BAD_REQUEST)
+            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=InvalidToken')
 
 
 class LoginApiView(generics.GenericAPIView):
@@ -210,31 +213,32 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
     def get(self, request, uidb64, token):
 
         redirect_url = request.GET.get('redirect_url')
-        print(redirect_url)
+        print(os.getenv('FRONTEND_URL'))
 
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
+            if not User.objects.filter(id=id).exists():
+                return Response({"status" : "UIDB Token is invalid"},status=status.HTTP_400_BAD_REQUEST)
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
-                # if redirect_url and len(redirect_url) > 3:
-                #     return CustomRedirect(redirect_url+'?token_valid=False')
-                # else:
-                #     return CustomRedirect(os.getenv('FRONTEND_URL', '')+'?token_valid=False')
+                if redirect_url and len(redirect_url) > 3:
+                    return redirect(redirect_url+'?token_valid=False')
+                else:
+                    return redirect(os.getenv('FRONTEND_URL', '')+'?token_valid=False')
                 return Response({'error' : 'Token is invalid. Please request a new one'})
-            return Response({'success' : True,'message' : 'Credentials valid' , 'uidb64' : uidb64,'token' : token})
-            # if redirect_url and len(redirect_url) > 3:
-            #     return CustomRedirect(redirect_url+'?token_valid=True&message=Credentials Valid&uidb64='+uidb64+'&token='+token)
-            # else:
-            #     return CustomRedirect(os.getenv('FRONTEND_URL', '')+'?token_valid=False')
+            if redirect_url and len(redirect_url) > 3:
+                return redirect(redirect_url+'?token_valid=True&message=Credentials Valid&uidb64='+uidb64+'&token='+token)
+            else:
+                return redirect(os.getenv('FRONTEND_URL', '')+'?token_valid=False')
 
         except DjangoUnicodeDecodeError as identifier:
-            # try:
-            #     if not PasswordResetTokenGenerator().check_token(user):
-            #         return CustomRedirect(redirect_url+'?token_valid=False')
+            try:
+                if not PasswordResetTokenGenerator().check_token(user):
+                    return redirect(redirect_url+'?token_valid=False')
                     
-            # except UnboundLocalError as e:
-            #     return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
+            except UnboundLocalError as e:
+                return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
             if not PasswordResetTokenGenerator().check_token(user, token):
                 return Response({'error' : 'Token is invalid. Please request a new one'})
 

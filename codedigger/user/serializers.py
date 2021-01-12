@@ -40,15 +40,18 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def add(self , instance , validated_data):
         
-        if (' ' + validated_data.get('guru')+' ') in instance.gurus:
-            raise ValueError((validated_data.get('guru'))+"is already present in list")
-        instance.gurus = instance.gurus+validated_data.get('guru')+' '
+        if (',' + validated_data.get('guru')+',') in instance.gurus:
+            raise ValueError((validated_data.get('guru'))+" is already present in list")
+        instance.gurus = instance.gurus+validated_data.get('guru')+','
         instance.save()
         return instance
     
     def delete(self,instance,data):
 
-        instance.gurus = instance.gurus.replace(' '+data['guru']+' ', ' ')
+        if (',' + data.get('guru')+',') not in instance.gurus:
+            raise ValueError((data.get('guru'))+" is not present in list")
+
+        instance.gurus = instance.gurus.replace(','+data['guru']+',', ',')
         instance.save()
         return instance
        
