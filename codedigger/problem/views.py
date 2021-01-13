@@ -98,26 +98,63 @@ class UpsolveContestAPIView(
         handle = Profile.objects.get(owner = self.request.user).codeforces
         if handle == "" or handle == None :
             return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'})
-
-
-        
         virtual = request.GET.get('virtual')
-
+        page = request.GET.get('page')
+        path = request.build_absolute_uri('/problems/upsolve/codeforces')
+        if virtual != None:
+            path = path + '?virtual='+virtual+';'
+        else:
+            path = path + '?'
+        if page == None:
+            page = 1
+        elif page.isdigit():
+            page = int(page)
+        else: 
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
         RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
-
         data = {
             'wrong'  : Wrong , 
             'solved' : SolvedInContest , 
             'upsolved' : Upsolved , 
         }
-
         if virtual == 'true':
             RContest = RContest.union(VContest)
-
-        c = contest.objects.filter(contestId__in = list(RContest))
-
-        return Response({'status' : 'OK' , 'result' : UpsolveContestSerializer(c, many =True, context = data).data})
-
+        RContest = list(RContest)
+        total = len(RContest)
+        NumPage = (len(RContest)-1)//10 + 1  # Number of page
+        if NumPage == 0 :
+            return Response({'status' : 'OK' , 'result' : []})
+        if page > NumPage : 
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+        if page == NumPage :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+        RContest = RContest[10*(page-1) : 10*page]    
+        c = contest.objects.filter(contestId__in = RContest)
+        return Response({
+            'status' : 'OK' , 
+            'result' : UpsolveContestSerializer(c, many =True, context = data).data, 
+            'links' : {
+                'first' : path + 'page=1',
+                'last' : path + 'page='+str(NumPage),
+                'prev' : Prev,
+                'next' : Next
+            },
+            'meta' : {
+                'current_page' : page,
+                'from' : (page-1)*10 + 1,
+                'last_page' : NumPage,
+                'path' : request.build_absolute_uri('/problems/upsolve/codeforces'),
+                'per_page' : 10,
+                'to' : page*10,
+                'total' : total
+            }
+        })
 
 class CCUpsolveContestAPIView(
     mixins.CreateModelMixin,
@@ -135,7 +172,35 @@ class CCUpsolveContestAPIView(
         if handle == "" or handle == None:
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' })
 
+        page = request.GET.get('page')
+        path = request.build_absolute_uri('/problems/upsolve/codechef')+'?'
+
+        if page == None:
+            page = 1
+        elif page.isdigit():
+            page = int(page)
+        else: 
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+
         Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle)
+
+        total = len(Contest)
+        NumPage = (len(Contest)-1)//10 + 1  # Number of page
+        if NumPage == 0 :
+            return Response({'status' : 'OK' , 'result' : []})
+        if page > NumPage : 
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+        if page == NumPage :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+        
+        Contest = list(Contest)
+        Contest = Contest[10*(page-1) : 10*page]    
 
         data = {
             'solved'  : SolvedInContest,
@@ -153,7 +218,25 @@ class CCUpsolveContestAPIView(
                     'problems' :CCUpsolveContestSerializer(qs , many =True , context = data).data 
                 })
 
-        return Response({'status' : 'OK' , 'result' : user_contest_details})
+        return Response({
+            'status' : 'OK' , 
+            'result' : user_contest_details ,
+            'links' : {
+                'first' : path + 'page=1',
+                'last' : path + 'page='+str(NumPage),
+                'prev' : Prev,
+                'next' : Next
+            },
+            'meta' : {
+                'current_page' : page,
+                'from' : (page-1)*10 + 1,
+                'last_page' : NumPage,
+                'path' : request.build_absolute_uri('/problems/upsolve/codechef'),
+                'per_page' : 10,
+                'to' : page*10,
+                'total' : total
+            }
+        })
 
 class ATUpsolveContestAPIView(
     mixins.CreateModelMixin,
@@ -170,13 +253,40 @@ class ATUpsolveContestAPIView(
 
         if handle == "" or handle == None:
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' })
-
-        contests_details , all_contest , solved , wrong = atcoder_status(handle)
-
         practice = request.GET.get('practice')
+        page = request.GET.get('page')
+        path = request.build_absolute_uri('/problems/upsolve/atcoder')
+        if practice != None:
+            path = path + '?practice='+practice+';'
+        else:
+            path = path + '?'
+        if page == None:
+            page = 1
+        elif page.isdigit():
+            page = int(page)
+        else: 
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
         
+        contests_details , all_contest , solved , wrong = atcoder_status(handle)
         if practice == 'true':
             contests_details = contests_details.union(all_contest)
+
+        contests_details = list(contests_details)
+        total = len(contests_details)
+        NumPage = (len(contests_details)-1)//10 + 1  # Number of page
+        if NumPage == 0 :
+            return Response({'status' : 'OK' , 'result' : []})
+        if page > NumPage : 
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+        if page == NumPage :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+        contests_details = contests_details[10*(page-1) : 10*page] 
 
         data = {
             'solved'  : solved,
@@ -185,4 +295,22 @@ class ATUpsolveContestAPIView(
 
         qs = atcoder_contest.objects.filter(contestId__in = contests_details)
 
-        return Response({'status' : 'OK' , 'result' : AtcoderUpsolveContestSerializer(qs , many = True , context = data).data})
+        return Response({
+            'status' : 'OK' , 
+            'result' : AtcoderUpsolveContestSerializer(qs , many = True , context = data).data ,
+            'links' : {
+                'first' : path + 'page=1',
+                'last' : path + 'page='+str(NumPage),
+                'prev' : Prev,
+                'next' : Next
+            },
+            'meta' : {
+                'current_page' : page,
+                'from' : (page-1)*10 + 1,
+                'last_page' : NumPage,
+                'path' : request.build_absolute_uri('/problems/upsolve/atcoder'),
+                'per_page' : 10,
+                'to' : page*10,
+                'total' : total
+            }
+        })
