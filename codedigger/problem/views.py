@@ -82,7 +82,7 @@ class SolveProblemsAPIView(
             problem_qs = problem_qs.filter(q)
 
         problem_qs = problem_qs.order_by('?')[:20]
-        return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problem_qs, many = True).data  })
+        return JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
 
 class UpsolveContestAPIView(
     mixins.CreateModelMixin,
@@ -97,7 +97,7 @@ class UpsolveContestAPIView(
     def get(self , request):
         handle = Profile.objects.get(owner = self.request.user).codeforces
         if handle == "" or handle == None :
-            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'})
+            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'},status=status.HTTP_400_BAD_REQUEST)
         virtual = request.GET.get('virtual')
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/codeforces')
@@ -110,7 +110,7 @@ class UpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
         RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
         data = {
             'wrong'  : Wrong , 
@@ -119,13 +119,16 @@ class UpsolveContestAPIView(
         }
         if virtual == 'true':
             RContest = RContest.union(VContest)
-        RContest = list(RContest)
-        total = len(RContest)
-        NumPage = (len(RContest)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
+        
+         
+        c = contest.objects.filter(contestId__in = RContest).order_by('-startTime')
+
+        total = c.count()
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
             return Response({'status' : 'OK' , 'result' : []})
         if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
         if page == NumPage :
             Next = None
         else :
@@ -134,8 +137,7 @@ class UpsolveContestAPIView(
             Prev = None
         else :
             Prev = path + 'page='+str(page-1)
-        RContest = RContest[10*(page-1) : 10*page]    
-        c = contest.objects.filter(contestId__in = RContest)
+        c = c[10*(page-1) : 10*page]   
         return Response({
             'status' : 'OK' , 
             'result' : UpsolveContestSerializer(c, many =True, context = data).data, 
@@ -170,7 +172,7 @@ class CCUpsolveContestAPIView(
         handle = Profile.objects.get(owner =self.request.user).codechef
 
         if handle == "" or handle == None:
-            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' })
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
 
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/codechef')+'?'
@@ -180,27 +182,9 @@ class CCUpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
 
-        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle)
-
-        total = len(Contest)
-        NumPage = (len(Contest)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
-            return Response({'status' : 'OK' , 'result' : []})
-        if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
-        if page == NumPage :
-            Next = None
-        else :
-            Next = path + 'page='+str(page+1)
-        if page == 1:
-            Prev = None
-        else :
-            Prev = path + 'page='+str(page-1)
-        
-        Contest = list(Contest)
-        Contest = Contest[10*(page-1) : 10*page]    
+        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle) 
 
         data = {
             'solved'  : SolvedInContest,
@@ -217,6 +201,22 @@ class CCUpsolveContestAPIView(
                     'name' :  ContestName[contest],
                     'problems' :CCUpsolveContestSerializer(qs , many =True , context = data).data 
                 })
+
+        total = len(user_contest_details)
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
+            return Response({'status' : 'OK' , 'result' : []})
+        if page > NumPage : 
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
+        if page == NumPage :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+        user_contest_details = user_contest_details[10*(page-1) : 10*page] 
 
         return Response({
             'status' : 'OK' , 
@@ -250,9 +250,9 @@ class ATUpsolveContestAPIView(
     def get(self , request):
 
         handle = Profile.objects.get(owner =self.request.user).atcoder
-
         if handle == "" or handle == None:
-            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' })
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
+        
         practice = request.GET.get('practice')
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/atcoder')
@@ -265,19 +265,23 @@ class ATUpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
         
         contests_details , all_contest , solved , wrong = atcoder_status(handle)
         if practice == 'true':
             contests_details = contests_details.union(all_contest)
+        data = {
+            'solved'  : solved,
+            'wrong' : wrong
+        }
+        qs = atcoder_contest.objects.filter(contestId__in = contests_details).order_by('-startTime')
 
-        contests_details = list(contests_details)
-        total = len(contests_details)
-        NumPage = (len(contests_details)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
+        total = qs.count()
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
             return Response({'status' : 'OK' , 'result' : []})
         if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
         if page == NumPage :
             Next = None
         else :
@@ -286,14 +290,8 @@ class ATUpsolveContestAPIView(
             Prev = None
         else :
             Prev = path + 'page='+str(page-1)
-        contests_details = contests_details[10*(page-1) : 10*page] 
 
-        data = {
-            'solved'  : solved,
-            'wrong' : wrong
-        }
-
-        qs = atcoder_contest.objects.filter(contestId__in = contests_details)
+        qs = qs[10*(page-1) : 10*page] 
 
         return Response({
             'status' : 'OK' , 
