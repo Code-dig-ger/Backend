@@ -29,7 +29,6 @@ class MentorProblemAPIView(
         
         #Mentors from Profile
         mentor=request.GET.get('mentor')
-        
         #User handle from Profile
         student = Profile.objects.get(owner=self.request.user).codeforces
 
@@ -50,7 +49,7 @@ class MentorProblemAPIView(
                 student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
 
         if mentor!='true':
-            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+            return Response({'status' : 'OK' , 'result':student_solved_set }) 
 
 
 
@@ -110,9 +109,9 @@ class SolveProblemsAPIView(
             problems_list = MentorProblemAPIView.get(self,request).data
 
             if(problems_list['status']!='OK'):
-                return JsonResponse(problem_list)
+                return JsonResponse(problems_list)
             else:
-                problem_list = problem_list['result']
+                problems_list = problems_list['result']
 
             if mentors=='true':
                 problem_qs = Problem.objects.filter( prob_id__in = problems_list )
