@@ -12,6 +12,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import Util
 import requests,json
 from lists.models import Solved
+from .exception import *
+
 
 
 
@@ -68,7 +70,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         username = attrs.get('username','')
 
         if not username.isalnum():
-            raise serializers.ValidationError('The username should only contain alphanumeric characters')
+            raise ValidationException("The username should only contain alphanumeric characters")
         return attrs
     
     def create(self,validated_data):
@@ -113,16 +115,14 @@ class LoginSerializer(serializers.ModelSerializer):
         user_obj_email = User.objects.filter(email=username).first()
         user_obj_username = User.objects.filter(username=username).first()
         if user_obj_email:
-            # if user_obj_email.is_authenticated:
-            #     raise AuthenticationFailed('Already Logged In')
             user = auth.authenticate(username = user_obj_email.username,password=password)
             if user_obj_email.auth_provider != 'email':
-                raise AuthenticationFailed(
-                    detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
+                raise AuthenticationException(
+                    'Please continue your login using ' + filtered_user_by_email[0].auth_provider)
             if not user:
-                raise AuthenticationFailed('Invalid credentials. Try again')
+                raise AuthenticationException('Invalid credentials. Try again')
             if not user.is_active:
-                raise AuthenticationFailed('Account disabled. contact admin')
+                raise AuthenticationException('Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
                 token = RefreshToken.for_user(user).access_token
@@ -132,7 +132,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
                 data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
                 Util.send_email(data)
-                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
+                raise AuthenticationException('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
@@ -140,13 +140,11 @@ class LoginSerializer(serializers.ModelSerializer):
             }
             return super().validate(attrs)
         if user_obj_username:
-            # if user_obj_username.is_authenticated:
-            #     raise AuthenticationFailed('Already Logged In')
             user = auth.authenticate(username = username,password=password)
             if not user:
-                raise AuthenticationFailed('Invalid credentials. Try again')
+                raise AuthenticationException('Invalid credentials. Try again')
             if not user.is_active:
-                raise AuthenticationFailed('Account disabled. contact admin')
+                raise AuthenticationException('Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
                 token = RefreshToken.for_user(user).access_token
@@ -156,14 +154,14 @@ class LoginSerializer(serializers.ModelSerializer):
                 email_body = 'Hi ' + user.username + '. Use link below to verify your email \n' + absurl
                 data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
                 Util.send_email(data)
-                raise AuthenticationFailed('Email is not verified, A Verification Email has been sent to your email address')
+                raise AuthenticationException('Email is not verified, A Verification Email has been sent to your email address')
             return {
                 'email' : user.email,
                 'username' : user.username,
                 'tokens': user.tokens
             }
             return super().validate(attrs)
-        raise AuthenticationFailed('Invalid credentials. Try again')
+        raise AuthenticationException('Invalid credentials. Try again')
         
 
 
@@ -189,7 +187,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 for ele in Solved.objects.filter(user__username=user,problem__platform='F'):
                     ele.delete()
             else:
-                raise serializers.ValidationError('The given handle does not exist')
+                raise ValidationException('The given codeforces handle does not exist')
         return value
 
     def validate_codechef(self,value):
@@ -199,7 +197,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 for ele in Solved.objects.filter(user__username=user,problem__platform='C'):
                     ele.delete()
             else:
-                raise serializers.ValidationError('The given handle does not exist')
+                raise ValidationException('The given codechef handle does not exist')
         return value
     
     def validate_atcoder(self,value):
@@ -209,7 +207,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 for ele in Solved.objects.filter(user__username=user,problem__platform='A'):
                     ele.delete()
             else:
-                raise serializers.ValidationError('The given handle does not exist')
+                raise ValidationException('The given atcoder handle does not exist')
         return value
     
     def validate_spoj(self,value):
@@ -219,7 +217,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 for ele in Solved.objects.filter(user__username=user,problem__platform='S'):
                     ele.delete()
             else:
-                raise serializers.ValidationError('The given handle does not exist')
+                raise ValidationException('The given spoj handle does not exist')
         return value
     
     def validate_uva(self,value):
@@ -229,7 +227,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 for ele in Solved.objects.filter(user__username=user,problem__platform='U'):
                     ele.delete()
             else:
-                raise serializers.ValidationError('The given handle does not exist')
+                raise ValidationException('The given UVA handle does not exist')
         return value
 
 class RequestPasswordResetEmailSeriliazer(serializers.Serializer):
@@ -268,14 +266,14 @@ class SetNewPasswordSerializer(serializers.Serializer):
             id = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(user, token):
-                raise AuthenticationFailed('The reset link is invalid', 401)
+                raise AuthenticationException('The reset link is invalid')
 
             user.set_password(password)
             user.save()
 
             return (user)
         except Exception as e:
-            raise AuthenticationFailed('The reset link is invalid', 401)
+            raise AuthenticationException('The reset link is invalid')
         return super().validate(attrs)
 
 
