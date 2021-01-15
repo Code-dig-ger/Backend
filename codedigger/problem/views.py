@@ -11,12 +11,82 @@ from django.db.models import Q
 # Serializer and Extra Utils Function
 
 from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer , AtcoderUpsolveContestSerializer,SolveProblemsSerializer
+from user.serializers import GuruSerializer
 from .utils import codeforces_status , codechef_status , atcoder_status
-import json
+import json,requests
 from django.http import JsonResponse
-from codeforces.views import MentorProblemAPIView
 import random
 
+class MentorProblemAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = GuruSerializer
+
+    
+    def get(self,request):
+        
+        #Mentors from Profile
+        mentor=request.GET.get('mentor')
+        
+        #User handle from Profile
+        student = Profile.objects.get(owner=self.request.user).codeforces
+
+        #fetch student submissions from api
+        res = requests.get("https://codeforces.com/api/user.status?handle="+student)
+        if res.status_code!=200:
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
+        res=res.json()
+        if res['status']!="OK":
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+
+        submissions_student = res["result"]
+
+        student_solved_set = set()
+        for submission in submissions_student:
+            if submission['verdict']=='OK':
+                student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
+
+        if mentor!='true':
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+
+
+        guru_solved_set = set()
+        guru_solved_list = []
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
+
+        #print(gurus)
+        for guru in gurus:
+            res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+            if res.status_code!=200:
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+                
+                 
+            res=res.json()
+            if res['status']!="OK":
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+             
+            submissions_guru = res["result"]
+            for submission in submissions_guru:
+                if 'contestId' in submission['problem'] : 
+                    if str(submission["problem"]['contestId'])+submission["problem"]['index'] in guru_solved_set:
+                        continue 
+                    elif submission['verdict']=='OK':
+                        guru_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
+                        guru_solved_list.append(submission["problem"])
+
+        #print(guru_solved_list)
+        problems_data=[]
+        for problem in guru_solved_list:           
+            if str(problem["contestId"])+problem['index'] not in student_solved_set:
+                problems_data.append( str(problem['contestId'])+problem['index'] )
+
+        return Response({'status' : 'OK' , 'result' : problems_data})
 
 class SolveProblemsAPIView(
     mixins.CreateModelMixin,
@@ -36,11 +106,17 @@ class SolveProblemsAPIView(
         mentors=request.GET.get('mentor')
         
         if request.user.is_authenticated : 
+
+            problems_list = MentorProblemAPIView.get(self,request).data
+
+            if(problems_list['status']!='OK'):
+                return JsonResponse(problem_list)
+            else:
+                problem_list = problem_list['result']
+
             if mentors=='true':
-                problems_list = MentorProblemAPIView.get(self,request).data['result']
                 problem_qs = Problem.objects.filter( prob_id__in = problems_list )
             else :
-                problems_list = MentorProblemAPIView.get(self,request).data['result']
                 q = Q()
                 for prob_id in problems_list:
                     q|=Q(prob_id=prob_id)

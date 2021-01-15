@@ -14,9 +14,11 @@ from django.db.models import Q
 
 from django.template.loader import render_to_string
 
+from rest_framework import generics,status,permissions,views
+
 # Create your views here.
 
-class MentorContestAPIView(
+class ContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
@@ -40,11 +42,11 @@ class MentorContestAPIView(
         res=requests.get("https://codeforces.com/api/user.status?handle="+student)
 
         if res.status_code!=200:
-            return JsonResponse({'status':'FAILED' , 'error' : 'Seems Codeforces API is not working!'}) 
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
         res=res.json()
         
         if res['status']!="OK":
-            return JsonResponse({'status':'FAILED' , 'error' : 'Seems Codeforces API is not working!'}) 
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
         submissions_student = res["result"]
     
         #student submissions in set
@@ -59,10 +61,10 @@ class MentorContestAPIView(
 
                 res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
                 if res.status_code!=200:
-                    return JsonResponse({'status':'FAILED', 'error' : 'Seems Codeforces API is not working!'}) 
+                    return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
                 res=res.json()
                 if res['status']!="OK":
-                    return JsonResponse({'status':'FAILED', 'error' : 'Seems Codeforces API is not working!'})
+                    return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
 
                 submissions_guru =  res['result']
 
@@ -99,5 +101,5 @@ class MentorContestAPIView(
             contest_qs = contest_qs.filter(q)
 
         contest_qs = contest_qs.order_by('?')[:20]
-        context = { 'status':'OK', 'contest_qs':ContestSerializer(contest_qs,many=True).data }
+        context = { 'status':'OK', 'result':ContestSerializer(contest_qs,many=True).data }
         return JsonResponse( context )
