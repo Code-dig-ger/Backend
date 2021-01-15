@@ -35,13 +35,12 @@ class GuruSerializer(serializers.ModelSerializer):
         if res['status']!="OK":
             raise serializers.ValidationError(handle+' is not a valid Codeforces handle')
 
-
         return attrs
     
     def add(self , instance , validated_data):
         
         if (',' + validated_data.get('guru')+',') in instance.gurus:
-            raise ValueError((validated_data.get('guru'))+" is already present in list")
+            raise serializers.ValidationError((validated_data.get('guru'))+" is already present in list")
         instance.gurus = instance.gurus+validated_data.get('guru')+','
         instance.save()
         return instance
@@ -49,7 +48,7 @@ class GuruSerializer(serializers.ModelSerializer):
     def delete(self,instance,data):
 
         if (',' + data.get('guru')+',') not in instance.gurus:
-            raise ValueError((data.get('guru'))+" is not present in list")
+            raise serializers.ValidationError((data.get('guru'))+" is not present in list")
 
         instance.gurus = instance.gurus.replace(','+data['guru']+',', ',')
         instance.save()
