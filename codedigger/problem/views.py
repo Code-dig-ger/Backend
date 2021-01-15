@@ -11,12 +11,81 @@ from django.db.models import Q
 # Serializer and Extra Utils Function
 
 from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer , AtcoderUpsolveContestSerializer,SolveProblemsSerializer
+from user.serializers import GuruSerializer
 from .utils import codeforces_status , codechef_status , atcoder_status
-import json
+import json,requests
 from django.http import JsonResponse
-from codeforces.views import MentorProblemAPIView
 import random
 
+class MentorProblemAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = GuruSerializer
+
+    
+    def get(self,request):
+        
+        #Mentors from Profile
+        mentor=request.GET.get('mentor')
+        #User handle from Profile
+        student = Profile.objects.get(owner=self.request.user).codeforces
+
+        #fetch student submissions from api
+        res = requests.get("https://codeforces.com/api/user.status?handle="+student)
+        if res.status_code!=200:
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
+        res=res.json()
+        if res['status']!="OK":
+            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+
+        submissions_student = res["result"]
+
+        student_solved_set = set()
+        for submission in submissions_student:
+            if submission['verdict']=='OK':
+                student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
+
+        if mentor!='true':
+            return Response({'status' : 'OK' , 'result':student_solved_set }) 
+
+
+
+        guru_solved_set = set()
+        guru_solved_list = []
+        gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
+
+        #print(gurus)
+        for guru in gurus:
+            res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+            if res.status_code!=200:
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+                
+                 
+            res=res.json()
+            if res['status']!="OK":
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+
+             
+            submissions_guru = res["result"]
+            for submission in submissions_guru:
+                if 'contestId' in submission['problem'] : 
+                    if str(submission["problem"]['contestId'])+submission["problem"]['index'] in guru_solved_set:
+                        continue 
+                    elif submission['verdict']=='OK':
+                        guru_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
+                        guru_solved_list.append(submission["problem"])
+
+        #print(guru_solved_list)
+        problems_data=[]
+        for problem in guru_solved_list:           
+            if str(problem["contestId"])+problem['index'] not in student_solved_set:
+                problems_data.append( str(problem['contestId'])+problem['index'] )
+
+        return Response({'status' : 'OK' , 'result' : problems_data})
 
 class SolveProblemsAPIView(
     mixins.CreateModelMixin,
@@ -36,11 +105,17 @@ class SolveProblemsAPIView(
         mentors=request.GET.get('mentor')
         
         if request.user.is_authenticated : 
+
+            problems_list = MentorProblemAPIView.get(self,request).data
+
+            if(problems_list['status']!='OK'):
+                return JsonResponse(problems_list)
+            else:
+                problems_list = problems_list['result']
+
             if mentors=='true':
-                problems_list = MentorProblemAPIView.get(self,request).data['result']
                 problem_qs = Problem.objects.filter( prob_id__in = problems_list )
             else :
-                problems_list = MentorProblemAPIView.get(self,request).data['result']
                 q = Q()
                 for prob_id in problems_list:
                     q|=Q(prob_id=prob_id)
@@ -82,7 +157,7 @@ class SolveProblemsAPIView(
             problem_qs = problem_qs.filter(q)
 
         problem_qs = problem_qs.order_by('?')[:20]
-        return JsonResponse({'status':'OK' , 'problems_list':ProbSerializer(problem_qs, many = True).data  })
+        return JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
 
 class UpsolveContestAPIView(
     mixins.CreateModelMixin,
@@ -97,7 +172,7 @@ class UpsolveContestAPIView(
     def get(self , request):
         handle = Profile.objects.get(owner = self.request.user).codeforces
         if handle == "" or handle == None :
-            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'})
+            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'},status=status.HTTP_400_BAD_REQUEST)
         virtual = request.GET.get('virtual')
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/codeforces')
@@ -110,7 +185,7 @@ class UpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
         RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
         data = {
             'wrong'  : Wrong , 
@@ -119,13 +194,16 @@ class UpsolveContestAPIView(
         }
         if virtual == 'true':
             RContest = RContest.union(VContest)
-        RContest = list(RContest)
-        total = len(RContest)
-        NumPage = (len(RContest)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
+        
+         
+        c = contest.objects.filter(contestId__in = RContest).order_by('-startTime')
+
+        total = c.count()
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
             return Response({'status' : 'OK' , 'result' : []})
         if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
         if page == NumPage :
             Next = None
         else :
@@ -134,8 +212,7 @@ class UpsolveContestAPIView(
             Prev = None
         else :
             Prev = path + 'page='+str(page-1)
-        RContest = RContest[10*(page-1) : 10*page]    
-        c = contest.objects.filter(contestId__in = RContest)
+        c = c[10*(page-1) : 10*page]   
         return Response({
             'status' : 'OK' , 
             'result' : UpsolveContestSerializer(c, many =True, context = data).data, 
@@ -170,7 +247,7 @@ class CCUpsolveContestAPIView(
         handle = Profile.objects.get(owner =self.request.user).codechef
 
         if handle == "" or handle == None:
-            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' })
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
 
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/codechef')+'?'
@@ -180,27 +257,9 @@ class CCUpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
 
-        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle)
-
-        total = len(Contest)
-        NumPage = (len(Contest)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
-            return Response({'status' : 'OK' , 'result' : []})
-        if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
-        if page == NumPage :
-            Next = None
-        else :
-            Next = path + 'page='+str(page+1)
-        if page == 1:
-            Prev = None
-        else :
-            Prev = path + 'page='+str(page-1)
-        
-        Contest = list(Contest)
-        Contest = Contest[10*(page-1) : 10*page]    
+        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle) 
 
         data = {
             'solved'  : SolvedInContest,
@@ -217,6 +276,22 @@ class CCUpsolveContestAPIView(
                     'name' :  ContestName[contest],
                     'problems' :CCUpsolveContestSerializer(qs , many =True , context = data).data 
                 })
+
+        total = len(user_contest_details)
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
+            return Response({'status' : 'OK' , 'result' : []})
+        if page > NumPage : 
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
+        if page == NumPage :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+        user_contest_details = user_contest_details[10*(page-1) : 10*page] 
 
         return Response({
             'status' : 'OK' , 
@@ -250,9 +325,9 @@ class ATUpsolveContestAPIView(
     def get(self , request):
 
         handle = Profile.objects.get(owner =self.request.user).atcoder
-
         if handle == "" or handle == None:
-            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' })
+            return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
+        
         practice = request.GET.get('practice')
         page = request.GET.get('page')
         path = request.build_absolute_uri('/problems/upsolve/atcoder')
@@ -265,19 +340,23 @@ class ATUpsolveContestAPIView(
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
         
         contests_details , all_contest , solved , wrong = atcoder_status(handle)
         if practice == 'true':
             contests_details = contests_details.union(all_contest)
+        data = {
+            'solved'  : solved,
+            'wrong' : wrong
+        }
+        qs = atcoder_contest.objects.filter(contestId__in = contests_details).order_by('-startTime')
 
-        contests_details = list(contests_details)
-        total = len(contests_details)
-        NumPage = (len(contests_details)-1)//10 + 1  # Number of page
-        if NumPage == 0 :
+        total = qs.count()
+        NumPage = (total-1)//10 + 1  # Number of page
+        if total == 0 :
             return Response({'status' : 'OK' , 'result' : []})
         if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'})
+            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
         if page == NumPage :
             Next = None
         else :
@@ -286,14 +365,8 @@ class ATUpsolveContestAPIView(
             Prev = None
         else :
             Prev = path + 'page='+str(page-1)
-        contests_details = contests_details[10*(page-1) : 10*page] 
 
-        data = {
-            'solved'  : solved,
-            'wrong' : wrong
-        }
-
-        qs = atcoder_contest.objects.filter(contestId__in = contests_details)
+        qs = qs[10*(page-1) : 10*page] 
 
         return Response({
             'status' : 'OK' , 

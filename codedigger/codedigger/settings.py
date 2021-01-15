@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'problem',
     'lists',
     'blog',
+    'contest',
 
     #Third Party
     'rest_framework',

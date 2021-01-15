@@ -30,4 +30,4 @@ class ABlogAPIView(mixins.CreateModelMixin,generics.ListAPIView ):
         if qs.exists() :
         	return Response({'status' : 'OK' , 'result' : ABlogSerializer(qs[0]).data })
         else :
-        	return Response({'status' : 'FAILED' , 'error' : 'Requested Blog doesn\'t exists.'})
+        	return Response({'status' : 'FAILED' , 'error' : 'Requested Blog doesn\'t exists.'},status = status.HTTP_400_BAD_REQUEST)

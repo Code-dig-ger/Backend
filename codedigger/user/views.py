@@ -268,12 +268,12 @@ class UserProfileGetView(generics.GenericAPIView):
         try :
             user = User.objects.get(username = username)
         except User.DoesNotExist : 
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User doesn\'t exists in our database. Register Now! :)'})
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User doesn\'t exists in our database. Register Now! :)'},status = status.HTTP_400_BAD_REQUEST)
 
         profile = Profile.objects.get(owner = user)
 
         if profile.codeforces == None:
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his/her account. :( '})
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his/her account. :( '},status = status.HTTP_400_BAD_REQUEST)
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
 
@@ -325,27 +325,27 @@ class UserProfileGetView(generics.GenericAPIView):
             if profile.codechef != "" and profile.codechef != None:
                 data = get_codechef_profile(profile.codechef)
             else :
-                return Response({'status' : 'FAILED' , 'error' : ermsg.format('codechef')})
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('codechef')},status = status.HTTP_400_BAD_REQUEST)
 
         elif request.GET.get('platform') == "atcoder" :
             if profile.atcoder != "" and profile.atcoder != None:
                 data = get_atcoder_profile(profile.atcoder)
             else :
-                return Response({'status' : 'FAILED' , 'error' : ermsg.format('atcoder')})
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('atcoder')},status = status.HTTP_400_BAD_REQUEST)
 
         elif request.GET.get('platform') == "uva" :
             if profile.uva_handle != "" and profile.uva_handle != None:
                 data = get_uva_profile(profile.uva_id , profile.uva_handle)
             else :
-                return Response({'status' : 'FAILED' , 'error' : ermsg.format('uva')})
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('uva')},status = status.HTTP_400_BAD_REQUEST)
 
         elif request.GET.get('platform') == "spoj" :
             if profile.spoj != "" and profile.spoj != None:
                 data = get_spoj_profile(profile.spoj)
             else :
-                return Response({'status' : 'FAILED' , 'error' : ermsg.format('spoj')})
+                return Response({'status' : 'FAILED' , 'error' : ermsg.format('spoj')},status = status.HTTP_400_BAD_REQUEST)
         else :
-            return Response({'status' : 'FAILED' , 'error' : 'Invalid GET Request'})
+            return Response({'status' : 'FAILED' , 'error' : 'Invalid GET Request'},status = status.HTTP_400_BAD_REQUEST)
 
         return Response({'status' : 'OK' , 'result' : data})
         
@@ -364,32 +364,32 @@ class SendFriendRequest(generics.GenericAPIView):
         # Check this username is Valid or Not 
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         if request.user.username == to_user :
-            return Response({'status' : 'FAILED' , 'error' : 'You cannot send a friend request to yourself.'}) 
+            return Response({'status' : 'FAILED' , 'error' : 'You cannot send a friend request to yourself.'},status = status.HTTP_400_BAD_REQUEST) 
 
         try: 
             to_user = User.objects.get(username = to_user , is_verified = True)
             if Profile.objects.get(owner = to_user).codeforces == "" or Profile.objects.get(owner = to_user).codeforces == None :
-                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'},status = status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist :
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'},status = status.HTTP_400_BAD_REQUEST)
 
         # Check whether this have sent a request already or not 
         try:
             status = UserFriends.objects.get(from_user = request.user, to_user = to_user)
             if status.status == True:
-                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'})
+                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'},status = status.HTTP_400_BAD_REQUEST)
             else :
-                return Response({'status' : 'FAILED' , 'error' : 'You have already Sent a Friend Request to this User.'})
+                return Response({'status' : 'FAILED' , 'error' : 'You have already Sent a Friend Request to this User.'},status = status.HTTP_400_BAD_REQUEST)
         except UserFriends.DoesNotExist:
             # Check for Opposite 
 
             try : 
                 status = UserFriends.objects.get(from_user = to_user, to_user = request.user)
                 if status.status == True:
-                    return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'})
+                    return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'},status = status.HTTP_400_BAD_REQUEST)
                 else :
                     status.status = True
                     return Response({'status' : 'OK' , 'result' : 'You are now Friends'})
@@ -406,7 +406,7 @@ class RemoveFriend(generics.GenericAPIView):
     def post(self, request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         user = request.data["user"]
 
@@ -414,9 +414,9 @@ class RemoveFriend(generics.GenericAPIView):
         try: 
             user = User.objects.get(username = user , is_verified = True)
             if Profile.objects.get(owner = user).codeforces == "" or Profile.objects.get(owner = user).codeforces == None :
-                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'},status = status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist :
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'},status = status.HTTP_400_BAD_REQUEST)
 
         # Check whether this have sent a request already or not 
         try:
@@ -434,7 +434,7 @@ class RemoveFriend(generics.GenericAPIView):
                 opp_status.delete()
                 return Response({'status' : 'OK' , 'result' : 'Removed Successfully!'})
             except UserFriends.DoesNotExist :
-                return Response({'status' : 'FAILED' , 'error' : 'Already Deleted!'})
+                return Response({'status' : 'FAILED' , 'error' : 'Already Deleted!'},status = status.HTTP_400_BAD_REQUEST)
 
 class AcceptFriendRequest(generics.GenericAPIView):
 
@@ -444,7 +444,7 @@ class AcceptFriendRequest(generics.GenericAPIView):
     def put(self, request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         from_user = request.data["from_user"]
 
@@ -452,20 +452,20 @@ class AcceptFriendRequest(generics.GenericAPIView):
         try: 
             from_user = User.objects.get(username = from_user , is_verified = True)
             if Profile.objects.get(owner = from_user).codeforces == "" or Profile.objects.get(owner = from_user).codeforces == None :
-                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'})
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'},status = status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist :
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'})
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'},status = status.HTTP_400_BAD_REQUEST)
 
         # Check whether this have sent a request already or not 
         try:
             status = UserFriends.objects.get(from_user = from_user, to_user = request.user)
             if status.status :
-                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends!'})
+                return Response({'status' : 'FAILED' , 'error' : 'You are already Friends!'},status = status.HTTP_400_BAD_REQUEST)
             status.status = True
             status.save()
             return Response({'status' : 'OK' , 'result' : 'You are now Friends!'})
         except UserFriends.DoesNotExist:
-            return Response({'status' : 'FAILED' , 'error' : 'No Request Found! It seems User have removed Request.'})
+            return Response({'status' : 'FAILED' , 'error' : 'No Request Found! It seems User have removed Request.'},status = status.HTTP_400_BAD_REQUEST)
 
 class FriendsShowView(generics.GenericAPIView):
 
@@ -475,7 +475,7 @@ class FriendsShowView(generics.GenericAPIView):
     def get(self , request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         friendsbyrequest = UserFriends.objects.filter(status = True , from_user = request.user)
         friendsbyaccept  = UserFriends.objects.filter(status = True , to_user = request.user)
@@ -494,7 +494,7 @@ class FriendRequestShowView(generics.GenericAPIView):
     def get(self , request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         friendsbyaccept  = UserFriends.objects.filter(status = False , to_user = request.user)
         friendsbyaccept = FriendsShowSerializer(friendsbyaccept , context = {'by_to_user':False} , many = True).data
@@ -508,7 +508,7 @@ class RequestSendShowView(generics.GenericAPIView):
     def get(self , request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '})
+            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         friendsbyrequest = UserFriends.objects.filter(status = False , from_user = request.user)
         friendsbyrequest = FriendsShowSerializer(friendsbyrequest , context = {'by_to_user':True} , many = True).data
