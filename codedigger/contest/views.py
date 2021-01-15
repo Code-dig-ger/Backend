@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 
 from rest_framework import generics,status,permissions,views
+from user.permissions import Authenticated
 
 # Create your views here.
 
@@ -22,7 +23,7 @@ class ContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = GuruSerializer
 
     def get(self,request):

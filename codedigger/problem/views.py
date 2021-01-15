@@ -17,11 +17,13 @@ import json,requests
 from django.http import JsonResponse
 import random
 
+from user.permissions import Authenticated
+
 class MentorProblemAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = GuruSerializer
 
     
@@ -163,7 +165,7 @@ class UpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = UpsolveContestSerializer
     #passed_id = None 
@@ -237,7 +239,7 @@ class CCUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = CCUpsolveContestSerializer
     #passed_id = None 
@@ -317,7 +319,7 @@ class ATUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = AtcoderUpsolveContestSerializer
     #passed_id = None 

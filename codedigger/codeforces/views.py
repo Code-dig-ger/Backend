@@ -12,6 +12,7 @@ from user.models import Profile
 from django.db.models import Q
 
 from django.template.loader import render_to_string
+from user.permissions import Authenticated
 
 
 def data(URL):
@@ -21,7 +22,7 @@ class MentorAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = GuruSerializer
 
     def get(self,request):
