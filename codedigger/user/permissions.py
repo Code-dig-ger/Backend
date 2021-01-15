@@ -24,3 +24,5 @@ class Authenticated(permissions.BasePermission):
         print(request.user.is_authenticated and request.user)
         if not request.user or not request.user.is_authenticated:
             raise Forbidden
+        else :
+            return True
