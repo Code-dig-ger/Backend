@@ -13,8 +13,7 @@ from .utils import Util
 import requests,json
 from lists.models import Solved
 from .exception import *
-
-
+import re
 
 
 class GuruSerializer(serializers.ModelSerializer):
@@ -43,21 +42,31 @@ class GuruSerializer(serializers.ModelSerializer):
     
     def add(self , instance , validated_data):
         
-        if (',' + validated_data.get('guru')+',') in instance.gurus:
+        if re.search(','+validated_data.get('guru')+',' , instance.gurus , re.IGNORECASE):
             raise ValidationException((validated_data.get('guru'))+" is already present in list")
+
+        if len(instance.gurus.split(',')[1:-1]) >= 10 :
+            raise ValidationException('You cannot add more mentors in your list. Delete Some. Use it wisely.')
+
         instance.gurus = instance.gurus+validated_data.get('guru')+','
+
+        if len(instance.gurus) > 300 :
+            raise ValidationException('You cannot add more mentors in your list. Delete Some. Use it wisely.')
+
         instance.save()
         return instance
     
     def delete(self,instance,data):
 
-        if (',' + data.get('guru')+',') not in instance.gurus:
-            raise ValidationException((data.get('guru'))+" is not present in list")
+        if data.get('guru') == None :
+            raise ValidationException('guru field is required')
 
-        instance.gurus = instance.gurus.replace(','+data['guru']+',', ',')
-        instance.save()
-        return instance
-       
+        if re.search(','+data.get('guru')+',' , instance.gurus , re.IGNORECASE) :
+           instance.gurus = re.sub(','+data['guru']+',' , ',' , instance.gurus, flags=re.IGNORECASE)
+           instance.save()
+           return instance
+        else :
+            raise ValidationException((data.get('guru'))+" is not present in list")
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68,min_length=6,write_only=True)
@@ -164,11 +173,6 @@ class LoginSerializer(serializers.ModelSerializer):
             return super().validate(attrs)
         raise AuthenticationException('Invalid credentials. Try again')
         
-
-
-
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     codeforces = serializers.CharField()
@@ -184,10 +188,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     def validate_codeforces(self,value):
         user = self.context.get('user')
         if value != Profile.objects.get(owner__username=user).codeforces:
-            if check_handle_cf(value):
+            cf_status = check_handle_cf(value)
+            if cf_status == 2:
                 for ele in Solved.objects.filter(user__username=user,problem__platform='F'):
                     ele.delete()
-            else:
+            elif cf_status:
+                raise ValidationException('It seems Codeforces API is not working! Please Wait until it is working perfect.')
+            else :
                 raise ValidationException('The given codeforces handle does not exist')
         return value
 
@@ -322,6 +329,6 @@ class FriendsShowSerializer(serializers.Serializer):
 
     class Meta :
         model = UserFriends
-        fields = ['username']
+        fields = ['username' , 'name']
 
 # Friends Serializer Ends

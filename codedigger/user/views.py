@@ -38,8 +38,11 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
-from codeforces.models import user as CodeforcesUser
+from codeforces.models import user as CodeforcesUser 
+from codeforces.models import user_contest_rank
 from codeforces.serializers import UserSerializer as CodeforcesUserSerializer
+from django.db.models import Q
+from lists.models import Solved
 
 # Friends
 from .serializers import SendFriendRequestSerializer , RemoveFriendSerializer , AcceptFriendRequestSerializer , FriendsShowSerializer
@@ -255,6 +258,63 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         return Response({'status': 'OK', 'result': 'Password reset success'}, status=status.HTTP_200_OK)
 
+class SearchUser(generics.GenericAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self , request):
+
+        search = request.GET.get('q')
+
+        if search != None :
+            q = Q()
+            q|=Q(  owner__username__icontains = search)
+            q|=Q(  codeforces__icontains = search)
+            q|=Q(  codechef__icontains = search)
+            q|=Q(  uva_handle__icontains = search)
+            q|=Q(  atcoder__icontains = search )
+            q|=Q(  name__icontains = search )
+            q|=Q(  spoj__icontains = search )
+            profiles = Profile.objects.filter(q).order_by('?')[:20]
+        else :
+            profiles = Profile.objects.all().order_by('?')[:20]
+
+        #TODO Exclude friends in search not-important
+
+        search_data = []
+        for profile in profiles : 
+            data = ProfileSerializer(profile).data
+            data['username'] = profile.owner.username
+            data['email'] = profile.owner.email
+            if request.user.is_authenticated :
+                if request.user.username == username:
+                    data['about_user'] = 'Logged In User Itself'
+                    data['about_mentor'] = 'Logged In User Itself'
+                else :
+                    # Check for friends 
+                    if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = True , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Friends'
+                    elif UserFriends.objects.filter(status = False , to_user = User.objects.get(username = username) , from_user = request.user).exists() :
+                        data['about_user'] = 'Request Sent'
+                    elif UserFriends.objects.filter(status = False , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
+                        data['about_user'] = 'Request Received'
+                    else :
+                        data['about_user'] = 'Stalking'
+
+                    data['about_mentor'] = 'Not Mentor'
+                    for mentor in Profile.objects.get(owner = request.user).gurus.split(',') :
+                        if mentor.casefold() == data['codeforces'].casefold() : 
+                            data['about_mentor'] = 'Mentor'
+                            break
+            else :
+                data['about_user'] = 'Not Authenticated'
+                data['about_mentor'] = 'Not Authenticated'
+
+            search_data.append(data)
+
+        return Response({'status' : 'OK' , 'result' : search_data})
 
 # Profile View 
 
@@ -287,6 +347,7 @@ class UserProfileGetView(generics.GenericAPIView):
             if request.user.is_authenticated :
                 if request.user.username == username:
                     data['about_user'] = 'Logged In User Itself'
+                    data['about_mentor'] = 'Logged In User Itself'
                 else :
                     # Check for friends 
                     if UserFriends.objects.filter(status = True , to_user = request.user , from_user = User.objects.get(username = username)).exists() :
@@ -299,8 +360,15 @@ class UserProfileGetView(generics.GenericAPIView):
                         data['about_user'] = 'Request Received'
                     else :
                         data['about_user'] = 'Stalking'
+
+                    data['about_mentor'] = 'Not Mentor'
+                    for mentor in Profile.objects.get(owner = request.user).gurus.split(',') :
+                        if mentor.casefold() == data['codeforces'].casefold() : 
+                            data['about_mentor'] = 'Mentor'
+                            break
             else :
                 data['about_user'] = 'Not Authenticated'
+                data['about_mentor'] = 'Not Authenticated'
 
 
         elif request.GET.get('platform') == "codeforces" :
@@ -320,6 +388,8 @@ class UserProfileGetView(generics.GenericAPIView):
                 data['friendOfCount'] = codeforces_data['friendOfCount'] 
             else :
                 data = codeforces_data 
+                
+            data['solvedCount'] = Solved.objects.filter(user = profile.owner , problem__platform='C').count()
 
         elif request.GET.get('platform') == "codechef" :
             if profile.codechef != "" and profile.codechef != None:
@@ -330,6 +400,7 @@ class UserProfileGetView(generics.GenericAPIView):
         elif request.GET.get('platform') == "atcoder" :
             if profile.atcoder != "" and profile.atcoder != None:
                 data = get_atcoder_profile(profile.atcoder)
+                data['solvedCount'] = Solved.objects.filter(user = profile.owner , problem__platform='A').count()
             else :
                 return Response({'status' : 'FAILED' , 'error' : ermsg.format('atcoder')},status = status.HTTP_400_BAD_REQUEST)
 
@@ -364,7 +435,7 @@ class SendFriendRequest(generics.GenericAPIView):
         # Check this username is Valid or Not 
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'FAILED', 'error' : 'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         if request.user.username == to_user :
             return Response({'status' : 'FAILED' , 'error' : 'You cannot send a friend request to yourself.'},status = status.HTTP_400_BAD_REQUEST) 
@@ -372,14 +443,14 @@ class SendFriendRequest(generics.GenericAPIView):
         try: 
             to_user = User.objects.get(username = to_user , is_verified = True)
             if Profile.objects.get(owner = to_user).codeforces == "" or Profile.objects.get(owner = to_user).codeforces == None :
-                return Response({'status' : 'FAILED' , 'error' : 'Requested User haven\'t activated his account.'},status = status.HTTP_400_BAD_REQUEST)
+                return Response({'status' : 'FAILED' , 'error' : 'Requested User have not activated his account.'},status = status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist :
-            return Response({'status' : 'FAILED' , 'error' : 'Requested User Doesn\'t Exists in our database.'},status = status.HTTP_400_BAD_REQUEST)
+            return Response({'status' : 'FAILED' , 'error' : 'Requested User Does not Exists in our database.'},status = status.HTTP_400_BAD_REQUEST)
 
         # Check whether this have sent a request already or not 
         try:
-            status = UserFriends.objects.get(from_user = request.user, to_user = to_user)
-            if status.status == True:
+            uf = UserFriends.objects.get(from_user = request.user, to_user = to_user)
+            if uf.status == True:
                 return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'},status = status.HTTP_400_BAD_REQUEST)
             else :
                 return Response({'status' : 'FAILED' , 'error' : 'You have already Sent a Friend Request to this User.'},status = status.HTTP_400_BAD_REQUEST)
@@ -387,8 +458,8 @@ class SendFriendRequest(generics.GenericAPIView):
             # Check for Opposite 
 
             try : 
-                status = UserFriends.objects.get(from_user = to_user, to_user = request.user)
-                if status.status == True:
+                uf = UserFriends.objects.get(from_user = to_user, to_user = request.user)
+                if uf.status == True:
                     return Response({'status' : 'FAILED' , 'error' : 'You are already Friends.'},status = status.HTTP_400_BAD_REQUEST)
                 else :
                     status.status = True
@@ -406,7 +477,7 @@ class RemoveFriend(generics.GenericAPIView):
     def post(self, request):
 
         if Profile.objects.get(owner = request.user).codeforces == "" or Profile.objects.get(owner = request.user).codeforces == None :
-            return Response({'status': 'FAILED', 'error' : 'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'FAILED', 'error' : 'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '},status = status.HTTP_400_BAD_REQUEST)
 
         user = request.data["user"]
 
@@ -420,13 +491,13 @@ class RemoveFriend(generics.GenericAPIView):
 
         # Check whether this have sent a request already or not 
         try:
-            status = UserFriends.objects.get(from_user = request.user, to_user = user)
+            uf = UserFriends.objects.get(from_user = request.user, to_user = user)
             try : 
                 opp_status = UserFriends.objects.get(from_user = user, to_user = request.user)
                 opp_status.delete()
             except UserFriends.DoesNotExist :
                 its_ok = True
-            status.delete()
+            uf.delete()
             return Response({'status' : 'OK' , 'result' : 'Removed Successfully!'})
         except UserFriends.DoesNotExist:
             try : 
@@ -458,11 +529,11 @@ class AcceptFriendRequest(generics.GenericAPIView):
 
         # Check whether this have sent a request already or not 
         try:
-            status = UserFriends.objects.get(from_user = from_user, to_user = request.user)
-            if status.status :
+            uf = UserFriends.objects.get(from_user = from_user, to_user = request.user)
+            if uf.status :
                 return Response({'status' : 'FAILED' , 'error' : 'You are already Friends!'},status = status.HTTP_400_BAD_REQUEST)
-            status.status = True
-            status.save()
+            uf.status = True
+            uf.save()
             return Response({'status' : 'OK' , 'result' : 'You are now Friends!'})
         except UserFriends.DoesNotExist:
             return Response({'status' : 'FAILED' , 'error' : 'No Request Found! It seems User have removed Request.'},status = status.HTTP_400_BAD_REQUEST)
@@ -513,6 +584,5 @@ class RequestSendShowView(generics.GenericAPIView):
         friendsbyrequest = UserFriends.objects.filter(status = False , from_user = request.user)
         friendsbyrequest = FriendsShowSerializer(friendsbyrequest , context = {'by_to_user':True} , many = True).data
         return Response({'status' : 'OK' , 'result' : friendsbyrequest})
-
 
 # Friends Related View Ends

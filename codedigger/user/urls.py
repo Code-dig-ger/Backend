@@ -11,7 +11,8 @@ from .views import (
      UserProfileGetView,
      ChangePassword,
      SendVerificationMail,
-     CheckAuthView
+     CheckAuthView,
+     SearchUser
 )
 # Friend Related View
 from .views import SendFriendRequest, RemoveFriend, AcceptFriendRequest, FriendsShowView
@@ -39,6 +40,7 @@ urlpatterns = [
     path('password-change/',ChangePassword.as_view(),name='password-change'),
     path('check-auth/',CheckAuthView.as_view(),name='check-auth'),
     path('password-reset-complete', SetNewPasswordAPIView.as_view(),name='password-reset-complete'),
+    path('search-user' , SearchUser.as_view() , name = 'search-user'),
 
     # Friends Related Path Start
     path('user/send-request' , SendFriendRequest.as_view() , name='Send_Friend_Request'),

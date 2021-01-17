@@ -4,14 +4,15 @@ from rest_framework import generics,mixins,permissions,status
 
 # Django Models Stuff
 from .models import Problem , atcoder_contest
-from user.models import Profile
+from user.models import Profile , UserFriends
 from codeforces.models import contest ,user_contest_rank
 from django.db.models import Q
 
 # Serializer and Extra Utils Function
 
 from .serializers import ProbSerializer , UpsolveContestSerializer , CCUpsolveContestSerializer , AtcoderUpsolveContestSerializer,SolveProblemsSerializer
-from user.serializers import GuruSerializer
+from user.serializers import GuruSerializer ,FriendsShowSerializer
+from lists.models import Solved
 from .utils import codeforces_status , codechef_status , atcoder_status
 import json,requests
 from django.http import JsonResponse
@@ -160,6 +161,30 @@ class SolveProblemsAPIView(
 
         problem_qs = problem_qs.order_by('?')[:20]
         return JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
+
+class ProblemSolvedByFriend(generics.GenericAPIView):
+    permission_classes = [Authenticated]
+    serializer_class = FriendsShowSerializer
+
+    def get(self, request , prob_id):
+
+        problem = Problem.objects.filter(prob_id = prob_id)
+
+        if not problem.exists():
+            return Response({'status' : 'FAILED' , 'error' : 'Problem Not Found'} , status = status.HTTP_404_NOT_FOUND)
+
+        problem = problem[0]
+
+        userSolved = Solved.objects.filter(problem = problem).values_list('user', flat=True)
+
+        friendSolvedByRequest = UserFriends.objects.filter(status = True , to_user__in = userSolved , from_user = request.user)
+        friendSolvedByAccept  = UserFriends.objects.filter(status = True , to_user = request.user , from_user__in = userSolved)
+
+        friendSolvedByRequest = FriendsShowSerializer(friendSolvedByRequest , context = {'by_to_user':True} , many = True).data
+        friendSolvedByAccept = FriendsShowSerializer(friendSolvedByAccept , context = {'by_to_user':False} , many = True).data
+
+        friendSolved = friendSolvedByRequest + friendSolvedByAccept
+        return Response({'status' : 'OK' , 'result' : friendSolved})
 
 class UpsolveContestAPIView(
     mixins.CreateModelMixin,

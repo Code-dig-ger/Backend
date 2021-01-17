@@ -18,6 +18,7 @@ def get_atcoder_profile(handle):
         'maxColor' : '#000000',
         'worldRank' : 'NA',
         'solvedCount' : 'NA',
+        'contestCount' : 0,
         'contestRank' : []
     }
     res = requests.get(url)
@@ -85,19 +86,10 @@ def get_atcoder_profile(handle):
                 contest_detail['worldRank'] = int(rnk)
                 contests_details.append(contest_detail)
         del contests
+        data['contestCount'] = len(contests_details)
         data['contestRank'] = sorted(contests_details, key = lambda i: i['worldRank'])[:3]
         del contests_details
-        
-    url = "https://kenkoooo.com/atcoder/atcoder-api/results?user="+handle
-    res = requests.get(url)
-    if res.status_code != 200:
-        return data
-    
-    d = res.json()
-    cnt = 0
-    for x in d : 
-        cnt += (x['result'] == 'AC') 
-    data['solvedCount'] = cnt
+
     data['status']  = 'OK'
     return data
 
@@ -202,6 +194,7 @@ def get_codechef_profile(handle):
         'worldRank' : 'NA',
         'countryRank' : 'NA',
         'solvedCount' : 'NA',
+        'contestCount' : 0,
         'contestRank' : [],
     }
     
@@ -278,7 +271,7 @@ def get_codechef_profile(handle):
                     'rank' : int(contest['rank'])
                 })
 
-
+    data['contestCount'] = len(overall)
     data['contestRank'] = sorted(overall, key = lambda i: i['rank'])[:3]
     data['lunchtimeRank'] = sorted(lunch , key = lambda i: i['rank'])[:3]
     data['cook-offRank'] = sorted(cook , key = lambda i: i['rank'])[:3]
@@ -315,6 +308,7 @@ def get_codeforces_profile(handle , codeforces_user=None) :
         'worldRank' : 'NA',
         'countryRank' : 'NA',
         'organizationRank' : 'NA',
+        'contestCount' : 0,
         'contestRank' : [],
         'status' : 'FAILED',
         'contribution' : 'NA',

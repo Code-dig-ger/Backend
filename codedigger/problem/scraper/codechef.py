@@ -51,7 +51,7 @@ def tagsScraper():
 
 
 def longChallenge(b_url, div, mon, yr):
-    print("longchallenge started")
+    #print("longchallenge started")
     
     for y in yr:
         for m in mon:
@@ -73,7 +73,7 @@ def longChallenge(b_url, div, mon, yr):
                 storeProb(data,cont,b_url)
                 
 def lunchTime(b_url, div):
-    print("lunch time started")
+    #print("lunch time started")
     latestLunch = 90
     while latestLunch > 57:
         for d in div:
@@ -88,7 +88,7 @@ def lunchTime(b_url, div):
 
 
 def cookOff(b_url, div):
-    print("cookOFF started")
+    #print("cookOFF started")
     latestOff = 125
     while latestOff > 91:
         for d in div:

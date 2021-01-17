@@ -4,11 +4,13 @@ import bs4
 
 def check_handle_cf(handle):
     if handle is None:
-        return True
+        return 0
     req = requests.get(' https://codeforces.com/api/user.info?handles=' + handle)
+    if req.status_code >= 500:
+        return 1
     if req.status_code == 200:
-        return True
-    return False
+        return 2
+    return 0
 
 def check_handle_spoj(user):
     if user is None:
