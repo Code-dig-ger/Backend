@@ -9,13 +9,15 @@ from .serializers import (
     RetrieveSerializer,
     GetUserlistSerializer,
     EditUserlistSerializer,
-    CreateUserlistSerializer
+    CreateUserlistSerializer,
+    ProblemSerializer
 )
 from django.db.models import Q
 from .permissions import IsOwner
 from .solved_update import codeforces,uva,atcoder,codechef,spoj
 from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,cron_uva,codechef_list
 from django.core.paginator import Paginator
+from django.http import Http404
 
 
 
@@ -23,19 +25,112 @@ class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True))
+#put check admin as well
 
-
-class TopicWiseRetrieveView(generics.RetrieveAPIView):
-    serializer_class = RetrieveSerializer
+class TopicWiseRetrieveView(views.APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True))
-    lookup_field = "slug"
+    
+    def get_object(self,slug):
+        if List.objects.filter(slug=slug).exists():
+            return List.objects.get(slug=slug)
+        return Http404
 
-    def get_serializer_context(self,**kwargs):
-        data = super().get_serializer_context(**kwargs)
-        data['user'] = self.request.user.username
-        data['page'] = self.request.GET.get('page',None)
-        return data
+    def get(self,request,slug):
+        curr_list = self.get_object(slug)
+        page = self.request.GET.get('page',None)
+        page_size = 6
+        paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+        cnt = int(curr_list.problem.all().count()/page_size)
+        if curr_list.problem.all().count() % page_size != 0:
+            cnt += 1
+        # if cnt == 0 :
+        #     return Response({'status' : 'OK' , 'result' : []})
+        # if page > cnt : 
+        #     return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
+        # if page == cnt :
+        #     Next = None
+        # else :
+        #     Next = path + 'page='+str(page+1)
+        # if page == 1:
+        #     Prev = None
+        # else :
+        #     Prev = path + 'page='+str(page-1)
+        path = request.build_absolute_uri('/lists/topicwise/' + str(slug) + '/?')
+        user = self.request.user
+        if user.is_anonymous:
+            user = None
+        if not page:
+            if cnt == 0 :
+                return Response({'status' : 'OK' , 'result' : []})
+            page = 1
+            while page <= cnt:
+                qs = paginator.page(page)
+                for ele in qs:
+                    solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
+                    if not solve.exists():
+                        if page == cnt :
+                            Next = None
+                        else :
+                            Next = path + 'page='+str(page+1)
+                        if page == 1:
+                            Prev = None
+                        else :
+                            Prev = path + 'page='+str(page-1)
+                        return response.Response({
+                            'status' : "OK",
+                            'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+                            'link' : {
+                                'first' : path + "page=1",
+                                'last' : path + "page" + str(cnt),
+                                'prev' : Prev,
+                                'next' : Next,
+                            },
+                            'meta' : {
+                                'user' : user,
+                                'completed' : False,
+                                'current_page' : page,
+                                'from' : (page-1)*page_size + 1,
+                                'last_page' : cnt,
+                                'path' : request.build_absolute_uri('/lists/topicwise/' + str(slug) + '/'),
+                                'per_page' : page_size,
+                                'to' : page*page_size,
+                                'total' : curr_list.problem.all().count()
+                            }
+                        })
+            page += 1
+            page = 1
+            qs = paginator.page(page)
+            if page == cnt :
+                Next = None
+            else :
+                Next = path + 'page='+str(page+1)
+            if page == 1:
+                Prev = None
+            else :
+                Prev = path + 'page='+str(page-1)
+            return response.Response({
+                'status' : "OK",
+                'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+                'link' : {
+                    'first' : path + "page=1",
+                    'last' : path + "page" + str(cnt),
+                    'prev' : Prev,
+                    'next' : Next,
+                },
+                'meta' : {
+                    'user' : user,
+                    'completed' : True,
+                    'current_page' : page,
+                    'from' : (page-1)*page_size + 1,
+                    'last_page' : cnt,
+                    'path' : request.build_absolute_uri('/lists/topicwise/' + str(slug) + '/'),
+                    'per_page' : page_size,
+                    'to' : page*page_size,
+                    'total' : curr_list.problem.all().count()
+                }
+            })
+        return response.Response(status=status.HTTP_200_OK)
 
 
 class TopicwiseGetLadderView(generics.ListAPIView):
