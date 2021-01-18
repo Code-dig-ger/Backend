@@ -169,6 +169,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 
 REST_FRAMEWORK = {
+<<<<<<< HEAD
+=======
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+>>>>>>> c479dd313fdfcd658870f1666e6cbcb3ddae6249
     'NON_FIELD_ERRORS_KEY' : 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
