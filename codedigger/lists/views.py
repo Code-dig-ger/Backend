@@ -712,7 +712,7 @@ class LevelwiseGetLadderView(generics.ListAPIView):
 
 class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
     
     def get_object(self,slug):
         if List.objects.filter(slug=slug).exists():
