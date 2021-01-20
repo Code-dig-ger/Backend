@@ -16,16 +16,16 @@ from .solved_update import codeforces,uva,atcoder,codechef,spoj
 from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,cron_uva,codechef_list
 from django.core.paginator import Paginator
 from django.http import Http404
-
+from user.permissions import *
 
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True) & Q(owner__is_staff=True))
 
 class TopicWiseRetrieveView(views.APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
     
     def get_object(self,slug):
@@ -173,12 +173,12 @@ class TopicWiseRetrieveView(views.APIView):
 
 class TopicwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
 
 
 class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
     
     def get_object(self,slug):
@@ -485,12 +485,12 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 
 class LevelwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
 
 
 class LevelwiseRetrieveView(views.APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
     
     def get_object(self,slug):
@@ -636,12 +636,12 @@ class LevelwiseRetrieveView(views.APIView):
 
 class LevelwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
 
 
 class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
     
     def get_object(self,slug):
@@ -964,16 +964,16 @@ class updateLadderview(views.APIView):
                 codechef(self.request.user.username,prob_id)
             if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
                 spoj(self.request.user.username,prob_id)
-        return response.Response(data={'status' : 'ok'})
+        return response.Response({'status' : "OK",'result' : 'ladder updated'},status = status.HTTP_200_OK)
 
 class updateListView(views.APIView):
     def get(self,request,*args,**kwargs):
         list_slug = self.request.GET.get('slug')
         page = self.request.GET.get('page')
         if list_slug is None or list_slug == "" :
-            return response.Response(data={'status' : 'No list provided'})
+            return response.Response(data={'status' : 'FAILED','error' : 'No list provided'})
         if page is None or page == "":
-            return response.Response(data={'status' : 'No page provided'})
+            return response.Response(data={'status' : 'FAILED','error' :'No page provided'})
         curr_list = List.objects.get(slug=list_slug)
         #set page size here and in the serializer list waala
         page_size = 6
@@ -1005,11 +1005,11 @@ class updateListView(views.APIView):
                 prob = Problem.objects.get(prob_id=ele,platform='C')
                 user = self.request.user
                 Solved.objects.create(user=user,problem=prob)
-        return response.Response(data={'status' : 'ok'})
+        return response.Response(data={'status' : 'OK','result' :'list updated'})
 
 
 class UserlistGetView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = GetUserlistSerializer
     
     def get_queryset(self):
@@ -1018,7 +1018,7 @@ class UserlistGetView(generics.ListAPIView):
     
 
 class UserlistCreateView(generics.CreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = CreateUserlistSerializer
 
     def get_serializer_context(self,**kwargs):
@@ -1031,28 +1031,28 @@ class UserlistCreateView(generics.CreateAPIView):
 
 
 class UserlistAddProblemView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
 
     def post(self,request,*args, **kwargs):
         data = request.data
         prob_id = data.get('prob_id',None)
         slug = data.get('slug',None)
         if prob_id is None or slug is None:
-            return response.Response({"status" : "prob_id or slug or both not provided"},status=status.HTTP_400_BAD_REQUEST)
+            return response.Response({"status" : 'FAILED','error' :"prob_id or slug or both not provided"},status=status.HTTP_400_BAD_REQUEST)
         if not List.objects.filter(slug = slug).exists():
-            return response.Response({"status" : "List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
+            return response.Response({"status" : 'FAILED','error' :"List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
         if not Problem.objects.filter(prob_id = prob_id).exists():
-            return response.Response({"status" : "Problem with the given prob_id does not exist"},status=status.HTTP_400_BAD_REQUEST)
+            return response.Response({"status" : 'FAILED','error' :"Problem with the given prob_id does not exist"},status=status.HTTP_400_BAD_REQUEST)
         curr_list = List.objects.get(slug=slug)
         curr_prob = Problem.objects.get(prob_id=prob_id)
         if curr_list.problem.filter(prob_id=prob_id).exists():
-            return response.Response({"status" : "Problem with the given prob_id already exists within the list"},status=status.HTTP_400_BAD_REQUEST)
+            return response.Response({"status" : 'FAILED','error' :"Problem with the given prob_id already exists within the list"},status=status.HTTP_400_BAD_REQUEST)
         curr_list.problem.add(curr_prob)
-        return response.Response({"status" : "Given problem has been added to the list"},status = status.HTTP_200_OK)
+        return response.Response({"status" : 'OK','result' :"Given problem has been added to the list"},status = status.HTTP_200_OK)
 
 
 class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [Authenticated]
     serializer_class = EditUserlistSerializer
     queryset = List.objects.all()
     lookup_field = 'slug'
@@ -1067,12 +1067,12 @@ class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
         if data.get('prob_id',None):
             for ele in data.get('prob_id',None):
                 if not Problem.objects.filter(prob_id = ele).exists():
-                    return response.Response({"status" : "Problem with the prob_id " + ele + " does not exist"},status=status.HTTP_400_BAD_REQUEST) 
+                    return response.Response({"status" : 'FAILED','error' :"Problem with the prob_id " + ele + " does not exist"},status=status.HTTP_400_BAD_REQUEST) 
                 if not List.objects.filter(slug = data['slug']).exists():
-                    return response.Response({"status" : "List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
+                    return response.Response({"status" : 'FAILED','error' :"List with the provided slug does not exist"},status=status.HTTP_400_BAD_REQUEST)
                 curr_prob = Problem.objects.get(prob_id=ele)
                 curr_list = List.objects.get(slug=data['slug'])
                 if not curr_list.problem.filter(prob_id=ele).exists():
-                    return response.Response({"status" : "Problem with the given prob_id " + ele + " does not exists within the list"},status=status.HTTP_400_BAD_REQUEST) 
+                    return response.Response({"status" : 'FAILED','error' :"Problem with the given prob_id " + ele + " does not exists within the list"},status=status.HTTP_400_BAD_REQUEST) 
                 curr_list.problem.remove(curr_prob)
         return super().update(request,**kwargs)

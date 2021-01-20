@@ -1,6 +1,16 @@
 from rest_framework import permissions
 from rest_framework.exceptions import APIException
 from rest_framework import status
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+
+class AuthenticatedOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.user or request.user.is_authenticated or request.method in SAFE_METHODS:
+            return True
+        else:
+            raise Forbidden
+        #return request.method in SAFE_METHODS
+    
 
 
 class IsOwner(permissions.BasePermission):
