@@ -48,8 +48,9 @@ class MentorProblemAPIView(
 
         student_solved_set = set()
         for submission in submissions_student:
-            if submission['verdict']=='OK':
-                student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
+            if 'contestId' in submission['problem'] : 
+                if submission['verdict']=='OK':
+                    student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
 
         if mentor!='true':
             return Response({'status' : 'OK' , 'result':student_solved_set }) 
