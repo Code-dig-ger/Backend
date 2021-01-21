@@ -5,6 +5,7 @@ from rest_framework import generics,mixins,permissions
 
 from codeforces.models import user,country,organization,contest
 from codeforces.serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
+from .models import *
 from user.serializers import GuruSerializer
 from problem.serializers import ProbSerializer
 import json,requests
@@ -104,3 +105,15 @@ class ContestAPIView(
         contest_qs = contest_qs.order_by('?')[:20]
         context = { 'status':'OK', 'result':ContestSerializer(contest_qs,many=True).data }
         return JsonResponse( context )
+
+
+from .contestMaker import makeContest
+
+def testing(request):
+
+    contest = Contest.objects.all()[0]
+
+    makeContest(contest)
+
+    return JsonResponse({'status' :  'OK'})
+

@@ -195,8 +195,8 @@ CRONJOBS = [
 
     ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every 10th minute 
 
-
 ]
+CRONTAB_LOCK_JOBS= True
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

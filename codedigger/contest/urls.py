@@ -4,4 +4,6 @@ from . import views
 
 urlpatterns = [
     path('' , views.ContestAPIView.as_view() , name = 'mentor.contest') ,
+
+    path('testing' , views.testing)
 ]
