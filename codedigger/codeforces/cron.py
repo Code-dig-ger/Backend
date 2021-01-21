@@ -305,7 +305,7 @@ def codeforces_update_problems():
 		if 'startTimeSeconds' in codeforces_contest:
 			new_contest.startTime = codeforces_contest['startTimeSeconds']
 
-		new_contest.Type = 'R'
+		new_contest.Type = 'G'
 		new_contest.contestId = codeforces_contest['id']
 		new_contest.name = codeforces_contest['name']
 		new_contest.duration = codeforces_contest['durationSeconds']

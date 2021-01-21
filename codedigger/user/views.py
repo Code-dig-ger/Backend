@@ -266,6 +266,8 @@ class SearchUser(generics.GenericAPIView):
 
         search = request.GET.get('q')
 
+        profiles = Profile.objects.filter(owner__is_verified = True).exclude(name = None).exclude(codeforces = None)
+
         if search != None :
             q = Q()
             q|=Q(  owner__username__icontains = search)
@@ -275,9 +277,9 @@ class SearchUser(generics.GenericAPIView):
             q|=Q(  atcoder__icontains = search )
             q|=Q(  name__icontains = search )
             q|=Q(  spoj__icontains = search )
-            profiles = Profile.objects.filter(q).order_by('?')[:20]
-        else :
-            profiles = Profile.objects.all().order_by('?')[:20]
+            profiles = profiles.filter(q)
+        
+        profiles = profiles.order_by('?')[:20]
 
         #TODO Exclude friends in search not-important
 
