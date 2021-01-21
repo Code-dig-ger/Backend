@@ -5,6 +5,7 @@ from rest_framework import generics,mixins,permissions
 
 from codeforces.models import user,country,organization,contest
 from codeforces.serializers import UserSerializer,CountrySerializer,OrganizationSerializer,ContestSerializer
+from .models import *
 from user.serializers import GuruSerializer
 from problem.serializers import ProbSerializer
 import json,requests
@@ -15,7 +16,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 
 from rest_framework import generics,status,permissions,views
-from user.permissions import Authenticated
+from user.permissions import *
 
 # Create your views here.
 
@@ -23,7 +24,7 @@ class ContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = GuruSerializer
 
     def get(self,request):
@@ -104,3 +105,16 @@ class ContestAPIView(
         contest_qs = contest_qs.order_by('?')[:20]
         context = { 'status':'OK', 'result':ContestSerializer(contest_qs,many=True).data }
         return JsonResponse( context )
+
+
+from .contestMaker import makeContest
+from .resultMaker import prepareResult
+
+def testing(request):
+
+    contest = Contest.objects.all()[0]
+
+    prepareResult(contest)
+
+    return JsonResponse({'status' :  'OK'})
+
