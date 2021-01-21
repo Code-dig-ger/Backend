@@ -18,7 +18,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.conf import settings  
 import jwt , json
-from .permissions import IsOwner,Authenticated
+from .permissions import *
 from rest_framework.generics import RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -260,7 +260,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
 
 class SearchUser(generics.GenericAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
 
     def get(self , request):
 
@@ -320,7 +320,7 @@ class SearchUser(generics.GenericAPIView):
 
 class UserProfileGetView(generics.GenericAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     
 
     def get(self , request , username):
@@ -426,7 +426,7 @@ class UserProfileGetView(generics.GenericAPIView):
 class SendFriendRequest(generics.GenericAPIView):
 
     serializer_class = SendFriendRequestSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def post(self, request):
 
@@ -472,7 +472,7 @@ class SendFriendRequest(generics.GenericAPIView):
 class RemoveFriend(generics.GenericAPIView):
 
     serializer_class = RemoveFriendSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def post(self, request):
 
@@ -510,7 +510,7 @@ class RemoveFriend(generics.GenericAPIView):
 class AcceptFriendRequest(generics.GenericAPIView):
 
     serializer_class = AcceptFriendRequestSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def put(self, request):
 
@@ -541,7 +541,7 @@ class AcceptFriendRequest(generics.GenericAPIView):
 class FriendsShowView(generics.GenericAPIView):
 
     serializer_class = FriendsShowSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def get(self , request):
 
@@ -560,7 +560,7 @@ class FriendsShowView(generics.GenericAPIView):
 class FriendRequestShowView(generics.GenericAPIView):
 
     serializer_class = FriendsShowSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def get(self , request):
 
@@ -574,7 +574,7 @@ class FriendRequestShowView(generics.GenericAPIView):
 class RequestSendShowView(generics.GenericAPIView):
 
     serializer_class = FriendsShowSerializer
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def get(self , request):
 

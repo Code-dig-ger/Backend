@@ -1150,7 +1150,7 @@ class updateListView(views.APIView):
 
 
 class UserlistGetView(generics.ListAPIView):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = GetUserlistSerializer
     
     def get_queryset(self):
@@ -1159,7 +1159,7 @@ class UserlistGetView(generics.ListAPIView):
     
 
 class UserlistCreateView(generics.CreateAPIView):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = CreateUserlistSerializer
 
     def get_serializer_context(self,**kwargs):
@@ -1172,7 +1172,7 @@ class UserlistCreateView(generics.CreateAPIView):
 
 
 class UserlistAddProblemView(views.APIView):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
 
     def post(self,request,*args, **kwargs):
         data = request.data
@@ -1193,7 +1193,7 @@ class UserlistAddProblemView(views.APIView):
 
 
 class EditUserlistView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = EditUserlistSerializer
     queryset = List.objects.all()
     lookup_field = 'slug'

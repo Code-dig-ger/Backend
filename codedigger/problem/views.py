@@ -17,14 +17,13 @@ from .utils import codeforces_status , codechef_status , atcoder_status
 import json,requests
 from django.http import JsonResponse
 import random
-
-from user.permissions import Authenticated
+from user.permissions import *
 
 class MentorProblemAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = GuruSerializer
 
     
@@ -95,7 +94,7 @@ class SolveProblemsAPIView(
     generics.ListAPIView,generics.GenericAPIView
     ):
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = SolveProblemsSerializer
     def get(self ,request):
 
@@ -163,7 +162,7 @@ class SolveProblemsAPIView(
         return JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
 
 class ProblemSolvedByFriend(generics.GenericAPIView):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = FriendsShowSerializer
 
     def get(self, request , prob_id):
@@ -190,7 +189,7 @@ class UpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = UpsolveContestSerializer
     #passed_id = None 
@@ -264,7 +263,7 @@ class CCUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = CCUpsolveContestSerializer
     #passed_id = None 
@@ -344,7 +343,7 @@ class ATUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [Authenticated]
+    permission_classes = [AuthenticatedActivated]
     #authentication_classes = [SessionAuthentication]
     serializer_class = AtcoderUpsolveContestSerializer
     #passed_id = None 
