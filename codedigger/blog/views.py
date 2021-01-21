@@ -7,9 +7,11 @@ from rest_framework import generics,mixins,permissions,status
 
 from .models import Blog
 from .serializers import BlogSerializer , ABlogSerializer
+from user.permissions import *
+
 
 class BlogAPIView(mixins.CreateModelMixin, generics.ListAPIView ):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     #authentication_classes = [SessionAuthentication]
     serializer_class = BlogSerializer
     #passed_id = None 
@@ -18,7 +20,7 @@ class BlogAPIView(mixins.CreateModelMixin, generics.ListAPIView ):
         return Response({'status' : 'OK' , 'result' : BlogSerializer(Blog.objects.all() , many = True).data })
 
 class ABlogAPIView(mixins.CreateModelMixin,generics.ListAPIView ):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedOrReadOnly]
     #authentication_classes = [SessionAuthentication]
     serializer_class = ABlogSerializer
     #passed_id = None 

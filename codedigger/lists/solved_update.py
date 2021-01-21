@@ -22,13 +22,13 @@ def codechef(user,prob_id):
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
     problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
-    if problems_solved.find('h5').text == 'Fully Solved (0)':
+    if not problems_solved or problems_solved.find('h5').text == 'Fully Solved (0)':
         return
     probset = set([])
     for ele in problems_solved.find('article').find_all('a'):
         probset.add(ele.text)
     if prob_id in probset:
-        print("Adding " + prob_id)
+        #print("Adding " + prob_id)
         user = User.objects.get(username=user)
         #testing purposes
         if not Problem.objects.filter(prob_id=prob_id,platform='C').exists():
@@ -52,7 +52,7 @@ def spoj(user,prob_id):
     soup = bs4.BeautifulSoup(res.content,'html.parser')
     status = soup.find('td' , {'status' : '15'})
     if status is not None:
-        print(str(prob_id))
+        #print(str(prob_id))
         prob = Problem.objects.get(prob_id=prob_id,platform='S')
         curr_user = User.objects.get(username=user)
         Solved.objects.create(user=curr_user,problem=prob)
@@ -74,7 +74,7 @@ def codeforces(user):
         if verdict is None:
             continue
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
-        print(name + " " + verdict + " " + prob_id)
+        #print(name + " " + verdict + " " + prob_id)
         if verdict == "OK":
             solve = Solved.objects.filter(user__username=user,problem__prob_id = prob_id).exists()
             if solve:
@@ -101,7 +101,7 @@ def uva(user):
     sorted_req1 = sorted(req1['subs'],key=lambda k: k[4], reverse=True)
     limit = 10
     for ele in sorted_req1:
-        print(str(ele[1]) + " " + str(ele[2])) 
+        #print(str(ele[1]) + " " + str(ele[2])) 
         if str(ele[2]) != '90':
             continue
         #testing
@@ -130,7 +130,7 @@ def atcoder(user):
     sorted_req = sorted(req,key=lambda k: k['epoch_second'], reverse=True)
     limit = 10
     for ele in sorted_req:
-        print(ele['problem_id'] + " " + ele['result'])
+        #print(ele['problem_id'] + " " + ele['result'])
         if ele['result'] != "AC":
             continue
         #testing
