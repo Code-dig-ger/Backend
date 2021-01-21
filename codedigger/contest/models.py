@@ -17,8 +17,9 @@ class Contest(models.Model):
 	name = models.CharField(max_length=100,blank = True,default=" ")
 	problem = models.ManyToManyField(Problem,through= 'ContestProblem',through_fields=('contest','problem'),related_name='contest_problem')
 	participants = models.ManyToManyField(User,through= 'ContestParticipation',through_fields=('contest','user'),related_name='contest_participants')
-	duration = models.DurationField(default = 120)
-	startTime = models.DateTimeField(auto_now_add=True)
+	duration = models.DurationField(default = 7200000000)
+	created_at = models.DateTimeField(auto_now_add = True)
+	startTime = models.DateTimeField()
 	numberOfProblem = models.IntegerField(default = 5)
 	platform = models.CharField(max_length = 5,blank=True, default = "F")
 	tag = models.CharField(max_length = 500 , blank=True, default = "")
@@ -50,6 +51,8 @@ class ContestParticipation(models.Model):
 class ContestResult(models.Model):
 	contestProblem = models.ForeignKey(ContestProblem, on_delete = models.CASCADE)
 	contestParticipation = models.ForeignKey(ContestParticipation , on_delete = models.CASCADE)
-	submissionTime = models.DateTimeField(auto_now_add=True)
-	verdict = models.BooleanField(default = True)
+	submissionTime = models.DurationField()
+	penalty = models.IntegerField()
 
+	def __str__(self):
+		return self.contestParticipation.user.username + " " + str(self.penalty)+" " + self.contestProblem.problem.prob_id + " " + self.contestProblem.contest.name

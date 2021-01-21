@@ -49,7 +49,7 @@ def get_participant_problem(participants_codeforces):
 
 
 def makeContest(contest):
-
+	
 	nProblems = contest.numberOfProblem
 	platforms = list(contest.platform) # TODO Till now we are using only codeforces 
 	tags = contest.tag.split(',')[1:-1]
@@ -79,13 +79,13 @@ def makeContest(contest):
 
 	# TODO Assuming Div2 only 
 
-	div = 'd'
+	div = 'div2'
 
 	nProblems = min(nProblems , problems.count())
 	
 	for i in range(0,nProblems):
 
-		l,r = problem_rating['div2'][i]
+		l,r = problem_rating[div][i]
 		newProblem = ContestProblem()
 		newProblem.contest = contest
 
@@ -100,5 +100,7 @@ def makeContest(contest):
 			newProblem.index = i
 			newProblem.save()
 
+	contest.isProblem = True
+	contest.save()
 	return
 

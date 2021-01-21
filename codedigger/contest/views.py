@@ -108,12 +108,13 @@ class ContestAPIView(
 
 
 from .contestMaker import makeContest
+from .resultMaker import prepareResult
 
 def testing(request):
 
     contest = Contest.objects.all()[0]
 
-    makeContest(contest)
+    prepareResult(contest)
 
     return JsonResponse({'status' :  'OK'})
 
