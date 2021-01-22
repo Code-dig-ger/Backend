@@ -91,3 +91,11 @@ class EditUserlistSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ('id','name','description','problem','slug','public')
+
+
+class UserlistAddSerializer(serializers.Serializer):
+    prob_id = serializers.CharField(required=True)
+    slug = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('prob_id','slug')

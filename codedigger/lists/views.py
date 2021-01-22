@@ -8,7 +8,8 @@ from .serializers import (
     GetUserlistSerializer,
     EditUserlistSerializer,
     CreateUserlistSerializer,
-    ProblemSerializer
+    ProblemSerializer,
+    UserlistAddSerializer
 )
 from django.db.models import Q
 from .permissions import IsOwner
@@ -1173,7 +1174,8 @@ class UserlistCreateView(generics.CreateAPIView):
 
 class UserlistAddProblemView(views.APIView):
     permission_classes = [AuthenticatedActivated]
-
+    serializer_class = UserlistAddSerializer
+    
     def post(self,request,*args, **kwargs):
         data = request.data
         prob_id = data.get('prob_id',None)
