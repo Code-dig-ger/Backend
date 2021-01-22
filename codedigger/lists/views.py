@@ -9,7 +9,9 @@ from .serializers import (
     EditUserlistSerializer,
     CreateUserlistSerializer,
     ProblemSerializer,
-    UserlistAddSerializer
+    UserlistAddSerializer,
+    UpdateLadderSerializer,
+    UpdateListSerializer
 )
 from django.db.models import Q
 from .permissions import IsOwner
@@ -1088,8 +1090,10 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             })
 
 
-class updateLadderview(views.APIView):
-    def get(self,request,*args, **kwargs):
+class updateLadderview(generics.GenericAPIView):
+    serializer_class = UpdateLadderSerializer
+
+    def post(self,request,*args, **kwargs):
         prob_id = self.request.GET.get('prob_id')
         if prob_id == None:
             codeforces(self.request.user.username)
@@ -1108,15 +1112,22 @@ class updateLadderview(views.APIView):
                 spoj(self.request.user.username,prob_id)
         return response.Response({'status' : "OK",'result' : 'ladder updated'},status = status.HTTP_200_OK)
 
-class updateListView(views.APIView):
-    def get(self,request,*args,**kwargs):
+class updateListView(generics.GenericAPIView):
+    serializer_class = UpdateListSerializer
+
+    def post(self,request,*args,**kwargs):
         list_slug = self.request.GET.get('slug')
         page = self.request.GET.get('page')
         if list_slug is None or list_slug == "" :
             return response.Response(data={'status' : 'FAILED','error' : 'No list provided'})
+        curr_list = List.objects.get(slug=list_slug)
+        cnt = int(curr_list.problem.all().count()/page_size)
+        if curr_list.problem.all().count() % page_size != 0:
+            cnt += 1
         if page is None or page == "":
             return response.Response(data={'status' : 'FAILED','error' :'No page provided'})
-        curr_list = List.objects.get(slug=list_slug)
+        if page > cnt:
+            return response.Response(data={'status' : 'FAILED','error' :'Page out of bounds'})
         #set page size here and in the serializer list waala
         page_size = 6
         paginator = Paginator(curr_list.problem.all(),page_size)

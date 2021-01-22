@@ -99,3 +99,16 @@ class UserlistAddSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('prob_id','slug')
+
+class UpdateLadderSerializer(serializers.Serializer):
+    prob_id = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('prob_id',)
+
+class UpdateListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+    page = serializers.IntegerField(required=True)
+
+    class Meta:
+        fields = ('slug','page',)

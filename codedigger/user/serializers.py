@@ -93,6 +93,11 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['token']
 
+class SendEmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255,required=True)
+
+    class Meta:
+        fields = ['email']
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255,read_only=True)
@@ -290,6 +295,12 @@ class SetNewPasswordSerializer(serializers.Serializer):
             raise AuthenticationException('The reset link is invalid')
         return super().validate(attrs)
 
+class PasswordChangeSerializer(serializers.Serializer):
+    old_pass = serializers.CharField(max_length = 68,min_length = 6,required=True)
+    new_pass = serializers.CharField(max_length = 68,min_length = 6,required=True)
+
+    class Meta:
+        fields = ['old_pass','new_pass']
 
 # Friends Serializer Starts
 
