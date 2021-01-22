@@ -33,6 +33,7 @@ class Contest(models.Model):
 	def __str__(self):
 		return self.name
 
+
 class ContestProblem(models.Model):
 	contest = models.ForeignKey(Contest,on_delete=models.CASCADE)
 	problem = models.ForeignKey(Problem,on_delete=models.CASCADE)
@@ -41,12 +42,14 @@ class ContestProblem(models.Model):
 	def __str__(self):
 		return self.problem.prob_id + ' is there in ' + self.contest.name
 
+
 class ContestParticipation(models.Model):
 	contest = models.ForeignKey(Contest,on_delete=models.CASCADE)
 	user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 	def __str__(self):
 		return self.user.username + ' is participating in '+ self.contest.name
+
 
 class ContestResult(models.Model):
 	contestProblem = models.ForeignKey(ContestProblem, on_delete = models.CASCADE)

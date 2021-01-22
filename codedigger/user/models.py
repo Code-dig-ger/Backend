@@ -84,6 +84,7 @@ class Profile(models.Model):
             Profile.objects.create(owner=instance)
 
 
+
 class UserFriends(models.Model):
 
     STATUS = ((True, 'Friends'), (False, 'Requested'))

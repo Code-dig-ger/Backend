@@ -1,6 +1,7 @@
 from django.db import models
 import random
 
+
 class Problem(models.Model):
     PLATFORM = (
         ('F' , 'Codeforces'),

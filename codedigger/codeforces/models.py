@@ -26,7 +26,8 @@ class contest(models.Model):
 
 	def __str__(self):
 		return self.contestId
-    
+
+
 class user(models.Model):
 	name = models.CharField(max_length=100 , blank=True, null=True,)
 	handle = models.CharField(max_length=50 , unique = True,db_index=True)
@@ -45,6 +46,7 @@ class user(models.Model):
 
 	def __str__(self):
 		return self.handle
+
 
 class user_contest_rank(models.Model):
 	user = models.ForeignKey(user , on_delete=models.CASCADE)

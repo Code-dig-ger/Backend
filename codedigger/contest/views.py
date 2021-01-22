@@ -15,6 +15,7 @@ from django.db.models import Q
 
 from django.template.loader import render_to_string
 
+
 from rest_framework import generics,status,permissions,views
 from user.permissions import *
 
@@ -37,34 +38,40 @@ class ContestAPIView(
         gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
  
         #TODO get user handle
-        student = Profile.objects.get(owner=self.request.user).codeforces
+        students = Profile.objects.get(owner=self.request.user).codeforces
+        #TODO convert to list
 
         #fetch student data from api
-
-        res=requests.get("https://codeforces.com/api/user.status?handle="+student)
-
-        if res.status_code!=200:
-            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
-        res=res.json()
-        
-        if res['status']!="OK":
-            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
-        submissions_student = res["result"]
-    
-        #student submissions in set
         student_contests=set()
-        for submission in submissions_student:
-            if (submission['verdict']=='OK'):
-                student_contests.add(submission["problem"]["contestId"])
+        for student in students:
+
+            res=requests.get("https://codeforces.com/api/user.status?handle="+student)
+
+            if res.status_code!=200:
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
+        
+            res=res.json()
+        
+            if res['status']!="OK":
+                return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
+        
+            submissions_student = res["result"]
+    
+            #student submissions in set
+            for submission in submissions_student:
+                if (submission['verdict']=='OK'):
+                    student_contests.add(submission["problem"]["contestId"])
         
         if mentor=='true':
             guru_contests=set()
             for guru in gurus:
 
                 res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+                
                 if res.status_code!=200:
                     return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
                 res=res.json()
+                
                 if res['status']!="OK":
                     return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
 
@@ -87,6 +94,7 @@ class ContestAPIView(
             contest_qs = contest.objects.filter(contestId__in=contest_list)
         else:
             q = Q()
+            
             for contestId in student_contests:
                 q|=Q(contestId=contestId)
             contest_qs=contest.objects.exclude(q)
@@ -97,6 +105,7 @@ class ContestAPIView(
         if divs!=None:
             divs = divs.split(',')
             q = Q()
+            
             for div in divs:
                 q|=Q(name__icontains=div)
                 
@@ -104,7 +113,9 @@ class ContestAPIView(
 
         contest_qs = contest_qs.order_by('?')[:20]
         context = { 'status':'OK', 'result':ContestSerializer(contest_qs,many=True).data }
+        
         return JsonResponse( context )
+
 
 
 from .contestMaker import makeContest
