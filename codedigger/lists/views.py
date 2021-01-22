@@ -1172,10 +1172,10 @@ class UserlistCreateView(generics.CreateAPIView):
         return serializer.save(owner=self.request.user)
 
 
-class UserlistAddProblemView(views.APIView):
+class UserlistAddProblemView(generics.CreateAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = UserlistAddSerializer
-    
+
     def post(self,request,*args, **kwargs):
         data = request.data
         prob_id = data.get('prob_id',None)
