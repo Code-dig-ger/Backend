@@ -108,7 +108,7 @@ class UpdateLadderSerializer(serializers.Serializer):
 
 class UpdateListSerializer(serializers.Serializer):
     slug = serializers.CharField(required=True)
-    page = serializers.IntegerField(required=True)
+    page = serializers.CharField(required=True)
 
     class Meta:
         fields = ('slug','page',)

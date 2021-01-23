@@ -20,7 +20,7 @@ from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,c
 from django.core.paginator import Paginator
 from django.http import Http404
 from user.permissions import *
-
+from user.exception import *
 
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -34,7 +34,7 @@ class TopicWiseRetrieveView(views.APIView):
     def get_object(self,slug):
         if List.objects.filter(slug=slug).exists():
             return List.objects.get(slug=slug)
-        return Http404
+        raise NotFoundException("The list with the given slug does not exist")
 
     def get(self,request,slug):
         curr_list = self.get_object(slug)
@@ -187,7 +187,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     def get_object(self,slug):
         if List.objects.filter(slug=slug).exists():
             return List.objects.get(slug=slug)
-        return Http404
+        raise NotFoundException("The list with the given slug does not exist")
     
     def get(self,request,slug):
         curr_list = self.get_object(slug)
@@ -569,7 +569,7 @@ class LevelwiseRetrieveView(views.APIView):
     def get_object(self,slug):
         if List.objects.filter(slug=slug).exists():
             return List.objects.get(slug=slug)
-        return Http404
+        raise NotFoundException("The list with the given slug does not exist")
 
     def get(self,request,slug):
         curr_list = self.get_object(slug)
@@ -720,7 +720,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     def get_object(self,slug):
         if List.objects.filter(slug=slug).exists():
             return List.objects.get(slug=slug)
-        return Http404
+        raise NotFoundException("The list with the given slug does not exist")
     
     def get(self,request,slug):
         curr_list = self.get_object(slug)

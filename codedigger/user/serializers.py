@@ -146,7 +146,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
                 email_body = {}
                 email_body['username'] = user.username
-                email_body['message'] = 'Use link below to reset your password'
+                email_body['message'] = 'Use link below to verify your email'
                 email_body['link'] = absurl
                 data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
                 Util.send_email(data)
@@ -171,7 +171,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
                 email_body = {}
                 email_body['username'] = user.username
-                email_body['message'] = 'Use link below to reset your password'
+                email_body['message'] = 'Use link below to verify your email'
                 email_body['link'] = absurl
                 data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
                 Util.send_email(data)
