@@ -83,6 +83,7 @@ class ProblemUserlisterializer(serializers.ModelSerializer):
 
 class EditUserlistSerializer(serializers.ModelSerializer):
     problem = serializers.SerializerMethodField()
+    slug = serializers.SlugField(read_only=True)
 
     def get_problem(self,attrs):
         user = self.context.get('user')

@@ -40,6 +40,7 @@ class TopicWiseRetrieveView(views.APIView):
         curr_list = self.get_object(slug)
         page = self.request.GET.get('page',None)
         page_size = 6
+        description = curr_list.description
         paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:
@@ -92,6 +93,7 @@ class TopicWiseRetrieveView(views.APIView):
                             'meta' : {
                                 'user' : user,
                                 'completed' : False,
+                                'description' : description,
                                 'current_page' : page,
                                 'from' : (page-1)*page_size + 1,
                                 'last_page' : cnt,
@@ -124,6 +126,7 @@ class TopicWiseRetrieveView(views.APIView):
                 'meta' : {
                     'user' : user,
                     'completed' : True,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
@@ -163,6 +166,7 @@ class TopicWiseRetrieveView(views.APIView):
                 'meta' : {
                     'user' : user,
                     'completed' : False,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
@@ -193,6 +197,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
         curr_list = self.get_object(slug)
         page = self.request.GET.get('page',None)
         page_size = 6
+        description = curr_list.description
         path = request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/?')
         user = self.request.user
         if not user.is_anonymous:
@@ -269,6 +274,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'user' : user,
                                         'curr_prob' : ele.prob_id,
                                         'completed' : False,
+                                        'description' : description,
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
@@ -302,6 +308,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'curr_prob' : None,
                             'completed' : True,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -358,6 +365,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'user' : user,
                                         'curr_prob' : ele.prob_id,
                                         'completed' : False,
+                                        'description' : description,
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
@@ -391,6 +399,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'curr_prob' : None,
                             'completed' : True,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -446,6 +455,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'completed' : False,
                             'curr_prob' : latest_unsolved,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -502,6 +512,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'completed' : False,
                             'curr_prob' : latest_unsolved,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -546,6 +557,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                 'meta' : {
                     'user' : None,
                     'completed' : False,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
@@ -575,6 +587,7 @@ class LevelwiseRetrieveView(views.APIView):
         curr_list = self.get_object(slug)
         page = self.request.GET.get('page',None)
         page_size = 6
+        description = curr_list.description
         paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:
@@ -583,6 +596,8 @@ class LevelwiseRetrieveView(views.APIView):
         user = self.request.user
         if user.is_anonymous:
             user = None
+        else:
+            user = user.username
         if not page:
             if cnt == 0 :
                 return response.Response({'status' : 'OK' , 'result' : []})
@@ -625,6 +640,7 @@ class LevelwiseRetrieveView(views.APIView):
                             'meta' : {
                                 'user' : user,
                                 'completed' : False,
+                                'description' : description,
                                 'current_page' : page,
                                 'from' : (page-1)*page_size + 1,
                                 'last_page' : cnt,
@@ -657,6 +673,7 @@ class LevelwiseRetrieveView(views.APIView):
                 'meta' : {
                     'user' : user,
                     'completed' : True,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
@@ -696,6 +713,7 @@ class LevelwiseRetrieveView(views.APIView):
                 'meta' : {
                     'user' : user,
                     'completed' : False,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
@@ -726,6 +744,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         curr_list = self.get_object(slug)
         page = self.request.GET.get('page',None)
         page_size = 6
+        description = curr_list.description
         path = request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/?')
         user = self.request.user
         if not user.is_anonymous:
@@ -802,6 +821,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'user' : user,
                                         'curr_prob' : ele.prob_id,
                                         'completed' : False,
+                                        'description' : description,
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
@@ -835,6 +855,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'curr_prob' : None,
                             'completed' : True,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -891,6 +912,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'user' : user,
                                         'curr_prob' : ele.prob_id,
                                         'completed' : False,
+                                        'description' : description,
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
@@ -924,6 +946,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'curr_prob' : None,
                             'completed' : True,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -979,6 +1002,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'completed' : False,
                             'curr_prob' : latest_unsolved,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -1035,6 +1059,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'user' : user,
                             'completed' : False,
                             'curr_prob' : latest_unsolved,
+                            'description' : description,
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
@@ -1079,6 +1104,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                 'meta' : {
                     'user' : None,
                     'completed' : False,
+                    'description' : description,
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
