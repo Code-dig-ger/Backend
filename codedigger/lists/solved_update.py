@@ -69,10 +69,10 @@ def codeforces(user):
     limit = 10
     for ele in req['result']:
         name = ele['problem']['name']
-        verdict = None
-        verdict = ele['verdict']
+        verdict = ele.get('verdict',None)
         if verdict is None:
             continue
+        print(verdict)
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
         #print(name + " " + verdict + " " + prob_id)
         if verdict == "OK":
