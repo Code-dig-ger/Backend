@@ -62,3 +62,14 @@ class Solved(models.Model):
     problem = models.ForeignKey(Problem,on_delete = models.CASCADE,related_name='prob')
     def __str__(self):
         return str(self.user.username) + " "  + str(self.problem.name)
+
+class ListExtraInfo(models.Model):
+    curr_list = models.ForeignKey(List,on_delete=models.CASCADE,related_name="curr_list_extra")
+    difficulty = models.IntegerField(null=True,blank=True)
+    video_link = models.CharField(max_length=200,null=True,blank=True)
+    contest_link = models.CharField(max_length=200,null=True,blank=True)
+    editorial = models.CharField(max_length=200,null=True,blank=True)
+
+    def __str__(self):
+        return self.curr_list.name + "'s extra info"
+    
