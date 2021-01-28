@@ -11,6 +11,20 @@ class AuthenticatedOrReadOnly(BasePermission):
         else:
             raise Forbidden
     
+class ForbiddenAdmin(APIException):
+    status_code = status.HTTP_403_FORBIDDEN
+    default_detail = {
+        'status' : "FAILED",
+        'error':'Only Admins can access this page'
+    }
+
+class AuthenticatedIsOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user and request.user.is_authenticated and obj.owner == request.user:
+            return True
+        else:
+            raise ForbiddenAdmin
 
 class IsOwner(permissions.BasePermission):
 

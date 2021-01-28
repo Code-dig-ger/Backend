@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from rest_framework.response import Response
 from .solved_update import *
+from user.exception import ValidationException
 
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
@@ -56,11 +57,11 @@ class CreateUserlistSerializer(serializers.ModelSerializer):
 
     slug = serializers.SlugField(read_only=True)
     name = serializers.CharField(required=True)
-
+    
     def validate_name(self,value):
         user = self.context.get('user')
         if List.objects.filter(name=value,owner__username=user).exists():
-            raise serializers.ValidationError('List with the name and user already exists')
+            raise ValidationException('List with the name and user already exists')
         return value
 
 
@@ -82,20 +83,35 @@ class ProblemUserlisterializer(serializers.ModelSerializer):
         fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','solved',)
 
 class EditUserlistSerializer(serializers.ModelSerializer):
-    problem = serializers.SerializerMethodField()
-
-    def get_problem(self,attrs):
-        user = self.context.get('user')
-        return ProblemSerializer(attrs.problem.all(),many=True,context = {"user" : user}).data
 
     class Meta:
         model = List
-        fields = ('id','name','description','problem','slug','public')
+        fields = ('name','description','public',)
 
 
 class UserlistAddSerializer(serializers.Serializer):
     prob_id = serializers.CharField(required=True)
     slug = serializers.CharField(required=True)
+    platform = serializers.CharField(required=True)
 
     class Meta:
-        fields = ('prob_id','slug')
+        fields = ('prob_id','slug','platform',)
+
+class UpdateLadderSerializer(serializers.Serializer):
+    prob_id = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('prob_id',)
+
+class UpdateListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+    page = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('slug','page',)
+
+class AddProblemsAdminSerializer(serializers.Serializer):
+    slug = serializers.SlugField(required=True)
+
+    class Meta:
+        fields = ('slug',)

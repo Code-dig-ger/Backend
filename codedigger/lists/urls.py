@@ -13,7 +13,8 @@ from .views import (
     UserlistCreateView,
     UserlistGetView,
     UserlistAddProblemView,
-    EditUserlistView
+    EditUserlistView,
+    AddProblemsAdminView
 )
 
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('levelwise/ladder/<str:slug>',LevelwiseLadderRetrieveView.as_view(),name='levelwise-list-name'),
     path('ladder-update',updateLadderview.as_view(),name='ladder-update'),
     path('list-update',updateListView.as_view(),name='list-update'),
+    path('add-problems-admin/',AddProblemsAdminView.as_view(),name='add-problems-admin'),
     path('userlist/',UserlistGetView.as_view(),name='userlist-get'),
     path('userlist/new',UserlistCreateView.as_view(),name='userlist-create'),
     path('userlist/add',UserlistAddProblemView.as_view(),name='userlist-add'),

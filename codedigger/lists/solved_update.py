@@ -64,15 +64,15 @@ def codeforces(user):
     cf_handle = Profile.objects.get(owner__username = user).codeforces
     if cf_handle == None:
         return
-    url = 'https://codeforces.com/api/user.status?handle=' + user
+    url = 'https://codeforces.com/api/user.status?handle=' + str(cf_handle)
     req = requests.get(url).json()
     limit = 10
     for ele in req['result']:
         name = ele['problem']['name']
-        verdict = None
-        verdict = ele['verdict']
+        verdict = ele.get('verdict',None)
         if verdict is None:
             continue
+        print(verdict)
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
         #print(name + " " + verdict + " " + prob_id)
         if verdict == "OK":
@@ -125,7 +125,7 @@ def atcoder(user):
     atcoder_handle = Profile.objects.get(owner__username = user).atcoder
     if atcoder_handle is None:
         return
-    url = 'https://kenkoooo.com/atcoder/atcoder-api/results?user=' + atcoder_handle
+    url = 'https://kenkoooo.com/atcoder/atcoder-api/results?user=' + str(atcoder_handle)
     req = requests.get(url).json()
     sorted_req = sorted(req,key=lambda k: k['epoch_second'], reverse=True)
     limit = 10

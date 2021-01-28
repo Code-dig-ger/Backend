@@ -8,6 +8,8 @@ from .serializers import (
     RequestPasswordResetEmailSeriliazer,
     ResetPasswordEmailRequestSerializer,
     SetNewPasswordSerializer,
+    SendEmailVerificationSerializer,
+    PasswordChangeSerializer
 )
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -112,8 +114,10 @@ class CheckAuthView(views.APIView):
         return Response({'status' : 'OK',"result" : "Token is Valid"},status=status.HTTP_200_OK)
 
 
-class SendVerificationMail(views.APIView):
-    def get(self,request,*args, **kwargs):
+class SendVerificationMail(generics.GenericAPIView):
+    serializer_class = SendEmailVerificationSerializer
+
+    def post(self,request,*args, **kwargs):
         email = request.data.get('email',None)
         if email is None:
             return Response({'status' : 'FAILED','error' : 'Email not provided'},status=status.HTTP_400_BAD_REQUEST)
@@ -163,8 +167,9 @@ class ProfileUpdateView(UpdateAPIView):
             pass
         return serializer.save(uva_id = get_uva(uva))
 
-class ChangePassword(views.APIView):
+class ChangePassword(generics.GenericAPIView):
     permission_classes = [Authenticated]
+    serializer_class = PasswordChangeSerializer
 
     def post(self,request,*args,**kwargs):
         data = request.data
