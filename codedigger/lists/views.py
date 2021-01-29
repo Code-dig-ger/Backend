@@ -110,7 +110,7 @@ class TopicWiseRetrieveView(views.APIView):
                 'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
                 'link' : {
                     'first' : path + "page=1",
-                    'last' : path + "page" + str(cnt),
+                    'last' : path + "page=" + str(cnt),
                     'prev' : Prev,
                     'next' : Next,
                 },
@@ -153,12 +153,12 @@ class TopicWiseRetrieveView(views.APIView):
             else :
                 Prev = path + 'page='+str(page-1)
             qs = paginator.page(page)
-            return response.Response({
+            res = {
                 'status' : "OK",
-                'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+                'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
                 'link' : {
                     'first' : path + "page=1",
-                    'last' : path + "page" + str(cnt),
+                    'last' : path + "page=" + str(cnt),
                     'prev' : Prev,
                     'next' : Next,
                 },
@@ -179,7 +179,10 @@ class TopicWiseRetrieveView(views.APIView):
                     'to' : page*page_size,
                     'total' : total
                 }
-            })
+            }
+            if user: 
+                res['meta']['user'] = user.username
+            return response.Response(res)
 
 
 class TopicwiseGetLadderView(generics.ListAPIView):
@@ -243,22 +246,20 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
         curr_prob = None 
         completed = False
 
-        print(cnt)
+        
         if user :
             completed = True
             temp = { 'F' : True, 'A' : True, 'U' : True }
             while page <= cnt:
-                print(page)
+                
                 qs = paginator.page(page)
                 for ele in qs:
-                    print(ele.prob_id)
+                    
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
                         if ele.platform == 'F' and temp['F']:
                             temp['F'] = False
-                            print("#TEST Start")
                             codeforces(user)
-                            print("#TEST STOP")
                         elif ele.platform == 'A' and temp['A']:
                             temp['A'] = False
                             atcoder(user)
@@ -269,13 +270,11 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             spoj(user,ele)
                         elif ele.platform == 'C':
                             codechef(user,ele)
-                print("#TEST Done update")
                 for ele in qs:
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
                         curr_prob = ele.prob_id
                         completed = False
-                        print(curr_prob)
                         break
                 if not completed:
                     break
@@ -308,7 +307,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
             'link' : {
                 'first' : path + "page=1",
-                'last' : path + "page" + str(cnt),
+                'last' : path + "page=" + str(cnt),
                 'prev' : Prev,
                 'next' : Next,
             },
