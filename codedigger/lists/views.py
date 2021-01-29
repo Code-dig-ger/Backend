@@ -56,7 +56,7 @@ class TopicWiseRetrieveView(views.APIView):
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:
             cnt += 1
-        path = request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/?')
+        path = request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '?')
         user = self.request.user
         if user.is_anonymous:
             user = None
@@ -113,7 +113,7 @@ class TopicWiseRetrieveView(views.APIView):
                                 'current_page' : page,
                                 'from' : (page-1)*page_size + 1,
                                 'last_page' : cnt,
-                                'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
+                                'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
                                 'per_page' : page_size,
                                 'to' : page*page_size,
                                 'total' : curr_list.problem.all().count()
@@ -151,7 +151,7 @@ class TopicWiseRetrieveView(views.APIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
@@ -196,7 +196,7 @@ class TopicWiseRetrieveView(views.APIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
@@ -235,7 +235,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
-        path = request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/?')
+        path = request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '?')
         user = self.request.user
         if not user.is_anonymous:
             user = user.username
@@ -320,7 +320,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                                         'per_page' : page_size,
                                         'to' : page*page_size,
                                         'total' : curr_list.problem.all().count()
@@ -359,7 +359,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : curr_list.problem.all().count()
@@ -421,7 +421,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                                         'per_page' : page_size,
                                         'to' : page*page_size,
                                         'total' : final.count()
@@ -460,7 +460,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : final.count()
@@ -521,7 +521,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : curr_list.problem.all().count()
@@ -583,7 +583,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : final.count()
@@ -633,7 +633,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
@@ -675,7 +675,7 @@ class LevelwiseRetrieveView(views.APIView):
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:
             cnt += 1
-        path = request.build_absolute_uri('/lists/levelwise/list/' + str(slug) + '/?')
+        path = request.build_absolute_uri('/lists/levelwise/list/' + str(slug) + '?')
         user = self.request.user
         if user.is_anonymous:
             user = None
@@ -732,7 +732,7 @@ class LevelwiseRetrieveView(views.APIView):
                                 'current_page' : page,
                                 'from' : (page-1)*page_size + 1,
                                 'last_page' : cnt,
-                                'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug) + '/'),
+                                'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug)),
                                 'per_page' : page_size,
                                 'to' : page*page_size,
                                 'total' : curr_list.problem.all().count()
@@ -770,7 +770,7 @@ class LevelwiseRetrieveView(views.APIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
@@ -815,7 +815,7 @@ class LevelwiseRetrieveView(views.APIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
@@ -854,7 +854,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
-        path = request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/?')
+        path = request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '?')
         user = self.request.user
         if not user.is_anonymous:
             user = user.username
@@ -939,7 +939,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                                        'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                                         'per_page' : page_size,
                                         'to' : page*page_size,
                                         'total' : curr_list.problem.all().count()
@@ -978,7 +978,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : curr_list.problem.all().count()
@@ -1040,7 +1040,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                                         'current_page' : page,
                                         'from' : (page-1)*page_size + 1,
                                         'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                                        'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                                         'per_page' : page_size,
                                         'to' : page*page_size,
                                         'total' : final.count()
@@ -1079,7 +1079,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : final.count()
@@ -1140,7 +1140,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : curr_list.problem.all().count()
@@ -1202,7 +1202,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             'current_page' : page,
                             'from' : (page-1)*page_size + 1,
                             'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                            'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                             'per_page' : page_size,
                             'to' : page*page_size,
                             'total' : final.count()
@@ -1252,7 +1252,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug) + '/'),
+                    'path' : request.build_absolute_uri('/lists/levelwise/ladder/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : curr_list.problem.all().count()
