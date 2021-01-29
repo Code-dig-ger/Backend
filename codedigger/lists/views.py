@@ -52,9 +52,13 @@ class TopicWiseRetrieveView(views.APIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
-        paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
-        cnt = int(curr_list.problem.all().count()/page_size)
-        if curr_list.problem.all().count() % page_size != 0:
+        problem_qs = curr_list.problem.all().order_by('rating')
+        for i in problem_qs : 
+            print(i.prob_id)
+        paginator = Paginator(problem_qs,page_size)
+        total = curr_list.problem.all().count()
+        cnt = total//page_size
+        if total % page_size != 0:
             cnt += 1
         path = request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/?')
         user = self.request.user
@@ -77,7 +81,10 @@ class TopicWiseRetrieveView(views.APIView):
                 elif prob.platform == 'S':
                     spoj(user,prob.prob_id)
                 elif prob.platform == 'C':
-                    codechef(user,prob.prob_id) 
+                    codechef(user,prob.prob_id)
+                # ky is user ne problem solve kar li hai 
+                # agar kar li hai continue 
+                # agar nahi kari hai to break  
             page = 1
             while page <= cnt:
                 qs = paginator.page(page)
@@ -94,7 +101,7 @@ class TopicWiseRetrieveView(views.APIView):
                             Prev = path + 'page='+str(page-1)
                         return response.Response({
                             'status' : "OK",
-                            'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+                            'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data, #TODO
                             'link' : {
                                 'first' : path + "page=1",
                                 'last' : path + "page" + str(cnt),
@@ -116,7 +123,7 @@ class TopicWiseRetrieveView(views.APIView):
                                 'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
                                 'per_page' : page_size,
                                 'to' : page*page_size,
-                                'total' : curr_list.problem.all().count()
+                                'total' : total
                             }
                         })
                 page += 1
@@ -154,7 +161,7 @@ class TopicWiseRetrieveView(views.APIView):
                     'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
                     'per_page' : page_size,
                     'to' : page*page_size,
-                    'total' : curr_list.problem.all().count()
+                    'total' : total
                 }
             })
         else:
@@ -199,7 +206,7 @@ class TopicWiseRetrieveView(views.APIView):
                     'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '/'),
                     'per_page' : page_size,
                     'to' : page*page_size,
-                    'total' : curr_list.problem.all().count()
+                    'total' : total
                 }
             })
 
@@ -1537,7 +1544,7 @@ class EditUserlistView(generics.GenericAPIView):
 
 
 class AddProblemsAdminView(generics.GenericAPIView):
-    permission_classes = [AuthenticatedAdmin]
+    permission_classes = [AuthenticatedIsOwner]
     serializer_class = AddProblemsAdminSerializer
 
     def post(self,request,*args,**kwargs):
