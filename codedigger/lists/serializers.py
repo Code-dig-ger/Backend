@@ -15,7 +15,7 @@ class ProblemSerializer(serializers.ModelSerializer):
 
     def get_description(self,obj):
         slug = self.context.get("slug")
-        qs = ListInfo.objects.filter(p_list__slug = slug,problem = obj)
+        qs = ListInfo.objects.filter(p_list = slug,problem = obj)
         if qs.exists():
             for ele in qs.values('description'):
                 return ele['description']
@@ -24,7 +24,7 @@ class ProblemSerializer(serializers.ModelSerializer):
 
     def get_solved(self,obj):
         user = self.context.get("user")
-        solve = Solved.objects.filter(user__username=user,problem = obj)
+        solve = Solved.objects.filter(user = user,problem = obj)
         return solve.exists()
 
 

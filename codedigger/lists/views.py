@@ -52,9 +52,8 @@ class TopicWiseRetrieveView(views.APIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
+        
         problem_qs = curr_list.problem.all().order_by('rating')
-        for i in problem_qs : 
-            print(i.prob_id)
         paginator = Paginator(problem_qs,page_size)
         total = curr_list.problem.all().count()
         cnt = total//page_size
@@ -64,70 +63,39 @@ class TopicWiseRetrieveView(views.APIView):
         user = self.request.user
         if user.is_anonymous:
             user = None
-        else:
-            user = user.username
         if not page:
             if cnt == 0 :
                 return response.Response({'status' : 'OK' , 'result' : []})
-            for prob in curr_list.problem.all():
-                if Solved.objects.filter(user__username=user,problem=prob).exists():
-                    continue
-                if prob.platform == 'F':
-                    codeforces(user)
-                elif prob.platform == 'A':
-                    atcoder(user)
-                elif prob.platform == 'U':
-                    uva(user)
-                elif prob.platform == 'S':
-                    spoj(user,prob.prob_id)
-                elif prob.platform == 'C':
-                    codechef(user,prob.prob_id)
-                # ky is user ne problem solve kar li hai 
-                # agar kar li hai continue 
-                # agar nahi kari hai to break  
             page = 1
+            temp = { 'F' : True, 'A' : True, 'U' : True}
             while page <= cnt:
                 qs = paginator.page(page)
                 for ele in qs:
-                    solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
+                    solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
-                        if page == cnt :
-                            Next = None
-                        else :
-                            Next = path + 'page='+str(page+1)
-                        if page == 1:
-                            Prev = None
-                        else :
-                            Prev = path + 'page='+str(page-1)
-                        return response.Response({
-                            'status' : "OK",
-                            'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data, #TODO
-                            'link' : {
-                                'first' : path + "page=1",
-                                'last' : path + "page" + str(cnt),
-                                'prev' : Prev,
-                                'next' : Next,
-                            },
-                            'meta' : {
-                                'user' : user,
-                                'completed' : False,
-                                'name' : name,
-                                'description' : description,
-                                'difficulty' : difficulty,
-                                'video_link' : video_link,
-                                'contest_link' : contest_link,
-                                'editorial' : editorial,
-                                'current_page' : page,
-                                'from' : (page-1)*page_size + 1,
-                                'last_page' : cnt,
-                                'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
-                                'per_page' : page_size,
-                                'to' : page*page_size,
-                                'total' : total
-                            }
-                        })
+                        if ele.platform == 'F' and temp['F']:
+                            temp['F'] = False
+                            codeforces(user)
+                        elif ele.platform == 'A' and temp['A']:
+                            temp['A'] = False
+                            atcoder(user)
+                        elif ele.platform == 'U' and temp['U']:
+                            temp['U'] = False
+                            uva(user)
+                        elif ele.platform == 'S':
+                            spoj(user,ele)
+                        elif ele.platform == 'C':
+                            codechef(user,ele)
+                for ele in qs:
+                    solve = Solved.objects.filter(user = user,problem=ele)
+                    if not solve.exists():
+                        completed = False
+                        break
+                if not completed : 
+                    break
                 page += 1
-            page = 1
+            if completed :
+                page = 1
             qs = paginator.page(page)
             if page == cnt :
                 Next = None
@@ -137,9 +105,9 @@ class TopicWiseRetrieveView(views.APIView):
                 Prev = None
             else :
                 Prev = path + 'page='+str(page-1)
-            return response.Response({
+            res= {
                 'status' : "OK",
-                'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+                'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
                 'link' : {
                     'first' : path + "page=1",
                     'last' : path + "page" + str(cnt),
@@ -163,7 +131,10 @@ class TopicWiseRetrieveView(views.APIView):
                     'to' : page*page_size,
                     'total' : total
                 }
-            })
+            }
+            if user :
+                res['meta']['user'] = user.username
+            return response.Response(res)
         else:
             if cnt == 0 :
                 return response.Response({'status' : 'OK' , 'result' : []})
@@ -228,7 +199,6 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     
     def get(self,request,slug):
         curr_list = self.get_object(slug)
-        page = self.request.GET.get('page',None)
         page_size = 6
         name = curr_list.name
         description = curr_list.description
@@ -242,410 +212,129 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
+        
         path = request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug) + '?')
         user = self.request.user
-        if not user.is_anonymous:
-            user = user.username
-            tspoj = Profile.objects.get(owner__username = user).spoj
-            tuva = Profile.objects.get(owner__username = user).uva_handle
-            tcodeforces = Profile.objects.get(owner__username = user).codeforces
-            tcodechef = Profile.objects.get(owner__username = user).codechef
-            tatcoder = Profile.objects.get(owner__username = user).atcoder
-            temp = []
-            if tspoj is None:
+        if user.is_anonymous :
+            user = None
+        
+        problem_qs = curr_list.problem.all()
+        if user:
+            temp = ['F']
+            if Profile.objects.get(owner = user).spoj != None:
                 temp.append('S')
-            if tuva is None:
+            if Profile.objects.get(owner = user).uva_handle != None:
                 temp.append('U')
-            if tatcoder is None:
+            if Profile.objects.get(owner = user).atcoder != None:
                 temp.append('A')
-            if tcodechef is None:
+            if Profile.objects.get(owner = user).codechef != None:
                 temp.append('C')
-            final = None
-            prev = None
-            for ele in temp:
-                if prev is None:
-                    prev = curr_list.problem.all().exclude(platform=ele)
-                    final = prev
-                else:
-                    chain1 = prev.exclude(platform=ele)
-                    prev = chain1
-                    final = prev
-            if not page:
-                if final is None:
-                    cnt = int(curr_list.problem.all().count()/page_size)
-                    if curr_list.problem.all().count() % page_size != 0:
-                        cnt += 1
-                    if cnt == 0 :
-                        return response.Response({'status' : 'OK' , 'result' : []})
-                    paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
-                    for prob in curr_list.problem.all():
-                        if Solved.objects.filter(user__username=user,problem=prob).exists():
-                            continue
-                        if prob.platform == 'F':
+            problem_qs = problem_qs.filter(platform__in = temp)
+            
+        cnt = int(problem_qs.count()/page_size)
+        if problem_qs.count() % page_size != 0:
+            cnt += 1
+        if cnt == 0 :
+            return response.Response({'status' : 'OK' , 'result' : []})
+
+        problem_qs = problem_qs.order_by('rating')
+        paginator = Paginator(problem_qs,page_size)
+        page = 1
+        curr_prob = None 
+        completed = False
+
+        print(cnt)
+        if user :
+            completed = True
+            temp = { 'F' : True, 'A' : True, 'U' : True }
+            while page <= cnt:
+                print(page)
+                qs = paginator.page(page)
+                for ele in qs:
+                    print(ele.prob_id)
+                    solve = Solved.objects.filter(user=user,problem=ele)
+                    if not solve.exists():
+                        if ele.platform == 'F' and temp['F']:
+                            temp['F'] = False
+                            print("#TEST Start")
                             codeforces(user)
-                        elif prob.platform == 'A':
+                            print("#TEST STOP")
+                        elif ele.platform == 'A' and temp['A']:
+                            temp['A'] = False
                             atcoder(user)
-                        elif prob.platform == 'U':
+                        elif ele.platform == 'U' and temp['U']:
+                            temp['U'] = False
                             uva(user)
-                        elif prob.platform == 'S':
-                            spoj(user,prob.prob_id)
-                        elif prob.platform == 'C':
-                            codechef(user,prob.prob_id) 
-                    page = 1
-                    while page <= cnt:
-                        qs = paginator.page(page)
-                        for ele in qs:
-                            solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
-                            if not solve.exists():
-                                if page == cnt :
-                                    Next = None
-                                else :
-                                    Next = path + 'page='+str(page+1)
-                                if page == 1:
-                                    Prev = None
-                                else :
-                                    Prev = path + 'page='+str(page-1)
-                                return response.Response({
-                                    'status' : "OK",
-                                    'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                                    'link' : {
-                                        'first' : path + "page=1",
-                                        'last' : path + "page" + str(cnt),
-                                        'prev' : Prev,
-                                        'next' : Next,
-                                    },
-                                    'meta' : {
-                                        'user' : user,
-                                        'curr_prob' : ele.prob_id,
-                                        'completed' : False,
-                                        'name' : name,
-                                        'description' : description,
-                                        'difficulty' : difficulty,
-                                        'video_link' : video_link,
-                                        'contest_link' : contest_link,
-                                        'editorial' : editorial,
-                                        'current_page' : page,
-                                        'from' : (page-1)*page_size + 1,
-                                        'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                                        'per_page' : page_size,
-                                        'to' : page*page_size,
-                                        'total' : curr_list.problem.all().count()
-                                    }
-                                })
-                        page += 1
-                    page = 1
-                    qs = paginator.page(page)
-                    if page == cnt :
-                        Next = None
-                    else :
-                        Next = path + 'page='+str(page+1)
-                    if page == 1:
-                        Prev = None
-                    else :
-                        Prev = path + 'page='+str(page-1)
-                    return response.Response({
-                        'status' : "OK",
-                        'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                        'link' : {
-                            'first' : path + "page=1",
-                            'last' : path + "page" + str(cnt),
-                            'prev' : Prev,
-                            'next' : Next,
-                        },
-                        'meta' : {
-                            'user' : user,
-                            'curr_prob' : None,
-                            'completed' : True,
-                            'name' : name,
-                            'description' : description,
-                            'difficulty' : difficulty,
-                            'video_link' : video_link,
-                            'contest_link' : contest_link,
-                            'editorial' : editorial,
-                            'current_page' : page,
-                            'from' : (page-1)*page_size + 1,
-                            'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                            'per_page' : page_size,
-                            'to' : page*page_size,
-                            'total' : curr_list.problem.all().count()
-                        }
-                    })
-                else:
-                    cnt = int(final.count()/page_size)
-                    if final.count() % page_size != 0:
-                        cnt += 1
-                    if cnt == 0 :
-                        return response.Response({'status' : 'OK' , 'result' : []})
-                    paginator = Paginator(final.order_by('rating'),page_size)  
-                    for prob in final:
-                        if Solved.objects.filter(user__username=user,problem=prob).exists():
-                            continue
-                        if prob.platform == 'F':
-                            codeforces(user)
-                        elif prob.platform == 'A':
-                            atcoder(user)
-                        elif prob.platform == 'U':
-                            uva(user)
-                        elif prob.platform == 'S':
-                            spoj(user,prob.prob_id)
-                        elif prob.platform == 'C':
-                            codechef(user,prob.prob_id) 
-                    page = 1
-                    while page <= cnt:
-                        qs = paginator.page(page)
-                        for ele in qs:
-                            solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
-                            if not solve.exists():
-                                if page == cnt :
-                                    Next = None
-                                else :
-                                    Next = path + 'page='+str(page+1)
-                                if page == 1:
-                                    Prev = None
-                                else :
-                                    Prev = path + 'page='+str(page-1)
-                                return response.Response({
-                                    'status' : "OK",
-                                    'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                                    'link' : {
-                                        'first' : path + "page=1",
-                                        'last' : path + "page" + str(cnt),
-                                        'prev' : Prev,
-                                        'next' : Next,
-                                    },
-                                    'meta' : {
-                                        'user' : user,
-                                        'curr_prob' : ele.prob_id,
-                                        'completed' : False,
-                                        'name' : name,
-                                        'description' : description,
-                                        'difficulty' : difficulty,
-                                        'video_link' : video_link,
-                                        'contest_link' : contest_link,
-                                        'editorial' : editorial,
-                                        'current_page' : page,
-                                        'from' : (page-1)*page_size + 1,
-                                        'last_page' : cnt,
-                                        'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                                        'per_page' : page_size,
-                                        'to' : page*page_size,
-                                        'total' : final.count()
-                                    }
-                                })
-                        page += 1 
-                    page = 1
-                    qs = paginator.page(page)
-                    if page == cnt :
-                        Next = None
-                    else :
-                        Next = path + 'page='+str(page+1)
-                    if page == 1:
-                        Prev = None
-                    else :
-                        Prev = path + 'page='+str(page-1)
-                    return response.Response({
-                        'status' : "OK",
-                        'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                        'link' : {
-                            'first' : path + "page=1",
-                            'last' : path + "page" + str(cnt),
-                            'prev' : Prev,
-                            'next' : Next,
-                        },
-                        'meta' : {
-                            'user' : user,
-                            'curr_prob' : None,
-                            'completed' : True,
-                            'name' : name,
-                            'description' : description,
-                            'difficulty' : difficulty,
-                            'video_link' : video_link,
-                            'contest_link' : contest_link,
-                            'editorial' : editorial,
-                            'current_page' : page,
-                            'from' : (page-1)*page_size + 1,
-                            'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                            'per_page' : page_size,
-                            'to' : page*page_size,
-                            'total' : final.count()
-                        }
-                    })
-            else:
-                latest_unsolved = None 
-                if final is None:
-                    cnt = int(curr_list.problem.all().count()/page_size)
-                    if curr_list.problem.all().count() % page_size != 0:
-                        cnt += 1
-                    paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
-                    start = 1
-                    while start <= cnt:
-                        qs = paginator.page(start)
-                        for ele in qs:
-                            solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
-                            if not solve.exists():
-                                latest_unsolved = ele.prob_id
-                                break
-                        start += 1
-                    if cnt == 0 :
-                        return response.Response({'status' : 'OK' , 'result' : []})
-                    if page.isdigit():
-                        page = int(page)
-                    else: 
-                        return response.Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
-                    if page > cnt : 
-                        return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
-                    if page == cnt :
-                        Next = None
-                    else :
-                        Next = path + 'page='+str(page+1)
-                    if page == 1:
-                        Prev = None
-                    else :
-                        Prev = path + 'page='+str(page-1)
-                    qs = paginator.page(page)
-                    return response.Response({
-                        'status' : "OK",
-                        'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                        'link' : {
-                            'first' : path + "page=1",
-                            'last' : path + "page" + str(cnt),
-                            'prev' : Prev,
-                            'next' : Next,
-                        },
-                        'meta' : {
-                            'user' : user,
-                            'completed' : False,
-                            'curr_prob' : latest_unsolved,
-                            'name' : name,
-                            'description' : description,
-                            'difficulty' : difficulty,
-                            'video_link' : video_link,
-                            'contest_link' : contest_link,
-                            'editorial' : editorial,
-                            'current_page' : page,
-                            'from' : (page-1)*page_size + 1,
-                            'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                            'per_page' : page_size,
-                            'to' : page*page_size,
-                            'total' : curr_list.problem.all().count()
-                        }
-                    })
-                else:
-                    paginator = Paginator(final.order_by('rating'),page_size) 
-                    cnt = int(final.count()/page_size)
-                    if final.count() % page_size != 0:
-                        cnt += 1
-                    start = 1
-                    while start <= cnt:
-                        qs = paginator.page(start)
-                        for ele in qs:
-                            solve = Solved.objects.filter(user__username=self.request.user,problem=ele)
-                            if not solve.exists():
-                                latest_unsolved = ele.prob_id
-                                break
-                        start += 1
-                    cnt = int(final.count()/page_size)
-                    if final.count() % page_size != 0:
-                        cnt += 1
-                    if cnt == 0 :
-                        return response.Response({'status' : 'OK' , 'result' : []})
-                    if page.isdigit():
-                        page = int(page)
-                    else: 
-                        return response.Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
-                    if page > cnt : 
-                        return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
-                    if page == cnt :
-                        Next = None
-                    else :
-                        Next = path + 'page='+str(page+1)
-                    if page == 1:
-                        Prev = None
-                    else :
-                        Prev = path + 'page='+str(page-1)
-                    qs = paginator.page(page)
-                    return response.Response({
-                        'status' : "OK",
-                        'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                        'link' : {
-                            'first' : path + "page=1",
-                            'last' : path + "page" + str(cnt),
-                            'prev' : Prev,
-                            'next' : Next,
-                        },
-                        'meta' : {
-                            'user' : user,
-                            'completed' : False,
-                            'curr_prob' : latest_unsolved,
-                            'name' : name,
-                            'description' : description,
-                            'difficulty' : difficulty,
-                            'video_link' : video_link,
-                            'contest_link' : contest_link,
-                            'editorial' : editorial,
-                            'current_page' : page,
-                            'from' : (page-1)*page_size + 1,
-                            'last_page' : cnt,
-                            'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                            'per_page' : page_size,
-                            'to' : page*page_size,
-                            'total' : final.count()
-                        }
-                    })
-        else:
-            paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
-            cnt = int(curr_list.problem.all().count()/page_size)
-            if curr_list.problem.all().count() % page_size != 0:
-                cnt += 1
-            page = '1'
-            if cnt == 0 :
-                return response.Response({'status' : 'OK' , 'result' : []})
+                        elif ele.platform == 'S':
+                            spoj(user,ele)
+                        elif ele.platform == 'C':
+                            codechef(user,ele)
+                print("#TEST Done update")
+                for ele in qs:
+                    solve = Solved.objects.filter(user=user,problem=ele)
+                    if not solve.exists():
+                        curr_prob = ele.prob_id
+                        completed = False
+                        print(curr_prob)
+                        break
+                if not completed:
+                    break
+                page += 1
+
+            if completed : 
+                page = 1
+
+        if self.request.GET.get('page',None) : 
+            page = self.request.GET.get('page',None)
             if page.isdigit():
                 page = int(page)
             else: 
                 return response.Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
             if page > cnt : 
                 return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
-            if page == cnt :
-                Next = None
-            else :
-                Next = path + 'page='+str(page+1)
-            if page == 1:
-                Prev = None
-            else :
-                Prev = path + 'page='+str(page-1)
-            qs = paginator.page(page)
-            return response.Response({
-                'status' : "OK",
-                'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
-                'link' : {
-                    'first' : path + "page=1",
-                    'last' : path + "page" + str(cnt),
-                    'prev' : Prev,
-                    'next' : Next,
-                },
-                'meta' : {
-                    'user' : None,
-                    'completed' : False,
-                    'name' : name,
-                    'description' : description,
-                    'difficulty' : difficulty,
-                    'video_link' : video_link,
-                    'contest_link' : contest_link,
-                    'editorial' : editorial,
-                    'current_page' : page,
-                    'from' : (page-1)*page_size + 1,
-                    'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
-                    'per_page' : page_size,
-                    'to' : page*page_size,
-                    'total' : curr_list.problem.all().count()
-                }
-            })
+
+        qs = paginator.page(page)
+        if page == cnt :
+            Next = None
+        else :
+            Next = path + 'page='+str(page+1)
+        if page == 1:
+            Prev = None
+        else :
+            Prev = path + 'page='+str(page-1)
+
+        res = {
+            'status' : "OK",
+            'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
+            'link' : {
+                'first' : path + "page=1",
+                'last' : path + "page" + str(cnt),
+                'prev' : Prev,
+                'next' : Next,
+            },
+            'meta' : {
+                'user' : user,
+                'curr_prob' : curr_prob,
+                'completed' : completed,
+                'name' : name,
+                'description' : description,
+                'difficulty' : difficulty,
+                'video_link' : video_link,
+                'contest_link' : contest_link,
+                'editorial' : editorial,
+                'current_page' : page,
+                'from' : (page-1)*page_size + 1,
+                'last_page' : cnt,
+                'path' : request.build_absolute_uri('/lists/topicwise/ladder/' + str(slug)),
+                'per_page' : page_size,
+                'to' : page*page_size,
+                'total' : curr_list.problem.all().count()
+            }
+        }
+        if user : 
+            res['meta']['user'] = user.username
+        print(res)
+        return response.Response(res)
 
 class LevelwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
@@ -678,7 +367,9 @@ class LevelwiseRetrieveView(views.APIView):
             video_link = qs.video_link
             contest_link = qs.contest_link
             editorial = qs.editorial
-        paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+        problem_qs = curr_list.problem.all().order_by('rating')
+        paginator = Paginator(problem_qs,page_size)
+        
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:
             cnt += 1
@@ -896,7 +587,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                         cnt += 1
                     if cnt == 0 :
                         return response.Response({'status' : 'OK' , 'result' : []})
-                    paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+                    problem_qs = curr_list.problem.all().order_by('rating')
+                    paginator = Paginator(problem_qs,page_size)
+                    
                     for prob in curr_list.problem.all():
                         if Solved.objects.filter(user__username=user,problem=prob).exists():
                             continue
@@ -997,7 +690,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                         cnt += 1
                     if cnt == 0 :
                         return response.Response({'status' : 'OK' , 'result' : []})
-                    paginator = Paginator(final.order_by('rating'),page_size)  
+                    problem_qs = final.order_by('rating')
+                    paginator = Paginator(problem_qs,page_size)
+                    
                     for prob in final:
                         if Solved.objects.filter(user__username=user,problem=prob).exists():
                             continue
@@ -1098,7 +793,10 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                     cnt = int(curr_list.problem.all().count()/page_size)
                     if curr_list.problem.all().count() % page_size != 0:
                         cnt += 1
-                    paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+
+                    problem_qs = curr_list.problem.all().order_by('rating')
+                    paginator = Paginator(problem_qs,page_size)
+
                     start = 1
                     while start <= cnt:
                         qs = paginator.page(start)
@@ -1154,7 +852,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                         }
                     })
                 else:
-                    paginator = Paginator(final.order_by('rating'),page_size) 
+                    problem_qs = final.order_by('rating')
+                    paginator = Paginator(problem_qs,page_size)
+
                     cnt = int(final.count()/page_size)
                     if final.count() % page_size != 0:
                         cnt += 1
@@ -1216,7 +916,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                         }
                     })
         else:
-            paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+            problem_qs = curr_list.problem.all().order_by('rating')
+            paginator = Paginator(problem_qs,page_size)
+
             cnt = int(curr_list.problem.all().count()/page_size)
             if curr_list.problem.all().count() % page_size != 0:
                 cnt += 1
@@ -1307,7 +1009,9 @@ class updateListView(generics.GenericAPIView):
             return response.Response(data={'status' : 'FAILED','error' :'Page out of bounds'})
         #set page size here and in the serializer list waala
         page_size = 6
-        paginator = Paginator(curr_list.problem.all(),page_size)
+        problem_qs = curr_list.problem.all().order_by('rating')
+        paginator = Paginator(problem_qs,page_size)
+
         qs = paginator.page(page)  
         check = {'S' : set(),'U' : 0,'C' : set(),'F' : 0,'A' : 0}
         for prob in qs:
@@ -1420,7 +1124,9 @@ class EditUserlistView(generics.GenericAPIView):
             contest_link = qs.contest_link
             editorial = qs.editorial
         page_size = 10
-        paginator = Paginator(curr_list.problem.all().order_by('rating'),page_size)
+        problem_qs = curr_list.problem.all().order_by('rating')
+        paginator = Paginator(problem_qs,page_size)
+
         path = request.build_absolute_uri('/lists/userlist/edit/' + str(slug) + '?')
         cnt = int(curr_list.problem.all().count()/page_size)
         if curr_list.problem.all().count() % page_size != 0:

@@ -55,7 +55,7 @@ class ListInfo(models.Model):
     description = models.TextField(max_length=400,blank=True,null=True)
 
     def __str__(self):
-        return str(self.p_list) +" " +  str(self.problem)
+        return str(self.p_list) +" " +  str(self.problem.prob_id)
     
 class Solved(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="user")

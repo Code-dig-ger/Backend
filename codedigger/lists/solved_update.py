@@ -10,12 +10,10 @@ from user.models import Profile,User
 from problem.models import Problem
 
 
-def codechef(user,prob_id):
-    if user is None or user == "":
+def codechef(user,prob):
+    if user is None or Solved.objects.filter(problem=prob,user=user).exists():
         return
-    if Solved.objects.filter(problem__prob_id=prob_id,user__username=user).exists():
-        return
-    codechef_handle = Profile.objects.get(owner__username=user).codechef
+    codechef_handle = Profile.objects.get(owner=user).codechef
     if codechef_handle is None:
         return
     url = 'https://www.codechef.com/users/'+str(codechef_handle)
@@ -27,24 +25,13 @@ def codechef(user,prob_id):
     probset = set([])
     for ele in problems_solved.find('article').find_all('a'):
         probset.add(ele.text)
-    if prob_id in probset:
-        #print("Adding " + prob_id)
-        user = User.objects.get(username=user)
-        #testing purposes
-        if not Problem.objects.filter(prob_id=prob_id,platform='C').exists():
-            return
-        prob = Problem.objects.get(prob_id=prob_id)
+    if prob.prob_id in probset:
         Solved.objects.create(user=user,problem=prob)
-    
-        
 
-
-def spoj(user,prob_id):
-    if user is None or user == "":
+def spoj(user,prob):
+    if user is None or Solved.objects.filter(problem=prob,user=user).exists():
         return
-    if Solved.objects.filter(problem__prob_id=prob_id,user__username=user).exists():
-        return
-    spoj_handle = Profile.objects.get(owner__username = user).spoj
+    spoj_handle = Profile.objects.get(owner = user).spoj
     if spoj_handle == None:
         return
     url = 'https://www.spoj.com/status/'+ str(prob_id) + ',' + str(spoj_handle)
@@ -52,48 +39,44 @@ def spoj(user,prob_id):
     soup = bs4.BeautifulSoup(res.content,'html.parser')
     status = soup.find('td' , {'status' : '15'})
     if status is not None:
-        #print(str(prob_id))
-        prob = Problem.objects.get(prob_id=prob_id,platform='S')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
+        Solved.objects.create(user=user,problem=prob)
 
 
 def codeforces(user):
-    if user is None or user == "":
+    if user is None:
         return
-    cf_handle = Profile.objects.get(owner__username = user).codeforces
+    cf_handle = Profile.objects.get(owner= user).codeforces
     if cf_handle == None:
         return
     url = 'https://codeforces.com/api/user.status?handle=' + str(cf_handle)
-    req = requests.get(url).json()
+    res = requests.get(url)
+    if res.status_code != 200 : 
+        return 
+    req = res.json()
+    if req['status'] != 'OK':
+        return
     limit = 10
     for ele in req['result']:
         name = ele['problem']['name']
         verdict = ele.get('verdict',None)
         if verdict is None:
             continue
-        print(verdict)
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
-        #print(name + " " + verdict + " " + prob_id)
-        if verdict == "OK":
-            solve = Solved.objects.filter(user__username=user,problem__prob_id = prob_id).exists()
+        if verdict == "OK" and Problem.objects.filter(prob_id=prob_id,platform='F').exists():
+            prob = Problem.objects.get(prob_id = prob_id , platform = 'F')
+            solve = Solved.objects.filter(user=user,problem= prob).exists()
             if solve:
                 limit -= 1
                 if limit <= 0:
                     break
                 continue
             else:
-                curr_user = User.objects.get(username=user)
-                #next if block below only for testing as the problem needs to exist in the database to get it 
-                if not Problem.objects.filter(prob_id=prob_id,platform='F').exists():
-                    continue
-                prob = Problem.objects.get(prob_id=prob_id,platform='F')
-                Solved.objects.create(user=curr_user,problem=prob)
+                Solved.objects.create(user=user,problem=prob)
     
 def uva(user):
-    if user is None or user == "":
+    if user is None:
         return
-    uva_id = Profile.objects.get(owner__username = user).uva_id
+    uva_id = Profile.objects.get(owner = user).uva_id
     if uva_id is None:
         return
     url1 = "https://uhunt.onlinejudge.org/api/subs-user/" + str(uva_id)
@@ -105,24 +88,22 @@ def uva(user):
         if str(ele[2]) != '90':
             continue
         #testing
-        if not Problem.objects.filter(prob_id=ele[1],platform='U').exists():
+        prob_id = str(ele[1])
+        if not Problem.objects.filter(prob_id=prob_id,platform='U').exists():
                 continue
-        solve = Solved.objects.filter(user__username = user,problem__prob_id = ele[1]).exists()
+        prob = Problem.objects.get(prob_id=prob_id,platform='U')
+        solve = Solved.objects.filter(user = user,problem = prob).exists()
         if solve:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        prob = Problem.objects.get(prob_id=ele[1],platform='U')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
-
-
+        Solved.objects.create(user=user,problem=prob)
     
 def atcoder(user):
-    if user is None or user == "":
+    if user is None:
         return
-    atcoder_handle = Profile.objects.get(owner__username = user).atcoder
+    atcoder_handle = Profile.objects.get(owner = user).atcoder
     if atcoder_handle is None:
         return
     url = 'https://kenkoooo.com/atcoder/atcoder-api/results?user=' + str(atcoder_handle)
@@ -136,13 +117,12 @@ def atcoder(user):
         #testing
         if not Problem.objects.filter(prob_id=ele['problem_id'],platform='A').exists():
             continue
-        solve = Solved.objects.filter(user__username = user,problem__prob_id = ele['problem_id']).exists()
+        prob = Problem.objects.get(prob_id=ele['problem_id'],platform='A')
+        solve = Solved.objects.filter(user = user,problem=prob).exists()
         if solve:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        prob = Problem.objects.get(prob_id=ele['problem_id'],platform='A')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
+        Solved.objects.create(user=user,problem=prob)
 
