@@ -1544,7 +1544,7 @@ class EditUserlistView(generics.GenericAPIView):
 
 
 class AddProblemsAdminView(generics.GenericAPIView):
-    permission_classes = [AuthenticatedIsOwner]
+    permission_classes = [AuthenticatedAdmin]
     serializer_class = AddProblemsAdminSerializer
 
     def post(self,request,*args,**kwargs):
