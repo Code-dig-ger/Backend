@@ -34,7 +34,7 @@ def spoj(user,prob):
     spoj_handle = Profile.objects.get(owner = user).spoj
     if spoj_handle == None:
         return
-    url = 'https://www.spoj.com/status/'+ str(prob_id) + ',' + str(spoj_handle)
+    url = 'https://www.spoj.com/status/'+ str(prob.prob_id) + ',' + str(spoj_handle)
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
     status = soup.find('td' , {'status' : '15'})
