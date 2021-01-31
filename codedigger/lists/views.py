@@ -56,7 +56,7 @@ class TopicWiseRetrieveView(views.APIView):
             contest_link = qs.contest_link
             editorial = qs.editorial
         
-        problem_qs = curr_list.problem.all().order_by('rating')
+        problem_qs = curr_list.problem.all().order_by('rating','id')
         total = curr_list.problem.all().count()
         cnt = total//page_size
         if total % page_size != 0:
@@ -261,7 +261,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
         if cnt == 0 :
             return response.Response({'status' : 'OK' , 'result' : []})
 
-        problem_qs = problem_qs.order_by('rating')
+        problem_qs = problem_qs.order_by('rating','id')
         page = 1
         curr_prob = None 
         curr_page = None
@@ -389,7 +389,7 @@ class LevelwiseRetrieveView(views.APIView):
             contest_link = qs.contest_link
             editorial = qs.editorial
         
-        problem_qs = curr_list.problem.all().order_by('rating')
+        problem_qs = curr_list.problem.all().order_by('rating','id')
         total = curr_list.problem.all().count()
         cnt = total//page_size
         if total % page_size != 0:
@@ -594,7 +594,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         if cnt == 0 :
             return response.Response({'status' : 'OK' , 'result' : []})
 
-        problem_qs = problem_qs.order_by('rating')
+        problem_qs = problem_qs.order_by('rating','id')
         page = 1
         curr_prob = None 
         curr_page = None
@@ -847,7 +847,7 @@ class EditUserlistView(generics.GenericAPIView):
             contest_link = qs.contest_link
             editorial = qs.editorial
         page_size = 10
-        problem_qs = curr_list.problem.all().order_by('rating')
+        problem_qs = curr_list.problem.all().order_by('rating','id')
 
         path = request.build_absolute_uri('/lists/userlist/edit/' + str(slug) + '?')
         cnt = int(curr_list.problem.all().count()/page_size)
