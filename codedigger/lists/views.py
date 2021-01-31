@@ -22,6 +22,10 @@ from django.core.paginator import Paginator
 from user.permissions import *
 from user.exception import *
 
+def getqs(qs,page_size,page):
+    qs = qs[page_size*(page-1):page_size*page]
+    return qs
+
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [AuthenticatedOrReadOnly]
@@ -53,7 +57,6 @@ class TopicWiseRetrieveView(views.APIView):
             editorial = qs.editorial
         
         problem_qs = curr_list.problem.all().order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
         total = curr_list.problem.all().count()
         cnt = total//page_size
         if total % page_size != 0:
@@ -69,7 +72,7 @@ class TopicWiseRetrieveView(views.APIView):
             page = 1
             temp = { 'F' : True, 'A' : True, 'U' : True}
             while page <= cnt:
-                qs = paginator.page(page)
+                qs = getqs(problem_qs,page_size,page)
                 for ele in qs:
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
@@ -96,7 +99,7 @@ class TopicWiseRetrieveView(views.APIView):
                 page += 1
             if completed :
                 page = 1
-            qs = paginator.page(page)
+            qs = getqs(problem_qs,page_size,page)
             if page == cnt :
                 Next = None
             else :
@@ -154,7 +157,24 @@ class TopicWiseRetrieveView(views.APIView):
                 Prev = None
             else :
                 Prev = path + 'page='+str(page-1)
-            qs = paginator.page(page)
+            qs = getqs(problem_qs,page_size,page)
+            temp = { 'F' : True, 'A' : True, 'U' : True}
+            for ele in qs:
+                solve = Solved.objects.filter(user=user,problem=ele)
+                if not solve.exists():
+                    if ele.platform == 'F' and temp['F']:
+                        temp['F'] = False
+                        codeforces(user)
+                    elif ele.platform == 'A' and temp['A']:
+                        temp['A'] = False
+                        atcoder(user)
+                    elif ele.platform == 'U' and temp['U']:
+                        temp['U'] = False
+                        uva(user)
+                    elif ele.platform == 'S':
+                        spoj(user,ele)
+                    elif ele.platform == 'C':
+                        codechef(user,ele)
             res = {
                 'status' : "OK",
                 'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
@@ -184,8 +204,6 @@ class TopicWiseRetrieveView(views.APIView):
             }
             if user: 
                 res['meta']['user'] = user.username
-            if completed:
-                res['meta']['completed'] = True
             return response.Response(res)
 
 
@@ -244,9 +262,9 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             return response.Response({'status' : 'OK' , 'result' : []})
 
         problem_qs = problem_qs.order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
         page = 1
         curr_prob = None 
+        curr_page = None
         completed = False
 
         
@@ -255,7 +273,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             temp = { 'F' : True, 'A' : True, 'U' : True }
             while page <= cnt:
                 
-                qs = paginator.page(page)
+                qs = getqs(problem_qs,page_size,page)
                 for ele in qs:
                     
                     solve = Solved.objects.filter(user=user,problem=ele)
@@ -277,6 +295,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
                         curr_prob = ele.prob_id
+                        curr_page = page
                         completed = False
                         break
                 if not completed:
@@ -288,6 +307,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if self.request.GET.get('page',None) : 
             page = self.request.GET.get('page',None)
+            completed = False
             if page.isdigit():
                 page = int(page)
             else: 
@@ -295,7 +315,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             if page > cnt : 
                 return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
 
-        qs = paginator.page(page)
+        qs = getqs(problem_qs,page_size,page)
         if page == cnt :
             Next = None
         else :
@@ -317,6 +337,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
             'meta' : {
                 'user' : user,
                 'curr_prob' : curr_prob,
+                'curr_unsolved_page' : curr_page,
                 'completed' : completed,
                 'name' : name,
                 'description' : description,
@@ -369,7 +390,6 @@ class LevelwiseRetrieveView(views.APIView):
             editorial = qs.editorial
         
         problem_qs = curr_list.problem.all().order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
         total = curr_list.problem.all().count()
         cnt = total//page_size
         if total % page_size != 0:
@@ -385,7 +405,7 @@ class LevelwiseRetrieveView(views.APIView):
             page = 1
             temp = { 'F' : True, 'A' : True, 'U' : True}
             while page <= cnt:
-                qs = paginator.page(page)
+                qs = getqs(problem_qs,page_size,page)
                 for ele in qs:
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
@@ -412,7 +432,7 @@ class LevelwiseRetrieveView(views.APIView):
                 page += 1
             if completed :
                 page = 1
-            qs = paginator.page(page)
+            qs = getqs(problem_qs,page_size,page)
             if page == cnt :
                 Next = None
             else :
@@ -470,7 +490,24 @@ class LevelwiseRetrieveView(views.APIView):
                 Prev = None
             else :
                 Prev = path + 'page='+str(page-1)
-            qs = paginator.page(page)
+            qs = getqs(problem_qs,page_size,page)
+            temp = { 'F' : True, 'A' : True, 'U' : True}
+            for ele in qs:
+                solve = Solved.objects.filter(user=user,problem=ele)
+                if not solve.exists():
+                    if ele.platform == 'F' and temp['F']:
+                        temp['F'] = False
+                        codeforces(user)
+                    elif ele.platform == 'A' and temp['A']:
+                        temp['A'] = False
+                        atcoder(user)
+                    elif ele.platform == 'U' and temp['U']:
+                        temp['U'] = False
+                        uva(user)
+                    elif ele.platform == 'S':
+                        spoj(user,ele)
+                    elif ele.platform == 'C':
+                        codechef(user,ele)
             res = {
                 'status' : "OK",
                 'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
@@ -492,7 +529,7 @@ class LevelwiseRetrieveView(views.APIView):
                     'current_page' : page,
                     'from' : (page-1)*page_size + 1,
                     'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/levelwise/list/' + str(slug)),
+                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
                     'per_page' : page_size,
                     'to' : page*page_size,
                     'total' : total
@@ -500,8 +537,6 @@ class LevelwiseRetrieveView(views.APIView):
             }
             if user: 
                 res['meta']['user'] = user.username
-            if completed:
-                res['meta']['completed'] = True
             return response.Response(res)
 
 
@@ -560,9 +595,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             return response.Response({'status' : 'OK' , 'result' : []})
 
         problem_qs = problem_qs.order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
         page = 1
         curr_prob = None 
+        curr_page = None
         completed = False
 
         
@@ -571,7 +606,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             temp = { 'F' : True, 'A' : True, 'U' : True }
             while page <= cnt:
                 
-                qs = paginator.page(page)
+                qs = getqs(problem_qs,page_size,page)
                 for ele in qs:
                     
                     solve = Solved.objects.filter(user=user,problem=ele)
@@ -593,6 +628,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                     solve = Solved.objects.filter(user=user,problem=ele)
                     if not solve.exists():
                         curr_prob = ele.prob_id
+                        curr_page = page
                         completed = False
                         break
                 if not completed:
@@ -604,6 +640,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if self.request.GET.get('page',None) : 
             page = self.request.GET.get('page',None)
+            completed = False
             if page.isdigit():
                 page = int(page)
             else: 
@@ -611,7 +648,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             if page > cnt : 
                 return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
 
-        qs = paginator.page(page)
+        qs = getqs(problem_qs,page_size,page)
         if page == cnt :
             Next = None
         else :
@@ -633,6 +670,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
             'meta' : {
                 'user' : user,
                 'curr_prob' : curr_prob,
+                'curr_unsolved_page' : curr_page,
                 'completed' : completed,
                 'name' : name,
                 'description' : description,
@@ -654,77 +692,77 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         return response.Response(res)
 
 
-class updateLadderview(generics.GenericAPIView):
-    serializer_class = UpdateLadderSerializer
+# class updateLadderview(generics.GenericAPIView):
+#     serializer_class = UpdateLadderSerializer
 
-    def post(self,request,*args, **kwargs):
-        prob_id = self.request.GET.get('prob_id')
-        if prob_id == None:
-            codeforces(self.request.user.username)
-            uva(self.request.user.username)
-            atcoder(self.request.user.username)
-        else:
-            if Problem.objects.filter(prob_id=prob_id,platform='F').exists():
-                codeforces(self.request.user.username)
-            if Problem.objects.filter(prob_id=prob_id,platform='U').exists():
-                uva(self.request.user.username)
-            if Problem.objects.filter(prob_id=prob_id,platform='A').exists():
-                atcoder(self.request.user.username)
-            if Problem.objects.filter(prob_id=prob_id,platform='C').exists():
-                codechef(self.request.user.username,prob_id)
-            if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
-                spoj(self.request.user.username,prob_id)
-        return response.Response({'status' : "OK",'result' : 'ladder updated'},status = status.HTTP_200_OK)
+#     def post(self,request,*args, **kwargs):
+#         prob_id = self.request.GET.get('prob_id')
+#         if prob_id == None:
+#             codeforces(self.request.user.username)
+#             uva(self.request.user.username)
+#             atcoder(self.request.user.username)
+#         else:
+#             if Problem.objects.filter(prob_id=prob_id,platform='F').exists():
+#                 codeforces(self.request.user.username)
+#             if Problem.objects.filter(prob_id=prob_id,platform='U').exists():
+#                 uva(self.request.user.username)
+#             if Problem.objects.filter(prob_id=prob_id,platform='A').exists():
+#                 atcoder(self.request.user.username)
+#             if Problem.objects.filter(prob_id=prob_id,platform='C').exists():
+#                 codechef(self.request.user.username,prob_id)
+#             if Problem.objects.filter(prob_id=prob_id,platform='S').exists():
+#                 spoj(self.request.user.username,prob_id)
+#         return response.Response({'status' : "OK",'result' : 'ladder updated'},status = status.HTTP_200_OK)
 
-class updateListView(generics.GenericAPIView):
-    serializer_class = UpdateListSerializer
+# class updateListView(generics.GenericAPIView):
+#     serializer_class = UpdateListSerializer
 
-    def post(self,request,*args,**kwargs):
-        list_slug = self.request.GET.get('slug')
-        page = self.request.GET.get('page')
-        if list_slug is None or list_slug == "" :
-            return response.Response(data={'status' : 'FAILED','error' : 'No list provided'})
-        curr_list = List.objects.get(slug=list_slug)
-        cnt = int(curr_list.problem.all().count()/page_size)
-        if curr_list.problem.all().count() % page_size != 0:
-            cnt += 1
-        if page is None or page == "":
-            return response.Response(data={'status' : 'FAILED','error' :'No page provided'})
-        if page > cnt:
-            return response.Response(data={'status' : 'FAILED','error' :'Page out of bounds'})
-        #set page size here and in the serializer list waala
-        page_size = 6
-        problem_qs = curr_list.problem.all().order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
+#     def post(self,request,*args,**kwargs):
+#         list_slug = self.request.GET.get('slug')
+#         page = self.request.GET.get('page')
+#         if list_slug is None or list_slug == "" :
+#             return response.Response(data={'status' : 'FAILED','error' : 'No list provided'})
+#         curr_list = List.objects.get(slug=list_slug)
+#         cnt = int(curr_list.problem.all().count()/page_size)
+#         if curr_list.problem.all().count() % page_size != 0:
+#             cnt += 1
+#         if page is None or page == "":
+#             return response.Response(data={'status' : 'FAILED','error' :'No page provided'})
+#         if page > cnt:
+#             return response.Response(data={'status' : 'FAILED','error' :'Page out of bounds'})
+#         #set page size here and in the serializer list waala
+#         page_size = 6
+#         problem_qs = curr_list.problem.all().order_by('rating')
+#         paginator = Paginator(problem_qs,page_size)
 
-        qs = paginator.page(page)  
-        check = {'S' : set(),'U' : 0,'C' : set(),'F' : 0,'A' : 0}
-        for prob in qs:
-            platform = prob.platform
-            if not Solved.objects.filter(user=self.request.user,problem__prob_id=prob.prob_id).exists():
-                if platform == 'S' or platform == 'C':
-                    check[platform].add(prob.prob_id)
-                else:
-                    check[platform] += 1
-        print(check)
-        if check['F'] > 0:
-            cron_codeforces(self.request.user.username) 
-        if check['U'] > 0:
-            cron_uva(self.request.user.username)
-        if check['A'] > 0:
-            cron_atcoder(self.request.user.username)
-        if len(check['S']) > 0:
-            for item in check['S']:
-                spoj(self.request.user.username,item)
-        if len(check['C']) > 0:
-            list1 = codechef_list(self.request.user.username)
-            list2 = check['C']
-            final = set((list1) & (list2))
-            for ele in final:
-                prob = Problem.objects.get(prob_id=ele,platform='C')
-                user = self.request.user
-                Solved.objects.create(user=user,problem=prob)
-        return response.Response(data={'status' : 'OK','result' :'list updated'})
+#         qs = paginator.page(page)  
+#         check = {'S' : set(),'U' : 0,'C' : set(),'F' : 0,'A' : 0}
+#         for prob in qs:
+#             platform = prob.platform
+#             if not Solved.objects.filter(user=self.request.user,problem__prob_id=prob.prob_id).exists():
+#                 if platform == 'S' or platform == 'C':
+#                     check[platform].add(prob.prob_id)
+#                 else:
+#                     check[platform] += 1
+#         print(check)
+#         if check['F'] > 0:
+#             cron_codeforces(self.request.user.username) 
+#         if check['U'] > 0:
+#             cron_uva(self.request.user.username)
+#         if check['A'] > 0:
+#             cron_atcoder(self.request.user.username)
+#         if len(check['S']) > 0:
+#             for item in check['S']:
+#                 spoj(self.request.user.username,item)
+#         if len(check['C']) > 0:
+#             list1 = codechef_list(self.request.user.username)
+#             list2 = check['C']
+#             final = set((list1) & (list2))
+#             for ele in final:
+#                 prob = Problem.objects.get(prob_id=ele,platform='C')
+#                 user = self.request.user
+#                 Solved.objects.create(user=user,problem=prob)
+#         return response.Response(data={'status' : 'OK','result' :'list updated'})
 
 
 class UserlistGetView(generics.ListAPIView):
@@ -810,7 +848,6 @@ class EditUserlistView(generics.GenericAPIView):
             editorial = qs.editorial
         page_size = 10
         problem_qs = curr_list.problem.all().order_by('rating')
-        paginator = Paginator(problem_qs,page_size)
 
         path = request.build_absolute_uri('/lists/userlist/edit/' + str(slug) + '?')
         cnt = int(curr_list.problem.all().count()/page_size)
@@ -834,7 +871,7 @@ class EditUserlistView(generics.GenericAPIView):
             Prev = None
         else :
             Prev = path + 'page='+str(page-1)
-        qs = paginator.page(page)
+        qs = getqs(problem_qs,page_size,page)
         return response.Response({
             'status' : "OK",
             'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
