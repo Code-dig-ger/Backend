@@ -31,6 +31,11 @@ class TopicwiseGetListView(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True) & Q(owner__is_staff=True))
 
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user
+        return data
+
 class TopicWiseRetrieveView(views.APIView):
     permission_classes = [AuthenticatedOrReadOnly]
     

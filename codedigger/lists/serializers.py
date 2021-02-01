@@ -34,10 +34,26 @@ class ProblemSerializer(serializers.ModelSerializer):
         fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','description','solved',)
 
 class GetSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField()
+    user_solved = serializers.SerializerMethodField()
+
+    def get_total(self,attrs):
+        return attrs.problem.count()
+
+    def get_user_solved(self,attrs):
+        cnt = 0
+        user = self.context.get('user',None)
+        if user is None or user.is_anonymous:
+            return None
+        for ele in attrs.problem.all():
+            if Solved.objects.filter(user=user,problem=ele).exists():
+                cnt += 1
+        return cnt
+
 
     class Meta:
         model = List
-        fields = ('id','name','description','slug')
+        fields = ('id','name','description','total','user_solved','slug')
 
 
 class GetLadderSerializer(serializers.ModelSerializer):
