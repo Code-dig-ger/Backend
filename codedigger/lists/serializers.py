@@ -1,5 +1,5 @@
 from rest_framework import serializers,status
-from .models import ListInfo,Solved,List,ListInfo
+from .models import ListInfo,Solved,List,ListInfo,LadderStarted
 from problem.models import Problem
 from user.models import User,Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -57,10 +57,34 @@ class GetSerializer(serializers.ModelSerializer):
 
 
 class GetLadderSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField()
+    user_solved = serializers.SerializerMethodField()
+    first_time = serializers.SerializerMethodField()
+
+    def get_total(self,attrs):
+        return attrs.problem.count()
+
+    def get_user_solved(self,attrs):
+        cnt = 0
+        user = self.context.get('user',None)
+        if user is None or user.is_anonymous:
+            return None
+        for ele in attrs.problem.all():
+            if Solved.objects.filter(user=user,problem=ele).exists():
+                cnt += 1
+        return cnt
+
+    def get_first_time(self,attrs):
+        user = self.context.get('user',None)
+        if not user :
+            return True
+        if LadderStarted.objects.filter(ladder_user = user,ladder=attrs).exists():
+            return False
+        return True
 
     class Meta:
         model = List
-        fields = ('id','name','description','slug',)
+        fields = ('id','name','description','total','user_solved','first_time','slug')
 
 
 class GetUserlistSerializer(serializers.ModelSerializer):

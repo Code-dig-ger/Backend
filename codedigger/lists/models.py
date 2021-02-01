@@ -3,6 +3,8 @@ from problem.models import Problem
 from user.models import User
 from django.template.defaultfilters import slugify
 import time
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 TYPE_CHOICES = (
     ("1" , "List"),
@@ -47,7 +49,27 @@ class List(models.Model):
                 self.slug = slugify(string)
                 super(List,self).save()
 
-
+    @receiver(post_save, sender=User)
+    def create_List(sender, instance, created, **kwargs):
+        if created:
+            List.objects.create(
+                owner=instance,
+                name="Upsolve",
+                description="Problems which you could not solve during a contest which you can solve now",
+                isAdmin = instance.is_staff,
+                isTopicWise = True,
+                type_list = '1',
+                public = False,
+                )
+            List.objects.create(
+                owner=instance,
+                name="TO-DO",
+                description="Problems in which you have a doubt or want to solve afterwards",
+                isAdmin = instance.is_staff,
+                isTopicWise = True,
+                type_list = '1',
+                public = False,
+                )
 
 class ListInfo(models.Model):   
     p_list = models.ForeignKey(List,on_delete=models.CASCADE,related_name="curr_list")
@@ -73,3 +95,6 @@ class ListExtraInfo(models.Model):
     def __str__(self):
         return self.curr_list.name + "'s extra info"
     
+class LadderStarted(models.Model):
+    ladder_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="ladder_user")
+    ladder = models.ForeignKey(List,on_delete=models.CASCADE,related_name="ladder")

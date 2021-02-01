@@ -1,5 +1,5 @@
 from rest_framework import generics,status,permissions,views,response,mixins
-from .models import ListInfo,Solved,List,ListExtraInfo
+from .models import ListInfo,Solved,List,ListExtraInfo,LadderStarted
 from problem.models import Problem
 from user.models import User,Profile
 from .serializers import (
@@ -217,6 +217,10 @@ class TopicwiseGetLadderView(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
 
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user
+        return data
 
 class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
@@ -235,6 +239,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
         video_link = None
         contest_link = None
         editorial = None
+        first_time = True
         if ListExtraInfo.objects.filter(curr_list=curr_list).exists():
             qs = ListExtraInfo.objects.get(curr_list=curr_list)
             difficulty = qs.difficulty
@@ -246,7 +251,9 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
         user = self.request.user
         if user.is_anonymous :
             user = None
-        
+        if user is not None:
+            if not LadderStarted.objects.filter(ladder_user=user,ladder = curr_list).exists():
+                LadderStarted.objects.create(ladder_user=user,ladder = curr_list)
         problem_qs = curr_list.problem.all()
         if user:
             temp = ['F']
@@ -368,6 +375,10 @@ class LevelwiseGetListView(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
 
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user
+        return data
 
 class LevelwiseRetrieveView(views.APIView):
     permission_classes = [AuthenticatedOrReadOnly]
@@ -550,6 +561,10 @@ class LevelwiseGetLadderView(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
 
+    def get_serializer_context(self,**kwargs):
+        data = super().get_serializer_context(**kwargs)
+        data['user'] = self.request.user
+        return data
 
 class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
@@ -579,7 +594,9 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
         user = self.request.user
         if user.is_anonymous :
             user = None
-        
+        if user is not None:
+            if not LadderStarted.objects.filter(ladder_user=user,ladder = curr_list).exists():
+                LadderStarted.objects.create(ladder_user=user,ladder = curr_list)
         problem_qs = curr_list.problem.all()
         if user:
             temp = ['F']
