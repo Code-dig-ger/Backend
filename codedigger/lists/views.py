@@ -904,7 +904,7 @@ class EditUserlistView(generics.GenericAPIView):
                 'next' : Next,
             },
             'meta' : {
-                'user' : None,
+                'user' : self.request.user.username,
                 'completed' : False,
                 'name' : name,
                 'description' : description,
