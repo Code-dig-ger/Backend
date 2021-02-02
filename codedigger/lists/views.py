@@ -896,7 +896,7 @@ class EditUserlistView(generics.GenericAPIView):
         qs = getqs(problem_qs,page_size,page)
         return response.Response({
             'status' : "OK",
-            'result' : ProblemSerializer(qs,many=True,context = {"slug" : slug,"user" : self.request.user}).data,
+            'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : self.request.user}).data,
             'link' : {
                 'first' : path + "page=1",
                 'last' : path + "page" + str(cnt),
