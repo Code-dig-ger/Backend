@@ -4,7 +4,7 @@ from user.models import Profile
 from problem.models import Problem
 
 problem_rating = {
-	
+
 	'div1' : [ (1600,1900), (1900,2100), (2100,2300), (2300,2400), (2400,2600),
 		(2600,2800), (2800,3000), (3000,3200), (3200,3400), (3400,3600) ],
 	'div2' : [ (800,1000), (1000,1200), (1200,1600), (1600,1900),  (1900,2100), 
@@ -102,6 +102,14 @@ def makeContest( contest ):
 	else: 
 		problems = problems.exclude(prob_id__in = participants_solved)
 
+	if tags is not None:
+		tags=tags.split(',')
+        q = Q()
+            
+        for tag in tags:
+			q|=Q(tags__icontains=tag) 
+            problems = problems.filter(q)
+
 	# TODO more filter on problems  e.g. by TAG
 
 	# TODO Assuming  Div2 only 
@@ -122,7 +130,6 @@ def makeContest( contest ):
 			r += 100
 			if l < 0:
 				break
-
 
 		if problems.filter(rating__gte = l , rating__lt = r).exists() :
 			newProblem.problem = problems.filter(rating__gte = l , rating__lt = r).order_by('?')[0]

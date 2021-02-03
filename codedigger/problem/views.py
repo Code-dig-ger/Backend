@@ -40,7 +40,7 @@ class MentorProblemAPIView(
         #User handle from Profile
         student = Profile.objects.get(owner=self.request.user).codeforces
 
-        #fetch student submissions from api
+        #fetch student  submissions from api
         res = requests.get("https://codeforces.com/api/user.status?handle="+student)
         if res.status_code!=200:
             return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST)
@@ -48,12 +48,12 @@ class MentorProblemAPIView(
         res=res.json()
         
         if res['status']!="OK":
-            return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
+            return  Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
 
 
         submissions_student = res["result"]
 
-        student_solved_set = set()
+        student_solved_set =  set()
         for submission in submissions_student:
             
             if 'contestId' in submission['problem'] : 
@@ -61,7 +61,7 @@ class MentorProblemAPIView(
                     student_solved_set.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])
 
         if mentor!='true':
-            return Response({'status' : 'OK' , 'result':student_solved_set }) 
+            return  Response({'status' : 'OK' , 'result':student_solved_set }) 
 
 
 
@@ -71,7 +71,7 @@ class MentorProblemAPIView(
 
         #print(gurus)
         for guru in gurus:
-            res = requests.get("https://codeforces.com/api/user.status?handle="+guru)
+            res =  requests.get("https://codeforces.com/api/user.status?handle="+guru)
             
             if res.status_code!=200:
                 return Response({'status' : 'FAILED' , 'error' : 'Codeforces API not working'},status = status.HTTP_400_BAD_REQUEST) 
@@ -103,7 +103,7 @@ class MentorProblemAPIView(
             if str(problem["contestId"])+problem['index'] not in student_solved_set:
                 problems_data.append( str(problem['contestId'])+problem['index'] )
 
-        return Response({'status' : 'OK' , 'result' : problems_data})
+        return  Response({'status' : 'OK' , 'result' : problems_data})
 
 
 
@@ -131,7 +131,7 @@ class SolveProblemsAPIView(
             problems_list = MentorProblemAPIView.get(self,request).data
 
             if(problems_list['status']!='OK'):
-                return JsonResponse(problems_list)
+                return  JsonResponse(problems_list)
             else:
                 problems_list = problems_list['result']
 
@@ -139,7 +139,7 @@ class SolveProblemsAPIView(
                 problem_qs = Problem.objects.filter( prob_id__in = problems_list )
             
             else :
-                q = Q()
+                q =  Q()
                 for prob_id in problems_list:
                     q|=Q(prob_id=prob_id)
                 problem_qs = Problem.objects.exclude(q)
@@ -147,11 +147,11 @@ class SolveProblemsAPIView(
             problem_qs = Problem.objects.all()
 
         if platforms is not None:
-            platforms=platforms.split(',')
+            platforms= platforms.split(',')
             problem_qs = problem_qs.filter( platform__in=platforms)
 
         if difficulty is not None:
-            difficulty=difficulty.split(',')
+            difficulty= difficulty.split(',')
             problem_qs = problem_qs.filter( difficulty__in = difficulty )
 
         if range_l is not None:
@@ -161,7 +161,7 @@ class SolveProblemsAPIView(
             problem_qs = problem_qs.filter(rating__lt=int(range_r))
 
         if searches is not None:
-            searches=searches.split(',')
+            searches = searches.split(',')
             for search in searches:
                 q = Q()
                 q|=Q(  name__icontains = search)
@@ -178,37 +178,37 @@ class SolveProblemsAPIView(
             
             for tag in tags:
                 q|=Q(tags__icontains=tag) 
-            problem_qs = problem_qs.filter(q)
+            problem_qs =  problem_qs.filter(q)
 
-        problem_qs = problem_qs.order_by('?')[:20]
-        return JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
+        problem_qs =  problem_qs.order_by('?')[:20]
+        return  JsonResponse({'status':'OK' , 'result':ProbSerializer(problem_qs, many = True).data})
 
 
 
 
 class ProblemSolvedByFriend(generics.GenericAPIView):
 
-    permission_classes = [AuthenticatedActivated]
-    serializer_class = FriendsShowSerializer
+    permission_classes =  [AuthenticatedActivated]
+    serializer_class =  FriendsShowSerializer
 
     def get(self, request , prob_id):
 
-        problem = Problem.objects.filter(prob_id = prob_id)
+        problem =  Problem.objects.filter(prob_id = prob_id)
 
         if not problem.exists():
             return Response({'status' : 'FAILED' , 'error' : 'Problem Not Found'} , status = status.HTTP_404_NOT_FOUND)
 
-        problem = problem[0]
+        problem =  problem[0]
 
-        userSolved = Solved.objects.filter(problem = problem).values_list('user', flat=True)
+        userSolved =  Solved.objects.filter(problem = problem).values_list('user', flat=True)
 
-        friendSolvedByRequest = UserFriends.objects.filter(status = True , to_user__in = userSolved , from_user = request.user)
-        friendSolvedByAccept  = UserFriends.objects.filter(status = True , to_user = request.user , from_user__in = userSolved)
+        friendSolvedByRequest =  UserFriends.objects.filter(status = True , to_user__in = userSolved , from_user = request.user)
+        friendSolvedByAccept  =  UserFriends.objects.filter(status = True , to_user = request.user , from_user__in = userSolved)
 
-        friendSolvedByRequest = FriendsShowSerializer(friendSolvedByRequest , context = {'by_to_user':True} , many = True).data
-        friendSolvedByAccept = FriendsShowSerializer(friendSolvedByAccept , context = {'by_to_user':False} , many = True).data
+        friendSolvedByRequest =  FriendsShowSerializer(friendSolvedByRequest , context = {'by_to_user':True} , many = True).data
+        friendSolvedByAccept  = FriendsShowSerializer(friendSolvedByAccept , context = {'by_to_user':False} , many = True).data
 
-        friendSolved = friendSolvedByRequest + friendSolvedByAccept
+        friendSolved  = friendSolvedByRequest + friendSolvedByAccept
         return Response({'status' : 'OK' , 'result' : friendSolved})
 
 
@@ -218,31 +218,31 @@ class UpsolveContestAPIView(
     generics.ListAPIView,
     ):
     permission_classes = [AuthenticatedActivated]
-    #authentication_classes = [SessionAuthentication]
+    #authentication_classes =  [SessionAuthentication]
     serializer_class = UpsolveContestSerializer
-    #passed_id = None 
+    # passed_id = None 
 
-    #running queries and stuff
+    #running queries  and stuff
     def get(self , request):
-        handle = Profile.objects.get(owner = self.request.user).codeforces
+        handle =  Profile.objects.get(owner = self.request.user).codeforces
         if handle == "" or handle == None :
-            return Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'},status=status.HTTP_400_BAD_REQUEST)
+            return  Response({'status' : 'FAILED' , 'error' : 'Please activate your account once by putting your name and codeforces handle..'},status=status.HTTP_400_BAD_REQUEST)
         
-        virtual = request.GET.get('virtual')
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/codeforces')
+        virtual =  request.GET.get('virtual')
+        page =  request.GET.get('page')
+        path =  request.build_absolute_uri('/problems/upsolve/codeforces')
         
         if virtual != None:
-            path = path + '?virtual='+virtual+';'
+            path =  path + '?virtual='+virtual+';'
         else:
-            path = path + '?'
+            path =  path + '?'
         
         if page == None:
             page = 1
         elif page.isdigit():
             page = int(page)
         else: 
-            return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
+            return  Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
         
         RContest , VContest , SolvedInContest , Upsolved , Wrong = codeforces_status(handle)
         data = {
@@ -252,7 +252,7 @@ class UpsolveContestAPIView(
         }
         
         if virtual == 'true':
-            RContest = RContest.union(VContest)
+            RContest =  RContest.union(VContest)
         
          
         c = contest.objects.filter(contestId__in = RContest).order_by('-startTime')
@@ -267,7 +267,7 @@ class UpsolveContestAPIView(
         if page == NumPage :
             Next = None
         else :
-            Next = path + 'page='+str(page+1)
+            Next = path +  'page='+str(page+1)
         
         if page == 1:
             Prev = None
@@ -280,19 +280,19 @@ class UpsolveContestAPIView(
             'status' : 'OK' , 
             'result' : UpsolveContestSerializer(c, many =True, context = data).data, 
             'links' : {
-                'first' : path + 'page=1',
-                'last' : path + 'page='+str(NumPage),
-                'prev' : Prev,
-                'next' : Next
+                'first' :  path + 'page=1',
+                'last' :  path + 'page='+str(NumPage),
+                'prev' :  Prev,
+                'next' :  Next
             },
             'meta' : {
                 'current_page' : page,
                 'from' : (page-1)*10 + 1,
                 'last_page' : NumPage,
                 'path' : request.build_absolute_uri('/problems/upsolve/codeforces'),
-                'per_page' : 10,
-                'to' : page*10,
-                'total' : total
+                'per_page' :  10,
+                'to' :  page*10,
+                'total' :  total
             }
         })
 
@@ -302,20 +302,20 @@ class CCUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [AuthenticatedActivated]
+    permission_classes =  [AuthenticatedActivated]
     #authentication_classes = [SessionAuthentication]
-    serializer_class = CCUpsolveContestSerializer
+    serializer_class =  CCUpsolveContestSerializer
     #passed_id = None 
 
     def get(self , request):
 
-        handle = Profile.objects.get(owner =self.request.user).codechef
+        handle =  Profile.objects.get(owner =self.request.user).codechef
 
         if handle == "" or handle == None:
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Codechef Username in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
 
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/codechef')+'?'
+        page =  request.GET.get('page')
+        path =  request.build_absolute_uri('/problems/upsolve/codechef')+'?'
 
         if page == None:
             page = 1
@@ -324,7 +324,7 @@ class CCUpsolveContestAPIView(
         else: 
             return Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
 
-        Upsolved , SolvedInContest , Contest , ContestName = codechef_status(handle) 
+        Upsolved ,  SolvedInContest , Contest , ContestName = codechef_status(handle) 
 
         data = {
             'solved'  : SolvedInContest,
@@ -334,7 +334,7 @@ class CCUpsolveContestAPIView(
         user_contest_details = []
 
         for contest in Contest :
-            qs = Problem.objects.filter(Q(contest_id = contest) | Q(index = contest))
+            qs =  Problem.objects.filter(Q(contest_id = contest) | Q(index = contest))
             
             if qs.count() > 0 :
                 user_contest_details.append({
@@ -344,42 +344,44 @@ class CCUpsolveContestAPIView(
                 })
 
         total = len(user_contest_details)
-        NumPage = (total-1)//10 + 1  # Number of page
+        NumPage =  (total-1)//10 + 1  # Number of page
         
         if total == 0 :
-            return Response({'status' : 'OK' , 'result' : []})
+            return  Response({'status' : 'OK' , 'result' : []})
         if page > NumPage : 
-            return Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
-        if page == NumPage :
-            Next = None
+            return  Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
+        if page ==  NumPage :
+            Next =  None
         else :
-            Next = path + 'page='+str(page+1)
+            Next = path +  'page='+str(page+1)
         
         if page == 1:
             Prev = None
         else :
-            Prev = path + 'page='+str(page-1)
+            Prev = path +  'page='+str(page-1)
         
         user_contest_details = user_contest_details[10*(page-1) : 10*page] 
 
         return Response({
-            'status' : 'OK' , 
-            'result' : user_contest_details ,
+            'status' :  'OK' , 
+            'result' :  user_contest_details ,
             'links' : {
                 'first' : path + 'page=1',
-                'last' : path + 'page='+str(NumPage),
-                'prev' : Prev,
-                'next' : Next
+                'last' :  path + 'page='+str(NumPage),
+                'prev' :  Prev,
+                'next' :  Next
             },
+
             'meta' : {
-                'current_page' : page,
+                'current_page' :  page,
                 'from' : (page-1)*10 + 1,
                 'last_page' : NumPage,
                 'path' : request.build_absolute_uri('/problems/upsolve/codechef'),
                 'per_page' : 10,
                 'to' : page*10,
-                'total' : total
+                'total' :  total
             }
+        
         })
 
 
@@ -388,10 +390,10 @@ class ATUpsolveContestAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView,
     ):
-    permission_classes = [AuthenticatedActivated]
-    #authentication_classes = [SessionAuthentication]
-    serializer_class = AtcoderUpsolveContestSerializer
-    #passed_id = None 
+    permission_classes =  [AuthenticatedActivated]
+    #authentication_classes  = [SessionAuthentication]
+    serializer_class =  AtcoderUpsolveContestSerializer
+    #passed_id  = None 
 
     def get(self , request):
 
@@ -401,13 +403,13 @@ class ATUpsolveContestAPIView(
             return Response({'status' : 'FAILED' , 'error' : 'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!' },status=status.HTTP_400_BAD_REQUEST)
         
         practice = request.GET.get('practice')
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/atcoder')
+        page =  request.GET.get('page')
+        path =  request.build_absolute_uri('/problems/upsolve/atcoder')
         
         if practice != None:
-            path = path + '?practice='+practice+';'
+            path =  path + '?practice='+practice+';'
         else:
-            path = path + '?'
+            path =  path + '?'
         
         if page == None:
             page = 1
@@ -419,15 +421,15 @@ class ATUpsolveContestAPIView(
         contests_details , all_contest , solved , wrong = atcoder_status(handle)
         
         if practice == 'true':
-            contests_details = contests_details.union(all_contest)
+            contests_details =  contests_details.union(all_contest)
         data = {
             'solved'  : solved,
             'wrong' : wrong
         }
-        qs = atcoder_contest.objects.filter(contestId__in = contests_details).order_by('-startTime')
+        qs =  atcoder_contest.objects.filter(contestId__in = contests_details).order_by('-startTime')
 
         total = qs.count()
-        NumPage = (total-1)//10 + 1  # Number of page
+        NumPage = (total-1)//10 +  1  # Number of page
         
         if total == 0 :
             return Response({'status' : 'OK' , 'result' : []})
@@ -436,7 +438,7 @@ class ATUpsolveContestAPIView(
         if page == NumPage :
             Next = None
         else :
-            Next = path + 'page='+str(page+1)
+            Next = path +  'page='+str(page+1)
         
         if page == 1:
             Prev = None
@@ -446,21 +448,22 @@ class ATUpsolveContestAPIView(
         qs = qs[10*(page-1) : 10*page] 
 
         return Response({
-            'status' : 'OK' , 
-            'result' : AtcoderUpsolveContestSerializer(qs , many = True , context = data).data ,
+            'status' :  'OK' , 
+            'result' :  AtcoderUpsolveContestSerializer(qs , many = True , context = data).data ,
             'links' : {
-                'first' : path + 'page=1',
-                'last' : path + 'page='+str(NumPage),
-                'prev' : Prev,
-                'next' : Next
+                'first' :  path + 'page=1',
+                'last' :  path + 'page='+str(NumPage),
+                'prev' :  Prev,
+                'next' :  Next
             },
             'meta' : {
                 'current_page' : page,
                 'from' : (page-1)*10 + 1,
-                'last_page' : NumPage,
-                'path' : request.build_absolute_uri('/problems/upsolve/atcoder'),
-                'per_page' : 10,
-                'to' : page*10,
-                'total' : total
+                'last_page' :  NumPage,
+                'path' :  request.build_absolute_uri('/problems/upsolve/atcoder'),
+                'per_page' :  10,
+                'to' :  page*10,
+                'total' :  total
             }
+        
         })
