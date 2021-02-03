@@ -1,13 +1,13 @@
 from django.db import models
 
 class organization(models.Model):
-	name = models.CharField(max_length=50 , blank=True, null=True,)
+	name = models.CharField(max_length=50 , blank=True, null=True,db_index=True)
 
 	def __str__(self):
 		return self.name
 
 class country(models.Model):
-	name = models.CharField(max_length=50 , blank=True, null=True,)
+	name = models.CharField(max_length=50 , blank=True, null=True,db_index=True)
 
 	def __str__(self):
 		return self.name
@@ -18,7 +18,7 @@ class contest(models.Model):
 		('G' , 'Gym')
 	)
 	name = models.CharField(max_length=200)
-	contestId = models.CharField(max_length=10)
+	contestId = models.CharField(max_length=10,db_index=True)
 	duration = models.IntegerField(blank = True , null = True)
 	startTime = models.IntegerField(blank = True , null = True)
 	Type = models.CharField(max_length=1, choices=TYPE)

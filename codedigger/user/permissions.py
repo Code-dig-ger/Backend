@@ -18,10 +18,10 @@ class ForbiddenAdmin(APIException):
         'error':'Only Admins can access this page'
     }
 
-class AuthenticatedIsOwner(permissions.BasePermission):
+class AuthenticatedAdmin(permissions.BasePermission):
 
-    def has_object_permission(self, request, view, obj):
-        if request.user and request.user.is_authenticated and obj.owner == request.user:
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated and request.user.is_staff:
             return True
         else:
             raise ForbiddenAdmin

@@ -19,7 +19,7 @@ class Problem(models.Model):
         ('C' , 'Challenging')
     )
     name = models.CharField(max_length=200 , blank = True , null = True)
-    prob_id = models.CharField(max_length=50)
+    prob_id = models.CharField(max_length=50,db_index=True)
     url = models.CharField(max_length=200)
     tags = models.CharField(max_length = 500, blank = True , null= True)
     contest_id = models.CharField(max_length=50, blank = True , null = True)
@@ -65,7 +65,7 @@ class Problem(models.Model):
 
 
 class atcoder_contest(models.Model):
-    contestId = models.CharField(max_length = 50)
+    contestId = models.CharField(max_length = 50,db_index=True)
     name = models.CharField(max_length = 200 , blank = True , null= True)
     startTime = models.CharField(max_length = 20 , blank = True , null = True)
     duration = models.CharField(max_length = 10 , blank = True , null = True)
