@@ -280,7 +280,7 @@ def makeContest( contest ):
 			newProblem.save()
 
 
-	contest.isProblem = True
+	contest.isProblem =  True
 	contest.save()
 	return
 
