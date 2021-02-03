@@ -48,7 +48,7 @@ def get_participant_problem(participants_codeforces):
 	return participants_solved
 
 
-def makeContest(contest):
+def makeContest( contest ):
 	
 	nProblems = contest.numberOfProblem
 	platforms = list(contest.platform) # TODO Till now we are using only codeforces 
@@ -56,6 +56,8 @@ def makeContest(contest):
 	rating = contest.rating # TODO We will take count this too later
 	difficulty = contest.difficulty 
 	isMentorOn = contest.isMentorOn
+	isGym = contest.isGym #TODO if false -> remove problems with -> platform='F' and len(contestId)>=6
+
 
 	participants = ContestParticipation.objects.filter(contest = contest).values_list('user', flat=True)
 	participants_codeforces =  list(Profile.objects.filter(owner__in = participants).values_list('codeforces' ,flat=True))

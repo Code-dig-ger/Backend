@@ -29,6 +29,7 @@ class Contest(models.Model):
 	isTeam = models.BooleanField(default = False)
 	isProblem = models.BooleanField(default = False)
 	isResult = models.BooleanField(default = False)
+	isGym = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.name
