@@ -16,7 +16,7 @@ from .serializers import (
 )
 from django.db.models import Q
 from .permissions import IsOwner
-from .solved_update import codeforces,uva,atcoder,codechef,spoj
+from .solved_update import codeforces,uva,atcoder,codechef,spoj,atcoder_scraper_check
 from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,cron_uva,codechef_list
 from django.core.paginator import Paginator
 from user.permissions import *
@@ -295,7 +295,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             codeforces(user)
                         elif ele.platform == 'A' and temp['A']:
                             temp['A'] = False
-                            atcoder(user)
+                            atcoder_scraper_check(user,ele)
                         elif ele.platform == 'U' and temp['U']:
                             temp['U'] = False
                             uva(user)
@@ -638,7 +638,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             codeforces(user)
                         elif ele.platform == 'A' and temp['A']:
                             temp['A'] = False
-                            atcoder(user)
+                            atcoder_scraper_check(user,ele)
                         elif ele.platform == 'U' and temp['U']:
                             temp['U'] = False
                             uva(user)
