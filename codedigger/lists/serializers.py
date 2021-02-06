@@ -43,7 +43,7 @@ class GetSerializer(serializers.ModelSerializer):
     def get_user_solved(self,attrs):
         cnt = 0
         user = self.context.get('user',None)
-        if user is None or not user.is_anonymous:
+        if user is None or user.is_anonymous:
             return None
         for ele in attrs.problem.all():
             if Solved.objects.filter(user=user,problem=ele).exists():
