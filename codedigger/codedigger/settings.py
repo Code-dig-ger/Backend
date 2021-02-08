@@ -178,18 +178,15 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-   # ('0 3 1 * *' , 'problem.cron.update_spoj'), # Every month at day 1 at 3:00 PM
-   # ('15 1 * * 2', 'codeforces.cron.codeforces_update_users'), # Every week on Tuesday at 1:00
-   # ('0 22 * * *', 'problem.cron.update_codechef'), # Everyday 22:00
-   # ('0 21 * * *', 'problem.cron.update_atcoder'),  # Everyday 21:00
-   # ('0 20 * * *', 'problem.cron.update_uva'), # Everyday 20:00
-    # ('30 16 * * 3', 'codeforces.cron.codeforces_update_contest'), # Every week on Wednesday at 1:00
-   # ('0 0 * * *' , 'codeforces.cron.codeforces_update_problems') # Every day at 00:00 
-   
-   # (Set time for lists updation ,'lists.cron.updater')
-
-    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder') # Every 10th minute 
-
+    ('0 15 1 * *'    , 'problem.cron.update_spoj'), # Every month at day 1 at 3:00 PM
+    ('0 13 * * 2'   , 'codeforces.cron.codeforces_update_users'), # Every week on Tuesday at 1:00PM
+    ('0 22 * * *'   , 'problem.cron.update_codechef'), # Everyday 22:00
+    ('0 21 * * *'   , 'problem.cron.update_atcoder'),  # Everyday 21:00
+    ('0 20 * * *'   , 'problem.cron.update_uva'), # Everyday 20:00
+    ('0 10 * * 2'  , 'codeforces.cron.codeforces_update_contest'), # Every week on Tuesday at 10:00
+    ('0 0 * * *'    , 'codeforces.cron.codeforces_update_problems'), # Every day at 00:00 
+    ('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM
+    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder'), # Every 10th minute 
 ]
 CRONTAB_LOCK_JOBS= True
 
