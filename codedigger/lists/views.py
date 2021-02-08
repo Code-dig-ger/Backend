@@ -16,7 +16,7 @@ from .serializers import (
 )
 from django.db.models import Q
 from .permissions import IsOwner
-from .solved_update import codeforces,uva,atcoder,codechef,spoj
+from .solved_update import codeforces,uva,atcoder,codechef,spoj,atcoder_scraper_check
 from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,cron_uva,codechef_list
 from django.core.paginator import Paginator
 from user.permissions import *
@@ -29,7 +29,7 @@ def getqs(qs,page_size,page):
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [AuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True) & Q(owner__is_staff=True))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True) & Q(public=True) & Q(isAdmin =True))
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -40,7 +40,7 @@ class TopicWiseRetrieveView(views.APIView):
     permission_classes = [AuthenticatedOrReadOnly]
     
     def get_object(self,slug):
-        if List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True) & Q(slug=slug)).exists():
+        if List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(isAdmin =True) & Q(slug=slug)).exists():
             return List.objects.get(slug=slug)
         raise NotFoundException("The list with the given slug does not exist")
 
@@ -215,7 +215,7 @@ class TopicWiseRetrieveView(views.APIView):
 class TopicwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
     permission_classes = [AuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(isAdmin =True))
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -226,7 +226,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     
     def get_object(self,slug):
-        if List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(owner__is_staff=True) & Q(slug=slug)).exists():
+        if List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = True)  & Q(public=True) & Q(isAdmin =True) & Q(slug=slug)).exists():
             return List.objects.get(slug=slug)
         raise NotFoundException("The list with the given slug does not exist")
     
@@ -295,7 +295,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
                             codeforces(user)
                         elif ele.platform == 'A' and temp['A']:
                             temp['A'] = False
-                            atcoder(user)
+                            atcoder_scraper_check(user,ele)
                         elif ele.platform == 'U' and temp['U']:
                             temp['U'] = False
                             uva(user)
@@ -373,7 +373,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 class LevelwiseGetListView(generics.ListAPIView):
     serializer_class=GetSerializer
     permission_classes = [AuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
+    queryset = List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(isAdmin =True))
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -384,7 +384,7 @@ class LevelwiseRetrieveView(views.APIView):
     permission_classes = [AuthenticatedOrReadOnly]
     
     def get_object(self,slug):
-        if List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True) & Q(slug=slug)).exists():
+        if List.objects.filter((Q(type_list = '1') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(isAdmin =True) & Q(slug=slug)).exists():
             return List.objects.get(slug=slug)
         raise NotFoundException("The list with the given slug does not exist")
 
@@ -559,7 +559,7 @@ class LevelwiseRetrieveView(views.APIView):
 class LevelwiseGetLadderView(generics.ListAPIView):
     serializer_class=GetLadderSerializer
     permission_classes = [AuthenticatedOrReadOnly]
-    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True))
+    queryset = List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(isAdmin =True))
 
     def get_serializer_context(self,**kwargs):
         data = super().get_serializer_context(**kwargs)
@@ -570,7 +570,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     
     def get_object(self,slug):
-        if List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(owner__is_staff=True) & Q(slug=slug)).exists():
+        if List.objects.filter((Q(type_list = '2') | Q(type_list = '3')) & Q(isTopicWise = False)  & Q(public=True) & Q(isAdmin =True) & Q(slug=slug)).exists():
             return List.objects.get(slug=slug)
         raise NotFoundException("The list with the given slug does not exist")
     
@@ -638,7 +638,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
                             codeforces(user)
                         elif ele.platform == 'A' and temp['A']:
                             temp['A'] = False
-                            atcoder(user)
+                            atcoder_scraper_check(user,ele)
                         elif ele.platform == 'U' and temp['U']:
                             temp['U'] = False
                             uva(user)

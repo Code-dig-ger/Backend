@@ -126,3 +126,19 @@ def atcoder(user):
             continue
         Solved.objects.create(user=user,problem=prob)
 
+
+def atcoder_scraper_check(user,prob):
+    if user is None or Solved.objects.filter(problem=prob,user=user).exists():
+        return
+    atcoder_handle = Profile.objects.get(owner = user).atcoder
+    if atcoder_handle is None:
+        return
+    contest = prob.contest_id
+    taskname = prob.prob_id
+    URL = "https://atcoder.jp/contests/" +  contest + "/submissions/?f.User=" + user.username + "&" + "f.Task=" + taskname
+    r = requests.get(URL)
+    soup = bs4.BeautifulSoup(r.content, 'html5lib')
+    check = soup.find_all("span", {"class" : "label label-success"})
+    if check:
+        Solved.objects.create(user=user,problem=prob)
+

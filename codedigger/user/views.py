@@ -55,6 +55,9 @@ class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self,request):
+        """
+        Endpoint for registering a user 
+        """
         user = request.data
         serializer = self.serializer_class(data = user)
         serializer.is_valid(raise_exception=True)
@@ -85,6 +88,9 @@ class VerifyEmail(views.APIView):
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self,request):
+        """
+        Endpoint for verification of the mail
+        """
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token,settings.SECRET_KEY)
@@ -103,6 +109,9 @@ class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self,request):
+        """
+        Endpoint for logging in a user
+        """
         serializer = self.serializer_class(data=request.data,context = {'current_site' : get_current_site(request).domain})
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
@@ -111,6 +120,9 @@ class CheckAuthView(views.APIView):
     permission_classes = [Authenticated]
 
     def get(self,request,*args, **kwargs):
+        """
+        Endpoint for checking if user is authenticated or not by checking if the JWT token is valid or not.
+        """
         return Response({'status' : 'OK',"result" : "Token is Valid"},status=status.HTTP_200_OK)
 
 
@@ -118,6 +130,9 @@ class SendVerificationMail(generics.GenericAPIView):
     serializer_class = SendEmailVerificationSerializer
 
     def post(self,request,*args, **kwargs):
+        """
+        Endpoint for sending a verification mail
+        """
         email = request.data.get('email',None)
         if email is None:
             return Response({'status' : 'FAILED','error' : 'Email not provided'},status=status.HTTP_400_BAD_REQUEST)
@@ -172,6 +187,9 @@ class ChangePassword(generics.GenericAPIView):
     serializer_class = PasswordChangeSerializer
 
     def post(self,request,*args,**kwargs):
+        """
+        Endpoint for changing the password
+        """
         data = request.data
         old_pass = data.get('old_pass',None)
         new_pass = data.get('new_pass',None)
@@ -192,6 +210,9 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
 
     def post(self, request):
+        """
+        Endpoint for sending the password reset email
+        """
         serializer = self.serializer_class(data=request.data)
 
         email = request.data.get('email', '')
@@ -222,7 +243,9 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
 
     def get(self, request, uidb64, token):
-
+        """
+        Endpoint which verifies the token used for resetting the password
+        """
         redirect_url = request.GET.get('redirect_url')
         print(os.getenv('FRONTEND_URL'))
 
@@ -259,6 +282,9 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
 
     def patch(self, request):
+        """
+        Endpoint for changing the password in the profile
+        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'status': 'OK', 'result': 'Password reset success'}, status=status.HTTP_200_OK)

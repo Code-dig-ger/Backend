@@ -76,7 +76,7 @@ class GetLadderSerializer(serializers.ModelSerializer):
 
     def get_first_time(self,attrs):
         user = self.context.get('user',None)
-        if not user :
+        if user is None or user.is_anonymous :
             return True
         if LadderStarted.objects.filter(ladder_user = user,ladder=attrs).exists():
             return False
