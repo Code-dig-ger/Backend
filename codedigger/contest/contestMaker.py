@@ -104,11 +104,10 @@ def makeContest( contest ):
 
 	if tags is not None:
 		tags=tags.split(',')
-        q = Q()
-            
-        for tag in tags:
+		q = Q()    
+		for tag in tags:
 			q|=Q(tags__icontains=tag) 
-            problems = problems.filter(q)
+			problems = problems.filter(q)
 
 	# TODO more filter on problems  e.g. by TAG
 
