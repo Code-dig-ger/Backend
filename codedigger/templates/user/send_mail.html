@@ -11,43 +11,6 @@
     <title>Codedigger Mail</title>
 
     <style type="text/css">
-    	/* Codeforces Rank Related*/
-		.rated-user {
-    		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    		text-decoration: none;
-    		font-weight: bold;
-    		display: inline-block;
-		}
-		.user-black {
-		    color: black !important;
-		}
-		.user-legendary {
-		    color: red !important;
-		}
-		.legendary-user-first-letter {
-		    color: black !important;
-		}
-		.user-red {
-		    color: red !important;
-		}
-		.user-violet {
-		    color: #a0a !important;
-		}
-		.user-orange {
-		    color: #FF8C00 !important;
-		}
-		.user-blue {
-		    color: blue !important;
-		}
-		.user-cyan {
-		    color: #03A89E !important;
-		}
-		.user-green {
-		    color: green !important;
-		}
-		.user-gray {
-		    color: gray !important;
-		}
 
         body {
             width: 100%;
@@ -94,6 +57,60 @@
             border: 1px solid gray;
             border-radius: 10px;
             border-right: 5px solid #747474;
+        }
+
+        button {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+          outline: none;
+          border: 0;
+          vertical-align: middle;
+          text-decoration: none;
+          font-size: inherit;
+          font-family: inherit;
+        }
+        button.learn-more {
+          font-weight: 600;
+          color: #382b22;
+          text-transform: uppercase;
+          padding: 1.00em 1.25em;
+          background: #fff0f0;
+          border: 2px solid #9608EE;
+          border-radius: 0.75em;
+          transform-style: preserve-3d;
+          transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
+        }
+        button.learn-more::before {
+          position: absolute;
+          content: "";
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: #997AD5;
+          border-radius: inherit;
+          box-shadow: 0 0 0 2px #9608EE, 0 0.625em 0 0 #ffe3e2;
+          transform: translate3d(0, 0.75em, -1em);
+          transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+        }
+        button.learn-more:hover {
+          background: #ffe9e9;
+          transform: translate(0, 0.25em);
+        }
+        button.learn-more:hover::before {
+          box-shadow: 0 0 0 2px #9608EE, 0 0.5em 0 0 #ffe3e2;
+          transform: translate3d(0, 0.5em, -1em);
+        }
+        button.learn-more:active {
+          background: #ffe9e9;
+          transform: translate(0em, 0.75em);
+        }
+        button.learn-more:active::before {
+          box-shadow: 0 0 0 2px #9608EE, 0 0 #ffe3e2;
+          transform: translate3d(0, 0, -1em);
         }
 
         /* ----------- responsivity ----------- */
@@ -258,9 +275,9 @@
                             <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
                                 <tr>
                                     <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <div id="rating-change" style="line-height: 24px">
+                                        <div style="line-height: 24px">
 
-                                            {{message}}
+                                            Click below button to {{message}}
 
                                         </div>
                                     </td>
@@ -277,8 +294,32 @@
                                 <tr>
                                     <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
                                        
-                                       {{link}}
+                                      <a href="{{link}}" target="_blank"> <button class="learn-more"> {{message}} !</button> </a> 
 
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="15" style="font-size: 40px; line-height: 40px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
+                                <tr>
+                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
+                                       
+                                        If above button is not working for any reason, open below url in any browser.
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td height="15" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="font-size: 12px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
+                                        <a href="{{link}}" id="link">{{link}}</a> 
                                     </td>
                                 </tr>
                             </table>
@@ -300,9 +341,19 @@
         <tr>
             <td height="20" style="border-top: 2px solid #e0e0e0;font-size: 20px; line-height: 20px;">&nbsp;</td>
         </tr>
-        <tr>
             <td align="center">
                 <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590 bg_color">
+                    <tr>
+                        <td align="left" style="font-size: 16px; color: #888888; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
+                                        If it was not you, just ignore this mail.
+                                        <br>
+                                        With best regards,
+                                        <br>
+                                        Codedigger Team.
+                                    </td>
+                        </tr>
+                        <td height="15" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
+                    </tr>
                     <tr>
                         <td>
                             <table border="0" width="300" align="left" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;" class="container590">

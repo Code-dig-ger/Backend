@@ -16,7 +16,7 @@ from .views import (
 )
 # Friend Related View
 from .views import SendFriendRequest, RemoveFriend, AcceptFriendRequest, FriendsShowView
-from .views import FriendRequestShowView, RequestSendShowView
+from .views import FriendRequestShowView, RequestSendShowView, testing
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -51,4 +51,5 @@ urlpatterns = [
     path('user/show-send-request' , RequestSendShowView.as_view() , name='Show_Friend_Request_Send_List'),
 
     # Friends Related Path End
+    path('testing' , testing),
 ]

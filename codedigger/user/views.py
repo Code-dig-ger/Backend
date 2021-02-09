@@ -74,9 +74,9 @@ class RegisterView(generics.GenericAPIView):
         absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
         email_body = {}
         email_body['username'] = user.username
-        email_body['message'] = 'Use link below to verify your email'
+        email_body['message'] = 'Verify your email'
         email_body['link'] = absurl
-        data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+        data = {'email_body' : email_body,'email_subject' : 'Codedigger - Email Confirmation','to_email' : user.email}
         Util.send_email(data)
         return Response({'status' : "OK",'result': user_data},status = status.HTTP_201_CREATED)
 
@@ -145,9 +145,9 @@ class SendVerificationMail(generics.GenericAPIView):
         absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
         email_body = {}
         email_body['username'] = user.username
-        email_body['message'] = 'Use link below to verify your email'
+        email_body['message'] = 'Verify your email'
         email_body['link'] = absurl
-        data = {'email_body' : email_body,'email_subject' : 'Verify your email','to_email' : user.email}
+        data = {'email_body' : email_body,'email_subject' : 'Codedigger - Email Verification','to_email' : user.email}
         Util.send_email(data)
         return Response({'status' : 'OK','result' :'A Verification Email has been sent'},status = status.HTTP_200_OK)
 
@@ -230,10 +230,10 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             absurl = 'https://'+current_site + relativeLink
             email_body = {}
             email_body['username'] = user.username
-            email_body['message'] = 'Use link below to reset your password'
+            email_body['message'] = 'Reset your Password'
             email_body['link'] = absurl + "?redirect_url="+redirect_url
             data = {'email_body': email_body, 'to_email': user.email,
-                    'email_subject': 'Reset your passsword'}
+                    'email_subject': 'Codedigger - Password Reset'}
             Util.send_email(data)
         return Response({'status': 'OK','result' :'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
 
@@ -619,3 +619,17 @@ class RequestSendShowView(generics.GenericAPIView):
         return Response({'status' : 'OK' , 'result' : friendsbyrequest})
 
 # Friends Related View Ends
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+
+def testing(request):
+
+    context = {
+        'username': 'shivamsinghal1012',
+        'message' : 'Verify your Email ' ,
+        'link' : 'https://google.com' 
+    }
+
+    return HttpResponse(render_to_string('user/send_mail.html',context))
+
