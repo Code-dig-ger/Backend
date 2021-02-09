@@ -51,6 +51,11 @@ class MentorAPIView(
 
         return Response({'status': 'OK' , 'result':'Deleted Successfully' })
 
+from .cron import codeforces_update_problems
+def testing(request):
+    codeforces_update_problems()
+    return JsonResponse({'status' : 'OK'})
+
 
 
 

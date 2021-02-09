@@ -57,21 +57,18 @@ def codeforces(user):
         return
     limit = 10
     for ele in req['result']:
-        name = ele['problem']['name']
-        verdict = ele.get('verdict',None)
-        if verdict is None:
+        if 'verdict' not in ele or 'contestId' not in ele or ele['verdict'] != 'OK':
             continue
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
-        if verdict == "OK" and Problem.objects.filter(prob_id=prob_id,platform='F').exists():
-            prob = Problem.objects.get(prob_id = prob_id , platform = 'F')
-            solve = Solved.objects.filter(user=user,problem= prob).exists()
-            if solve:
-                limit -= 1
-                if limit <= 0:
-                    break
-                continue
-            else:
-                Solved.objects.create(user=user,problem=prob)
+        prob = Problem.objects.filter(prob_id= prob_id , platform='F')
+        if not prob.exists() :
+            continue
+        solve,created = Solved.objects.get_or_create(user=user,problem = prob[0])
+        if not created:
+            limit -= 1
+            if limit <= 0:
+                break
+            continue
     
 def uva(user):
     if user is None:
@@ -84,21 +81,17 @@ def uva(user):
     sorted_req1 = sorted(req1['subs'],key=lambda k: k[4], reverse=True)
     limit = 10
     for ele in sorted_req1:
-        #print(str(ele[1]) + " " + str(ele[2])) 
         if str(ele[2]) != '90':
             continue
-        #testing
-        prob_id = str(ele[1])
-        if not Problem.objects.filter(prob_id=prob_id,platform='U').exists():
-                continue
-        prob = Problem.objects.get(prob_id=prob_id,platform='U')
-        solve = Solved.objects.filter(user = user,problem = prob).exists()
-        if solve:
+        prob = Problem.objects.filter(prob_id=str(ele[1]),platform='U')
+        if not prob.exists():
+            continue
+        solve, created = Solved.objects.get_or_create(user = user,problem = prob[0])
+        if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        Solved.objects.create(user=user,problem=prob)
     
 def atcoder(user):
     if user is None:
@@ -111,20 +104,17 @@ def atcoder(user):
     sorted_req = sorted(req,key=lambda k: k['epoch_second'], reverse=True)
     limit = 10
     for ele in sorted_req:
-        #print(ele['problem_id'] + " " + ele['result'])
         if ele['result'] != "AC":
             continue
-        #testing
-        if not Problem.objects.filter(prob_id=ele['problem_id'],platform='A').exists():
+        prob = Problem.objects.filter(prob_id=ele['problem_id'],platform='A')
+        if not prob.exists():
             continue
-        prob = Problem.objects.get(prob_id=ele['problem_id'],platform='A')
-        solve = Solved.objects.filter(user = user,problem=prob).exists()
-        if solve:
+        solve, created = Solved.objects.get_or_create(user = user,problem = prob[0])
+        if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        Solved.objects.create(user=user,problem=prob)
 
 
 def atcoder_scraper_check(user,prob):

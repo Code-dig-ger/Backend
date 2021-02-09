@@ -227,8 +227,7 @@ def codeforces_update_problems():
 	message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
 	recepient = 'testing.codedigger@gmail.com'
 	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-
-
+	
 	url = "https://codeforces.com/api/contest.list"
 	res = requests.get(url)
 
@@ -241,9 +240,7 @@ def codeforces_update_problems():
 	if(data["status"] != 'OK') :
 		return 
 
-	# TODO Skip Starting Contest Around 1000
-
-	for codeforces_contest in data['result'] : 
+	for codeforces_contest in data['result'][:50] : 
 
 		url = "https://codeforces.com/api/contest.standings?contestId=" + str(codeforces_contest['id']) + "&from=1&count=1"
 		res = requests.get(url)
@@ -288,9 +285,7 @@ def codeforces_update_problems():
 	if(data["status"] != 'OK') :
 		return 
 
-	# TODO Skip Starting Contest Around 1000
-
-	for codeforces_contest in data['result'] : 
+	for codeforces_contest in data['result'][-50:] : 
 
 		url = "https://codeforces.com/api/contest.standings?contestId=" + str(codeforces_contest['id']) + "&from=1&count=1"
 		res = requests.get(url)
@@ -353,9 +348,7 @@ def codeforces_update_contest():
 	
 	data["result"].reverse()
 
-	#TODO Don't Check Previous Contest # Skip 1000
-	
-	for codeforces_contest in data["result"]:
+	for codeforces_contest in data["result"][-50:]:
 
 		url = "https://codeforces.com/api/contest.ratingChanges?contestId=" + str(codeforces_contest['id'])
 		res = requests.get(url)

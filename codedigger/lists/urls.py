@@ -14,7 +14,8 @@ from .views import (
     UserlistGetView,
     UserlistAddProblemView,
     EditUserlistView,
-    AddProblemsAdminView
+    AddProblemsAdminView,
+    testing
 )
 
 
@@ -34,5 +35,7 @@ urlpatterns = [
     path('userlist/',UserlistGetView.as_view(),name='userlist-get'),
     path('userlist/new',UserlistCreateView.as_view(),name='userlist-create'),
     path('userlist/add',UserlistAddProblemView.as_view(),name='userlist-add'),
-    path('userlist/edit/<str:slug>',EditUserlistView.as_view(),name='userlist-edit')
+    path('userlist/edit/<str:slug>',EditUserlistView.as_view(),name='userlist-edit'),
+
+    path('testing' , testing),
 ]

@@ -1023,5 +1023,13 @@ class AddProblemsAdminView(generics.GenericAPIView):
             curr_prob = Problem.objects.get(prob_id=ele)
             curr_list.problem.add(curr_prob)
         return response.Response({"status" : 'OK','result' :"The correct problems have been inserted in the list",'wrong' : wrong,'double' : double},status=status.HTTP_200_OK)  
+
+
+from .cron import updater
+from django.http import JsonResponse
+def testing(request) :
+    updater()
+    return JsonResponse({'status' : 'OK'}) 
+
             
             

@@ -10,99 +10,89 @@ from user.models import Profile,User
 from problem.models import Problem
 
 def cron_codeforces(user):
-    if user is None or user == "":
+    if user is None:
         return
-    cf_handle = Profile.objects.get(owner__username = user).codeforces
+    cf_handle = Profile.objects.get(owner = user).codeforces
     if cf_handle == None:
         return
-    url = 'https://codeforces.com/api/user.status?handle=' + user
-    req = requests.get(url).json()
+    url = 'https://codeforces.com/api/user.status?handle=' + cf_handle
+    req = requests.get(url)
+    if req.status_code != 200:
+        return 
+    req = req.json()
+    if req['status'] != 'OK':
+        return
     limit = 10
     for ele in req['result']:
-        name = ele['problem']['name']
-        verdict = None
-        verdict = ele['verdict']
-        if verdict is None:
+        if 'verdict' not in ele or 'contestId' not in ele or ele['verdict'] != 'OK':
             continue
         prob_id = str(ele['problem']['contestId']) + str(ele['problem']['index'])
-        print(name + " " + verdict + " " + prob_id)
-        if verdict == "OK":
-            solve = Solved.objects.filter(user__username=user,problem__prob_id = prob_id).exists()
-            if solve:
-                limit -= 1
-                if limit <= 0:
-                    break
-                continue
-            else:
-                curr_user = User.objects.get(username=user)
-                #next if block below only for testing as the problem needs to exist in the database to get it 
-                if not Problem.objects.filter(prob_id=prob_id,platform='F').exists():
-                    continue
-                prob = Problem.objects.get(prob_id=prob_id,platform='F')
-                Solved.objects.create(user=curr_user,problem=prob)
+        prob = Problem.objects.filter(prob_id= prob_id , platform='F')
+        if not prob.exists() :
+            continue
+        solve,created = Solved.objects.get_or_create(user=user,problem = prob[0])
+        if not created:
+            limit -= 1
+            if limit <= 0:
+                break
+            continue
     
 def cron_uva(user):
-    if user is None or user == "":
+    if user is None:
         return
-    uva_id = Profile.objects.get(owner__username = user).uva_id
+    uva_id = Profile.objects.get(owner = user).uva_id
     if uva_id is None:
         return
     url1 = "https://uhunt.onlinejudge.org/api/subs-user/" + str(uva_id)
-    req1 = requests.get(url1).json()
+    req1 = requests.get(url1)
+    if req1.status_code != 200 :
+        return 
+    req1 = req1.json()
     sorted_req1 = sorted(req1['subs'],key=lambda k: k[4], reverse=True)
     limit = 10
     for ele in sorted_req1:
-        print(str(ele[1]) + " " + str(ele[2])) 
         if str(ele[2]) != '90':
             continue
-        #testing
-        if not Problem.objects.filter(prob_id=ele[1],platform='U').exists():
-                continue
-        solve = Solved.objects.filter(user__username = user,problem__prob_id = ele[1]).exists()
-        if solve:
+        prob = Problem.objects.filter(prob_id=str(ele[1]),platform='U')
+        if not prob.exists():
+            continue
+        solve, created = Solved.objects.get_or_create(user = user,problem = prob[0])
+        if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        prob = Problem.objects.get(prob_id=ele[1],platform='U')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
-
-
     
 def cron_atcoder(user):
-    if user is None or user == "":
+    if user is None:
         return
-    atcoder_handle = Profile.objects.get(owner__username = user).atcoder
+    atcoder_handle = Profile.objects.get(owner = user).atcoder
     if atcoder_handle is None:
         return
     url = 'https://kenkoooo.com/atcoder/atcoder-api/results?user=' + atcoder_handle
-    req = requests.get(url).json()
+    req = requests.get(url)
+    if req.status_code != 200:
+        return
+    req = req.json()
     sorted_req = sorted(req,key=lambda k: k['epoch_second'], reverse=True)
     limit = 10
     for ele in sorted_req:
-        print(ele['problem_id'] + " " + ele['result'])
         if ele['result'] != "AC":
             continue
-        #testing
-        if not Problem.objects.filter(prob_id=ele['problem_id'],platform='A').exists():
+        prob = Problem.objects.filter(prob_id=ele['problem_id'],platform='A')
+        if not prob.exists():
             continue
-        solve = Solved.objects.filter(user__username = user,problem__prob_id = ele['problem_id']).exists()
-        if solve:
+        solve, created = Solved.objects.get_or_create(user = user,problem = prob[0])
+        if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
-        prob = Problem.objects.get(prob_id=ele['problem_id'],platform='A')
-        curr_user = User.objects.get(username=user)
-        Solved.objects.create(user=curr_user,problem=prob)
-
-
 
 def cron_codechef(user):
-    if user is None or user == "":
+    if user is None:
         return
-    codechef_handle = Profile.objects.get(owner__username=user).codechef
+    codechef_handle = Profile.objects.get(owner=user).codechef
     if codechef_handle is None:
         return
     url = 'https://www.codechef.com/users/'+str(codechef_handle)
@@ -112,23 +102,15 @@ def cron_codechef(user):
     if problems_solved.find('h5').text == 'Fully Solved (0)':
         return
     for ele in problems_solved.find('article').find_all('a'):
-        #testing purposes
-        print(ele.text)
-        if not Problem.objects.filter(prob_id=ele.text,platform='C').exists():
+        prob = Problem.objects.filter(prob_id=ele.text,platform='C')
+        if not prob.exists():
             continue
-        if Solved.objects.filter(problem__prob_id=ele.text,user__username=user).exists():
-            continue
-        user = User.objects.get(username=user)
-        prob = Problem.objects.get(prob_id=ele.text,platform='C')
-        Solved.objects.create(user=user,problem=prob)
-    
-        
-
+        solve, created = Solved.objects.get_or_create(problem=prob[0],user=user)
 
 def cron_spoj(user):
-    if user is None or user == "":
+    if user is None:
         return
-    spoj_handle = Profile.objects.get(owner__username = user).spoj
+    spoj_handle = Profile.objects.get(owner= user).spoj
     if spoj_handle == None:
         return
     url = 'https://www.spoj.com/users/'+spoj_handle
@@ -140,25 +122,18 @@ def cron_spoj(user):
     for ele in problems.find_all('td'):
         if ele.text == "":
             continue
-        print(ele.text)
-        #testing
-        if not Problem.objects.filter(prob_id=ele.text,platform='S').exists():
+        prob = Problem.objects.filter(prob_id = ele.text,platform='S')
+        if not prob.exists():
             continue
-        if Solved.objects.filter(problem__prob_id=ele.text,user__username=user).exists():
-            continue
-        curr_user = User.objects.get(username=user)
-        prob = Problem.objects.get(prob_id = ele.text,platform='S')
-        Solved.objects.create(user=curr_user,problem=prob)
-
+        solve, created = Solved.objects.get_or_create(problem=prob[0],user=user)
 
 def updater():
     for ele in User.objects.all():
-        print(ele.username)
-        cron_codeforces(ele.username)
-        cron_cron_uva(ele.username)
-        cron_atcoder(ele.username)
-        cron_codechef(ele.username)
-        cron_spoj(ele.username)
+        cron_codeforces(ele)
+        cron_uva(ele)
+        cron_atcoder(ele)
+        cron_codechef(ele)
+        cron_spoj(ele)
 
 def codechef_list(user):
     if user is None or user == "":
