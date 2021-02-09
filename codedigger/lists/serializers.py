@@ -12,6 +12,7 @@ from user.exception import ValidationException
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    platform = serializers.SerializerMethodField()
 
     def get_description(self,obj):
         slug = self.context.get("slug")
@@ -27,6 +28,18 @@ class ProblemSerializer(serializers.ModelSerializer):
         solve = Solved.objects.filter(user = user,problem = obj)
         return solve.exists()
 
+    def get_platform(self,obj):
+        if obj.platform == 'F':
+            return "Codeforces"
+        elif obj.platform == 'A':
+            return "Atcoder"
+        elif obj.platform == 'C':
+            return "Codechef"
+        elif obj.platform == 'S':
+            return "Spoj"
+        elif obj.platform == 'U':
+            return "UVA"
+        
 
 
     class Meta:
