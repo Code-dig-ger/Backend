@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate
 from user.models import User
 import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import random
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -22,7 +24,7 @@ def register_social_user(provider, user_id, email, name):
         if provider == filtered_user_by_email[0].auth_provider:
 
             registered_user = authenticate(
-                username=filtered_user_by_email.username, password='test123')
+                username=filtered_user_by_email.username, password=os.getenv('SOCIAL_SECRET'))
 
             return {
                 'username': registered_user.username,
@@ -37,14 +39,14 @@ def register_social_user(provider, user_id, email, name):
     else:
         user = {
             'username': generate_username(name), 'email': email,
-            'password': 'test123'}
+            'password': os.getenv('SOCIAL_SCRET')}
         user = User.objects.create_user(**user)
         user.is_verified = True
         user.auth_provider = provider
         user.save()
 
         new_user = authenticate(
-            username=filtered_user_by_email.username, password='test123')
+            username=filtered_user_by_email.username, password=os.getenv('SOCIAL_SECRET'))
         return {
             'email': new_user.email,
             'username': new_user.username,
