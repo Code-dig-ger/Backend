@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate
-from user.models import User
+from user.models import User,Profile
 import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -22,10 +22,15 @@ def register_social_user(provider, user_id, email, name):
         if provider == filtered_user_by_email[0].auth_provider:
             registered_user = authenticate(
                 username=filtered_user_by_email[0].username, password=os.getenv('SOCIAL_SECRET'))
+            first_time = False
+            temp = Profile.objects.get(owner = registered_user).name
+            if temp is None:
+                first_time = True
             return {
                 'username': registered_user.username,
                 'email': registered_user.email,
-                'tokens': registered_user.tokens()
+                'tokens': registered_user.tokens(),
+                'first_time' : first_time
                 }
 
         else:
