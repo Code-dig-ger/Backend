@@ -50,6 +50,6 @@ def register_social_user(provider, user_id, email, name):
             username = ele, password=os.getenv('SOCIAL_SECRET'))
         return {
             'email': new_user.email,
-            'username': generate_username(name),
+            'username': new_user.username,
             'tokens': new_user.tokens()
         }
