@@ -51,5 +51,6 @@ def register_social_user(provider, user_id, email, name):
         return {
             'email': new_user.email,
             'username': new_user.username,
-            'tokens': new_user.tokens()
+            'tokens': new_user.tokens(),
+            'first_time' : True
         }
