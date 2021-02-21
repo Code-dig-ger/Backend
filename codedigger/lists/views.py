@@ -1000,6 +1000,8 @@ class AddProblemsAdminView(generics.GenericAPIView):
     def post(self,request,*args,**kwargs):
         data = request.data
         slug = data.get('slug',None)
+        l = data.get('l',0)
+        r = data.get('r',5000)
         if not slug:
             return response.Response({"status" : 'FAILED','error' :"slug not provided"},status=status.HTTP_400_BAD_REQUEST) 
         if not List.objects.filter(slug=slug).exists(): 
@@ -1008,6 +1010,8 @@ class AddProblemsAdminView(generics.GenericAPIView):
         final = set()
         wrong = set()
         double = set()
+        rating_l = set()
+        rating_r = set()
         if data.get('prob_id',None):
             for ele in data.get('prob_id',None):
                 final.add(ele)
@@ -1021,8 +1025,13 @@ class AddProblemsAdminView(generics.GenericAPIView):
             if curr_list.problem.filter(prob_id=ele).exists():  
                 continue
             curr_prob = Problem.objects.get(prob_id=ele)
-            curr_list.problem.add(curr_prob)
-        return response.Response({"status" : 'OK','result' :"The correct problems have been inserted in the list",'wrong' : wrong,'double' : double},status=status.HTTP_200_OK)  
+            if curr_prob.rating <= l : 
+                rating_l.add(ele)
+            elif curr_prob.rating > r :
+                rating_r.add(ele)
+            else  :
+                curr_list.problem.add(curr_prob)
+        return response.Response({"status" : 'OK','result' :"The correct problems have been inserted in the list",'wrong' : wrong,'double' : double , 'rating_l' : rating_l , 'rating_r' : rating_r},status=status.HTTP_200_OK)  
 
 
 from .cron import updater
