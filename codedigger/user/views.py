@@ -180,7 +180,11 @@ class ProfileUpdateView(UpdateAPIView):
         uva = self.request.data['uva_handle']
         if not uva:
             pass
-        return serializer.save(uva_id = get_uva(uva))
+        ele = get_uva(uva)
+        if int(ele) > 0:
+            return serializer.save(uva_id = ele)
+        else:
+            return serializer.save()
 
 class ChangePassword(generics.GenericAPIView):
     permission_classes = [Authenticated]
