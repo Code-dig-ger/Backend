@@ -177,9 +177,9 @@ class ProfileUpdateView(UpdateAPIView):
         return self.queryset.filter(owner=self.request.user)
 
     def perform_update(self,serializer):
-        uva = self.request.data['uva_handle']
-        if not uva:
-            pass
+        uva = self.request.data.get('uva_handle',None)
+        if uva == None:
+            return serializer.save()
         ele = get_uva(uva)
         if int(ele) > 0:
             return serializer.save(uva_id = ele)

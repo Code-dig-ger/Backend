@@ -187,10 +187,10 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     codeforces = serializers.CharField()
-    spoj = serializers.CharField(allow_blank = True,allow_null=True)
-    codechef = serializers.CharField(allow_blank = True,allow_null=True)
-    atcoder = serializers.CharField(allow_blank = True,allow_null=True)
-    uva_handle = serializers.CharField(allow_blank = True,allow_null=True)
+    spoj = serializers.CharField(allow_blank = True,allow_null=True,required=False)
+    codechef = serializers.CharField(allow_blank = True,allow_null=True,required=False)
+    atcoder = serializers.CharField(allow_blank = True,allow_null=True,required=False)
+    uva_handle = serializers.CharField(allow_blank = True,allow_null=True,required=False)
 
     class Meta:
         model = Profile
