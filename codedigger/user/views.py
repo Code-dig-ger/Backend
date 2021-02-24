@@ -70,8 +70,10 @@ class RegisterView(generics.GenericAPIView):
         current_site = get_current_site(request).domain
 
         relative_link = reverse('email-verify')
-
+        redirect_url = request.GET.get('redirect_url',None)
         absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        if redirect_url != None:
+            absurl += "&redirect_url=" + redirect_url
         email_body = {}
         email_body['username'] = user.username
         email_body['message'] = 'Verify your email'
@@ -145,7 +147,10 @@ class SendVerificationMail(generics.GenericAPIView):
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relative_link = reverse('email-verify')
+        redirect_url = request.GET.get('redirect_url',None)
         absurl = 'https://' + current_site + relative_link + "?token=" + str(token)
+        if redirect_url != None:
+            absurl += "&redirect_url=" + redirect_url
         email_body = {}
         email_body['username'] = user.username
         email_body['message'] = 'Verify your email'
