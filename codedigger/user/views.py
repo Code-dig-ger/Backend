@@ -92,17 +92,20 @@ class VerifyEmail(views.APIView):
         Endpoint for verification of the mail
         """
         token = request.GET.get('token')
+        redirect_url = request.GET.get('redirect_url',None)
+        if redirect_url is None:
+            redirect_url = os.getenv('EMAIL_REDIRECT')
         try:
             payload = jwt.decode(token,settings.SECRET_KEY)
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=SuccessfullyActivated')
+            return redirect(redirect_url + '?email=SuccessfullyActivated')
         except jwt.ExpiredSignatureError as identifier:
-            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=ActivationLinkExpired')
+            return redirect(redirect_url + '?email=ActivationLinkExpired')
         except jwt.exceptions.DecodeError as identifier:
-            return redirect(os.getenv('EMAIL_REDIRECT') + '?email=InvalidToken')
+            return redirect(redirect_url + '?email=InvalidToken')
 
 
 class LoginApiView(generics.GenericAPIView):
@@ -251,7 +254,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
         Endpoint which verifies the token used for resetting the password
         """
         redirect_url = request.GET.get('redirect_url')
-        print(os.getenv('FRONTEND_URL'))
 
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
