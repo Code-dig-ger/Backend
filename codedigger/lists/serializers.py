@@ -8,6 +8,7 @@ from django.db.models import Q
 from rest_framework.response import Response
 from .solved_update import *
 from user.exception import ValidationException
+from django.template.defaultfilters import slugify
 
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
@@ -113,8 +114,9 @@ class CreateUserlistSerializer(serializers.ModelSerializer):
     
     def validate_name(self,value):
         user = self.context.get('user')
-        if List.objects.filter(name=value,owner__username=user).exists():
-            raise ValidationException('List with the name and user already exists')
+        slug = slugify(value) + "-" + str(User.objects.get(username=user).id)
+        if List.objects.filter(name=value,owner__username=user).exists() or List.objects.filter(slug=slug,owner__username=user).exists():
+            raise ValidationException('List with the name or slug and user already exists')
         return value
 
 
