@@ -191,7 +191,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     codechef = serializers.CharField(allow_blank = True,allow_null=True,required=False)
     atcoder = serializers.CharField(allow_blank = True,allow_null=True,required=False)
     uva_handle = serializers.CharField(allow_blank = True,allow_null=True,required=False)
-
     class Meta:
         model = Profile
         fields = ['name','codeforces','codechef','atcoder','spoj','uva_handle',]
@@ -239,7 +238,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 raise ValidationException('The given spoj handle does not exist')
         return value
     
-    def validate_uva(self,value):
+    def validate_uva_handle(self,value):
         user = self.context.get('user')
         if value != Profile.objects.get(owner__username=user).uva_handle:
             if check_handle_uva(value):
