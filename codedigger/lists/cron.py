@@ -8,6 +8,8 @@ django.setup()
 from lists.models import Solved
 from user.models import Profile,User
 from problem.models import Problem
+from django.core.mail import send_mail	
+from codedigger.settings import EMAIL_HOST_USER
 
 def cron_codeforces(user):
     if user is None:
@@ -128,12 +130,20 @@ def cron_spoj(user):
         solve, created = Solved.objects.get_or_create(problem=prob[0],user=user)
 
 def updater():
+    subject = 'Codeforces update Problems Started'
+    message = 'This is automated message from Codedigger which tells that your codeforces updation has started'
+    recepient = 'aaradhyaberi@gmail.com'
+    send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
     for ele in User.objects.all():
         cron_codeforces(ele)
         cron_uva(ele)
         cron_atcoder(ele)
         cron_codechef(ele)
         cron_spoj(ele)
+    subject = 'Codeforces update Problems Started'
+    message = 'This is automated message from Codedigger which tells that your codeforces updation has ended'
+    recepient = 'aaradhyaberi@gmail.com'
+    send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
 def codechef_list(user):
     if user is None or user == "":
