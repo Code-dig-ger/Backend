@@ -3,6 +3,9 @@
 # Result Assign -- Contest with isResult False 
 # contest end -- (startTime + duration) <= time.now 
 
+#Email
+from django.core.mail import send_mail	
+from codedigger.settings import EMAIL_HOST_USER
 
 ## Short Code Contest 
 from .utils import login, clean, penalty
@@ -88,7 +91,18 @@ def update_penalty(contest, cookie) :
 			break
 
 def update_codeforces_short_code_contests() : 
+
+	subject = 'Update Codeforces Short Code Contests Start'
+	message = 'Hope you are enjoying our Problems'
+	recepient = 'testing.codedigger@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
+
 	cookie = login()
 	codeforcescontest = CodeforcesContest.objects.filter(Type = "Short Code")
 	for contest in codeforcescontest : 
 		update_penalty(contest, cookie)
+
+	subject = 'Update Codeforces Short Code Contests End'
+	message = 'Hope you are enjoying our Problems'
+	recepient = 'testing.codedigger@gmail.com'
+	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
