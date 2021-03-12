@@ -140,3 +140,14 @@ class UserSerializer(serializers.ModelSerializer):
             'contestCount',
             'contestRank',
         ]
+
+class MiniUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model= user
+        fields = [
+            'name',
+            'handle',
+            'rating',
+            'rank'
+        ]

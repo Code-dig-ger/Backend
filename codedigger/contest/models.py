@@ -1,6 +1,7 @@
 from django.db import models
 from user.models import User
 from problem.models import Problem
+from codeforces.models import user as CodeforcesUser
 
 # Create your models here.
 class Contest(models.Model):
@@ -26,6 +27,40 @@ class Contest(models.Model):
 
 	def __str__(self):
 		return self.name
+
+class CodeforcesContest(models.Model):
+	contestId = models.IntegerField()
+	groupId = models.CharField(max_length = 20, blank = True, default=" ")
+	name = models.CharField(max_length = 100, blank = True, default=" ")
+	Type = models.CharField(max_length = 100)
+	nproblems = models.IntegerField()
+
+	def __str__(self):
+		return self.name
+
+class CodeforcesContestParticipation(models.Model):
+	contest = models.ForeignKey(CodeforcesContest, on_delete = models.CASCADE)
+	user = models.ForeignKey(CodeforcesUser, on_delete = models.CASCADE)
+	participantId = models.IntegerField()
+	isOfficial = models.BooleanField()
+	isVirtual = models.BooleanField()
+
+	def __str__(self):
+		return self.user.handle + " participated in " + self.contest.name
+
+class CodeforcesContestSubmission(models.Model):
+	participant = models.ForeignKey(CodeforcesContestParticipation, on_delete = models.CASCADE)
+	isSolved = models.BooleanField(null = True)
+	submissionId = models.IntegerField(null = True)
+	problemIndex = models.IntegerField(null = True)
+	penalty = models.IntegerField(null = True)
+	lang = models.CharField(max_length = 50, null = True)
+
+	def __str__(self):
+		if self.isSolved : 
+			return self.participant.user.handle + " solved " + self.participant.contest.name + " - " + str(self.problemIndex)
+		else :
+			return self.participant.user.handle + " not solved " + self.participant.contest.name + " - " +str(self.problemIndex)
 
 
 class ContestProblem(models.Model):

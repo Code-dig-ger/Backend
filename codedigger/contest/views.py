@@ -110,13 +110,13 @@ class ContestAPIView(
 
 
 
-def testing(request):
+# def testing(request):
 
-    contest = Contest.objects.all()[0]
+#     contest = Contest.objects.all()[0]
 
-    prepareResult(contest)
+#     prepareResult(contest)
 
-    return JsonResponse({'status' :  'OK'})
+#     return JsonResponse({'status' :  'OK'})
 
 
 
@@ -257,3 +257,45 @@ def makeContest( contest ):
 	contest.save()
 	return
 
+
+
+## Short Code Contest 
+from .cron import update_codeforces_short_code_contests
+from .serializers import *
+
+def testing(requests):
+	update_codeforces_short_code_contests()
+	return JsonResponse({'status' :  'OK'})
+
+
+class ShortCodeContestAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+	permission_classes = [AuthenticatedOrReadOnly]
+	serializer_class = CodeforcesContestSerializer
+
+	def get(self,request):
+		shortCodeContest = CodeforcesContest.objects.filter(Type = 'Short Code')
+		return JsonResponse({'status' : 'OK' , 'results' : CodeforcesContestSerializer(shortCodeContest, many=True).data})
+
+class ShortCodeContestStandingAPIView(
+    mixins.CreateModelMixin,
+    generics.ListAPIView,
+    ):
+	permission_classes = [AuthenticatedOrReadOnly]
+	serializer_class = CodeforcesContestParticipationSerializer
+
+	def get(self,request,contestId):
+		contest = CodeforcesContest.objects.filter(Type = 'Short Code' , contestId = contestId)
+		if not contest.exists() :
+			return JsonResponse({'status' :'FAILED' , 'error' : 'No such Contest Found'})
+
+		participants = CodeforcesContestParticipation.objects.filter(contest = contest[0])
+		return JsonResponse({
+			'status' : 'OK',
+			'results' : {
+				'contest' : CodeforcesContestSerializer(contest, many=True).data,
+				'standing' : CodeforcesContestParticipationSerializer(participants, many=True).data
+			}
+		})
