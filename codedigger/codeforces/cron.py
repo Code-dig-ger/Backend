@@ -73,6 +73,7 @@ def save_user(newUser, codeforces_user):
 	else :
 		newUser.rating = 0
 		newUser.maxRating = 0
+
 	newUser.photoUrl = codeforces_user['titlePhoto'][2:]
 
 	if 'country' in codeforces_user :
