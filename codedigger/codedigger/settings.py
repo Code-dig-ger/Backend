@@ -187,7 +187,7 @@ CRONJOBS = [
     ('0 0 * * *'    , 'codeforces.cron.codeforces_update_problems'), # Every day at 00:00 
     ('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM
     ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder'), # Every 10th minute 
-    ('10 20 * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
+    ('15 10 * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
 ]
 CRONTAB_LOCK_JOBS= True
 

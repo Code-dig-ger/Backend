@@ -65,10 +65,14 @@ def save_user(newUser, codeforces_user):
 		name = name[:100]
 
 	newUser.name = name		
-	newUser.rating = codeforces_user['rating']
-	newUser.maxRating = codeforces_user['maxRating']
-	newUser.rank = codeforces_user['rank']
-	newUser.maxRank  = codeforces_user['maxRank']
+	if 'rating' in codeforces_user :
+	 	newUser.rating = codeforces_user['rating']
+		newUser.maxRating = codeforces_user['maxRating']
+		newUser.rank = codeforces_user['rank']
+		newUser.maxRank  = codeforces_user['maxRank']
+	else :
+		newUser.rating = 0
+		newUser.maxRating = 0
 	newUser.photoUrl = codeforces_user['titlePhoto'][2:]
 
 	if 'country' in codeforces_user :
