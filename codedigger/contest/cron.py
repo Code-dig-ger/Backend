@@ -91,18 +91,7 @@ def update_penalty(contest, cookie) :
 			break
 
 def update_codeforces_short_code_contests() : 
-
-	subject = 'Update Codeforces Short Code Contests Start'
-	message = 'Hope you are enjoying our Problems'
-	recepient = 'testing.codedigger@gmail.com'
-	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-
 	cookie = login()
 	codeforcescontest = CodeforcesContest.objects.filter(Type = "Short Code")
 	for contest in codeforcescontest : 
 		update_penalty(contest, cookie)
-
-	subject = 'Update Codeforces Short Code Contests End'
-	message = 'Hope you are enjoying our Problems'
-	recepient = 'testing.codedigger@gmail.com'
-	send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
