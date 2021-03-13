@@ -66,7 +66,7 @@ def save_user(newUser, codeforces_user):
 
 	newUser.name = name		
 	if 'rating' in codeforces_user :
-	 	newUser.rating = codeforces_user['rating']
+		newUser.rating = codeforces_user['rating']
 		newUser.maxRating = codeforces_user['maxRating']
 		newUser.rank = codeforces_user['rank']
 		newUser.maxRank  = codeforces_user['maxRank']
