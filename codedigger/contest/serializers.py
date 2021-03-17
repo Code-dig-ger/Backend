@@ -5,7 +5,7 @@ from codeforces.serializers import MiniUserSerializer
 class CodeforcesContestSerializer(serializers.ModelSerializer):
     class Meta:
         model = CodeforcesContest
-        fields = [ 'name', 'contestId', 'groupId', 'Type', 'nproblems']
+        fields = [ 'name', 'contestId', 'groupId', 'Type', 'nproblems', 'showOnlyOfficial']
 
 class CodeforcesContestSubmissionSerializer(serializers.ModelSerializer):
     class Meta:

@@ -145,6 +145,39 @@ def updater():
     recepient = 'aaradhyaberi@gmail.com'
     send_mail(subject, message, EMAIL_HOST_USER, [recepient], fail_silently = False)
 
+msg = '{} Update List {}'
+
+def codeforces_updater():
+    send_mail(msg.format('Codeforces','Started'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+    for ele in User.objects.all():
+        cron_codeforces(ele)
+    send_mail(msg.format('Codeforces','Finished'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+
+def uva_updater():
+    send_mail(msg.format('Uva','Started'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+    for ele in User.objects.all():
+        cron_uva(ele)
+    send_mail(msg.format('Uva','Finished'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+
+def codechef_updater():
+    send_mail(msg.format('Codechef','Started'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+    for ele in User.objects.all():
+        cron_codechef(ele)
+    send_mail(msg.format('Codechef','Finished'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+
+def atcoder_updater():
+    send_mail(msg.format('Atcoder','Started'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+    for ele in User.objects.all():
+        cron_atcoder(ele)
+    send_mail(msg.format('Atcoder','Finished'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+
+def spoj_updater():
+    send_mail(msg.format('Spoj','Started'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+    for ele in User.objects.all():
+        cron_spoj(ele)
+    send_mail(msg.format('Spoj','Finished'), 'OK', EMAIL_HOST_USER, ['testing.codedigger@gmail.com'], fail_silently = True)
+
+
 def codechef_list(user):
     if user is None or user == "":
         return

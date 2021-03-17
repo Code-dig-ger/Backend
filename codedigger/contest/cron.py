@@ -52,8 +52,8 @@ def update_penalty(contest, cookie) :
 			contest_participant,created = CodeforcesContestParticipation.objects.get_or_create(
 				contest=contest,
 				user=contest_user,
+				participantId=participant['participantid'],
 				defaults={
-					'participantId' : participant['participantid'],
 					'isOfficial' : clean(column[0].text) != '',
 					'isVirtual' : column[1].find('sup') != None
 				})

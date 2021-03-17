@@ -33,6 +33,7 @@ class CodeforcesContest(models.Model):
 	groupId = models.CharField(max_length = 20, blank = True, default=" ")
 	name = models.CharField(max_length = 100, blank = True, default=" ")
 	Type = models.CharField(max_length = 100)
+	showOnlyOfficial = models.BooleanField()
 	nproblems = models.IntegerField()
 
 	def __str__(self):

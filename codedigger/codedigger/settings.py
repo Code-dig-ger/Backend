@@ -185,7 +185,12 @@ CRONJOBS = [
     ('0 20 * * *'   , 'problem.cron.update_uva'), # Everyday 20:00
     ('0 10 * * 2'  , 'codeforces.cron.codeforces_update_contest'), # Every week on Tuesday at 10:00
     ('0 0 * * *'    , 'codeforces.cron.codeforces_update_problems'), # Every day at 00:00 
-    ('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM
+    #('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM,
+    ('0 1 * * *'    , 'lists.cron.codeforces_updater'),
+    ('0 5 * * *'    , 'lists.cron.uva_updater'),
+    ('0 9 * * *'    , 'lists.cron.codechef_updater'),
+    ('0 13 * * *'    , 'lists.cron.atcoder_updater'),
+    ('0 17 * * *'    , 'lists.cron.spoj_updater'),
     ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder'), # Every 10th minute 
     ('*/15 * * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
 ]
