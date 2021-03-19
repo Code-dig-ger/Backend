@@ -101,6 +101,8 @@ def cron_codechef(user):
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content,'html.parser')
     problems_solved = soup.find('section' , {'class' : 'rating-data-section problems-solved'})
+    if problems_solved is None:
+        return
     if problems_solved.find('h5').text == 'Fully Solved (0)':
         return
     for ele in problems_solved.find('article').find_all('a'):
