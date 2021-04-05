@@ -98,3 +98,6 @@ class ListExtraInfo(models.Model):
 class LadderStarted(models.Model):
     ladder_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="ladder_user")
     ladder = models.ForeignKey(List,on_delete=models.CASCADE,related_name="ladder")
+
+    def __str__(self):
+        return self.ladder.name + " started by " + self.ladder_user.username

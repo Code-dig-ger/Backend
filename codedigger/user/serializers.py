@@ -79,8 +79,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = attrs.get('email','')
         username = attrs.get('username','')
 
-        if not username.isalnum():
-            raise ValidationException("The username should only contain alphanumeric characters")
+        # if not username.isalnum():
+        #     raise ValidationException("The username should only contain alphanumeric characters")
+        if re.match(r'^(?![-._])(?!.*[_.-]{2})[\w.-]{1,75}(?<![-._])$',username) is None:
+            raise ValidationException("Username is not in proper format")
         return attrs
     
     def create(self,validated_data):
