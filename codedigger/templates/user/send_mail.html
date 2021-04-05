@@ -1,406 +1,52 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
-    <!--[if !mso]--><!-- -->
-    <link href='https://fonts.googleapis.com/css?family=Work+Sans:300,400,500,600,700' rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel="stylesheet">
-    <!-- <![endif]-->
-
-    <title>Codedigger Mail</title>
-
-    <style type="text/css">
-
-        body {
-            width: 100%;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
-            mso-margin-top-alt: 0px;
-            mso-margin-bottom-alt: 0px;
-            mso-padding-alt: 0px 0px 0px 0px;
-        }
-        
-        p,
-        h1,
-        h2,
-        h3,
-        h4 {
-            margin-top: 0;
-            margin-bottom: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-        
-        span.preheader {
-            display: none;
-            font-size: 1px;
-        }
-        
-        html {
-            width: 100%;
-        }
-        
-        table {
-            font-size: 14px;
-            border: 0;
-        }
-
-        #rank-card{
-            border: 1px solid gray;
-            border-radius: 10px;
-            border-left: 5px solid #747474;
-        }
-        #rating-change{
-            border: 1px solid gray;
-            border-radius: 10px;
-            border-right: 5px solid #747474;
-        }
-
-        button {
-          position: relative;
-          display: inline-block;
-          cursor: pointer;
-          outline: none;
-          border: 0;
-          vertical-align: middle;
-          text-decoration: none;
-          font-size: inherit;
-          font-family: inherit;
-        }
-        button.learn-more {
-          font-weight: 600;
-          color: #382b22;
-          text-transform: uppercase;
-          padding: 1.00em 1.25em;
-          background: #fff0f0;
-          border: 2px solid #9608EE;
-          border-radius: 0.75em;
-          transform-style: preserve-3d;
-          transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
-        }
-        button.learn-more::before {
-          position: absolute;
-          content: "";
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: #997AD5;
-          border-radius: inherit;
-          box-shadow: 0 0 0 2px #9608EE, 0 0.625em 0 0 #ffe3e2;
-          transform: translate3d(0, 0.75em, -1em);
-          transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
-        }
-        button.learn-more:hover {
-          background: #ffe9e9;
-          transform: translate(0, 0.25em);
-        }
-        button.learn-more:hover::before {
-          box-shadow: 0 0 0 2px #9608EE, 0 0.5em 0 0 #ffe3e2;
-          transform: translate3d(0, 0.5em, -1em);
-        }
-        button.learn-more:active {
-          background: #ffe9e9;
-          transform: translate(0em, 0.75em);
-        }
-        button.learn-more:active::before {
-          box-shadow: 0 0 0 2px #9608EE, 0 0 #ffe3e2;
-          transform: translate3d(0, 0, -1em);
-        }
-
-        /* ----------- responsivity ----------- */
-        
-        @media only screen and (max-width: 640px) {
-            /*------ top header ------ */
-            .main-header {
-                font-size: 20px !important;
-            }
-            .main-section-header {
-                font-size: 28px !important;
-            }
-            .show {
-                display: block !important;
-            }
-            .hide {
-                display: none !important;
-            }
-            .align-center {
-                text-align: center !important;
-            }
-            .no-bg {
-                background: none !important;
-            }
-            /*----- main image -------*/
-            .main-image img {
-                width: 440px !important;
-                height: auto !important;
-            }
-            /* ====== divider ====== */
-            .divider img {
-                width: 440px !important;
-            }
-            /*-------- container --------*/
-            .container590 {
-                width: 440px !important;
-            }
-            .container580 {
-                width: 400px !important;
-            }
-            .main-button {
-                width: 220px !important;
-            }
-            /*-------- secions ----------*/
-            .section-img img {
-                width: 320px !important;
-                height: auto !important;
-            }
-            .team-img img {
-                width: 100% !important;
-                height: auto !important;
-            }
-        }
-        
-        @media only screen and (max-width: 479px) {
-            /*------ top header ------ */
-            .main-header {
-                font-size: 18px !important;
-            }
-            .main-section-header {
-                font-size: 26px !important;
-            }
-            /* ====== divider ====== */
-            .divider img {
-                width: 280px !important;
-            }
-            /*-------- container --------*/
-            .container590 {
-                width: 280px !important;
-            }
-            .container590 {
-                width: 280px !important;
-            }
-            .container580 {
-                width: 260px !important;
-            }
-            /*-------- secions ----------*/
-            .section-img img {
-                width: 280px !important;
-                height: auto !important;
-            }
-        }
-    </style>
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
+        <title>Codedigger - {{message}}</title>
+    </head>
 
 
-<body class="respond" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-    <!-- pre-header -->
-    <table style="display:none!important;">
-        <tr>
-            <td>
-                <div style="overflow:hidden;display:none;font-size:1px;color:#ffffff;line-height:1px;font-family:Arial;maxheight:0px;max-width:0px;opacity:0;">
-                    Codedigger Mail
-                </div>
-            </td>
-        </tr>
-    </table>
-    <!-- pre-header end -->
-    <!-- header -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff">
-        <tr>
-            <td align="center">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                    <tr>
-                       <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td> 
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="height:70%;">
-                                        <a href="http://codedigger.tech/" style="display: block; border-style: none !important; border: 0 !important;"><img width="50%" border="0" src="https://lh3.googleusercontent.com/oYrlqJcNfzGmCl84iQe48NmDnTWer3CIWudMmiDeuY702E5nUkHsC2YAbutwOj53JM0Ik9koxaIobegGoO5z0fB7GjKjyQEccrBoZCQozA4oOUYlCMXrvMN--Xwkxz-_c4k55lUo5kK4aF-UybRXGcgu3UejkK9_F8yQ3W2FRyrjmqHyIaaKLGJsAgRTxZWyI2OD8gK-s76ebvbQQcQeoQf3lc_FAuTLTqjxDluz3WHWbPpDKtQ8Z8lmZFxzRH1WpXFjGW5XW1WC-cIdBpf9C30Scjzi6DjrzOM84GtatdhgIc5jeH_sXt5VKHalxYR2Zt4DvKb1c3xQS1f6uceEkeUlTNcH2_X-8jRFAtPitSCYdgYCMjsKAg_wYta53qUpXa6dJ1hDdzY-3wCm6vorGejyHZJK3v48XLG00EIbJ7wkyGQfK41klxbB4dROPEshvHAE3XDpon34Av1DAtFATW6ZwYkTWh0-3l2AfPEo__pXwyB9PEQg7KaEGwDzrtkiFboyRn19_GK2jG5FEtR-lI2CToUO9n95gsCjyq_cw2UPLkNI10GxNk8EGcJk83E4XfKIktMStxcr7C-k4PhzvEm-7GTxhzuQDTnO8jJCXoUHZSkxB50O_hGYcZ4SiKgtWL0P1ByZkOuFCNtnDjvB2IdnLBNmxPM13ol0qKE0vMH9gCci9S7U4tXX0vuHYA=w1366-h376" alt="Codedigger LOGO" />
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <!-- end header -->
-    <!-- big image section -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff" class="bg_color">
+    <body leftmargin="0.5em" topmargin="0.5em" marginwidth="0.5em" marginheight="0.5em">
+        <!-- pre-header -->
+        <div style="overflow:hidden;display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;">
+            Codedigger - {{message}}
+        </div>
+        <!-- pre-header end -->
 
-        <tr>
-            <td align="center" style="background-color: #ffffff !important">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center" style="color: #343434; font-size: 24px; font-family: Quicksand, Calibri, sans-serif; font-weight:700;letter-spacing: 3px; line-height: 35px;" class="main-header">
-                            <div style="line-height: 35px" >
- 
-                                HI CODER! {{username}},
+        <div style="font: medium/ 1.5  Arial,Helvetica,sans-serif">
+            <img src="https://lh3.googleusercontent.com/pw/ACtC-3fvyif39GMTNTsxXveZB0z3nPAxcaaYnTAw-bVROn58ZTkqO2k-kJngoftU8_xNPBdI5QB-gXgoQKOfBAndXRJiAxY6UxT96IlPf_wv_AihsFI_7dtmqchmJ9OfifaZcdH6JgPMxU2w1qUKGVbQBEf3=w290-h49-no?authuser=0" style="float:right;margin:0 0.5em 0.5em 0.5em" alt="Codedigger">
 
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="40" align="center" cellpadding="0" cellspacing="0" bgcolor="eeeeee">
-                                <tr>
-                                    <td height="2" style="font-size: 2px; line-height: 2px;">&nbsp;</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <div style="line-height: 24px">
+            <p>
+            Hello, {{username}}.
+            </p>
 
-                                            Click below button to {{message}}
+            <p>
+            Click  <a href="{{link}}">here</a> to {{message}}. 
+            </p>
 
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                       
-                                      <a href="{{link}}" target="_blank"> <button class="learn-more"> {{message}} !</button> </a> 
+            <p>
+            If for any reason the above link is not working, copy and paste the below link in any browser to {{message}} - 
+            </p>
 
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 40px; line-height: 40px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                       
-                                        If above button is not working for any reason, open below url in any browser.
+            <p>
+            <a href="{{link}}">{{link}}</a>
+            </p>
 
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td height="15" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="font-size: 12px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <a href="{{link}}" id="link">{{link}}</a> 
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <!-- end section -->
-    <!-- contact section -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff" class="bg_color">
-        <tr class="hide">
-            <td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
-        </tr>
-        <tr>
-            <td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
-        </tr>
-        <tr>
-            <td height="20" style="border-top: 2px solid #e0e0e0;font-size: 20px; line-height: 20px;">&nbsp;</td>
-        </tr>
-            <td align="center">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590 bg_color">
-                    <tr>
-                        <td align="left" style="font-size: 16px; color: #888888; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        If it was not you, just ignore this mail.
-                                        <br>
-                                        With best regards,
-                                        <br>
-                                        Codedigger Team.
-                                    </td>
-                        </tr>
-                        <td height="15" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table border="0" width="300" align="left" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;" class="container590">
-                                <tr>
-                                    <!-- logo -->
-                                    <!--<td align="left">
-                                        <a href="" style="display: block; border-style: none !important; border: 0 !important;"><img width="50%" border="0" src="https://lh3.googleusercontent.com/cz1cLquiLjSoxORU1jZHNWyIB2_GrsMFkLFSHd0oTj71fTg4MRazGTyAgAPz7R9qtZdXMxmzPPi8cIrHkC_9p6wDh8ACMPgddpmWNKmBroxOVLg6BxpV1utyu5QGLsb1khwgIqADmdw8vFVFLYv2GBJbxrH0c1HQCY_6ekCavDpnUULtUUW936CJ_-b1OtKri0Z51pC-VU1ns8FD9YXM2bsxZfipy3txFWacOAkLKYr9yMb2jiGoxDonpXVLsvsDxnr5VcIpL72SFR3ZgeB1LfjWp50eloo7CFXFiCvDMIPS0QnrTByN1r0JFBAM68SNeOAHrJRH_kLWvVqSZWyTvrXEn8pTo2nZUWM9SYPPG8r13HmdzJBwELcOfTSo5ytdm_f9JUbT0M-JDGhCfLZbXACa7kpGeENVzTIGop8KrtUAbuQS0K7sGwHb0phAIL_Z72YmTByGUwf_8OC01D8FYKnXNzwS5ub3tFOrLt0MHcALTaytC_Hm0ZC_TmVyJFUH08alJPRgAuosCWm0lr0bwAfy8klIGxl_P4kbLF1HH0uaftf45vDHFz8puujiXDP_2gAlh_Vi24v8hBmG5dYPYTHUNQPrcz1o-fwGmq9PwjkTb6iarfLokOr2buYrZVYuwG0jQVV_8S-GqNXsjS-gqxA23KnQLenpCxdk6LygOkbtHC1YZeT_gg97bqUZ_g=w1031-h284-no?authuser=0" alt="" /></a>
-                                    </td>-->
-                                </tr>
-                                <tr>
-                                    <td align="left" style="color: #888888; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 23px;" class="text_color">
-                                        <div style="color: #333333; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; font-weight: 600; mso-line-height-rule: exactly; line-height: 23px;">
-                                            Email us: <br/> <a href="mailto:codedigger1.0@gmail.com" style="color: #888888; font-size: 14px; font-family: 'Hind Siliguri', Calibri, Sans-serif; font-weight: 400;"> codedigger1.0@gmail.com </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table border="0" width="200" align="right" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;" class="container590">
-                                <tr>
-                                    <td>
-                                        <table border="0" align="right" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/Qc3zTxn.png" alt=""></a>
-                                                </td>
-                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/RBRORq1.png" alt=""></a>
-                                                </td>
-                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/Wji3af6.png" alt=""></a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-        </tr>
-    </table>
-    <!-- end section -->
-</body>
+            <p>
+            If it was not you, just ignore this mail.
+            </p>
+
+            <p>
+            With best regards,
+            </p>
+
+            <p>
+            Codedigger Team.
+            </p>
+
+            For any query Email us: 
+            <a href="mailto:contact.codedigger@gmail.com"> contact.codedigger@gmail.com </a>
+        </div>
+    </body>
 </html>
