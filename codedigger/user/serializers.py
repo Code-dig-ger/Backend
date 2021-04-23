@@ -135,7 +135,7 @@ class LoginSerializer(serializers.ModelSerializer):
             user = auth.authenticate(username = user_obj_email.username,password=password)
             if user_obj_email.auth_provider != 'email':
                 raise AuthenticationException(
-                    'Please continue your login using ' + filtered_user_by_email[0].auth_provider)
+                    'Please continue your login using ' + user_obj_email.auth_provider)
             if not user:
                 raise AuthenticationException('Invalid credentials. Try again')
             if not user.is_active:
@@ -199,11 +199,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def validate_codeforces(self,value):
         user = self.context.get('user')
-        if value != Profile.objects.get(owner__username=user).codeforces:
+        curr_user = User.objects.get(username=user)
+        if value != Profile.objects.get(owner=curr_user).codeforces:
             cf_status = check_handle_cf(value)
             if cf_status == 2:
-                for ele in Solved.objects.filter(user__username=user,problem__platform='F'):
-                    ele.delete()
+                Solved.objects.filter(user=curr_user,problem__platform='F').delete()
             elif cf_status:
                 raise ValidationException('It seems Codeforces API is not working! Please Wait until it is working perfect.')
             else :
@@ -212,40 +212,40 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def validate_codechef(self,value):
         user = self.context.get('user')
-        if value != Profile.objects.get(owner__username=user).codechef:
+        curr_user = User.objects.get(username=user)
+        if value != Profile.objects.get(owner=curr_user).codechef:
             if check_handle_codechef(value):
-                for ele in Solved.objects.filter(user__username=user,problem__platform='C'):
-                    ele.delete()
+                Solved.objects.filter(user=curr_user,problem__platform='C').delete()
             else:
                 raise ValidationException('The given codechef handle does not exist')
         return value
     
     def validate_atcoder(self,value):
         user = self.context.get('user')
-        if value != Profile.objects.get(owner__username=user).atcoder:
+        curr_user = User.objects.get(username=user)
+        if value != Profile.objects.get(owner=curr_user).atcoder:
             if check_handle_atcoder(value):
-                for ele in Solved.objects.filter(user__username=user,problem__platform='A'):
-                    ele.delete()
+                Solved.objects.filter(user=curr_user,problem__platform='A').delete()
             else:
                 raise ValidationException('The given atcoder handle does not exist')
         return value
     
     def validate_spoj(self,value):
         user = self.context.get('user')
-        if value != Profile.objects.get(owner__username=user).spoj:
+        curr_user = User.objects.get(username=user)
+        if value != Profile.objects.get(owner=curr_user).spoj:
             if check_handle_spoj(value):
-                for ele in Solved.objects.filter(user__username=user,problem__platform='S'):
-                    ele.delete()
+                Solved.objects.filter(user=curr_user,problem__platform='S').delete()
             else:
                 raise ValidationException('The given spoj handle does not exist')
         return value
     
     def validate_uva_handle(self,value):
         user = self.context.get('user')
-        if value != Profile.objects.get(owner__username=user).uva_handle:
+        curr_user = User.objects.get(username=user)
+        if value != Profile.objects.get(owner=curr_user).uva_handle:
             if check_handle_uva(value):
-                for ele in Solved.objects.filter(user__username=user,problem__platform='U'):
-                    ele.delete()
+                Solved.objects.filter(user=curr_user,problem__platform='U').delete()
             else:
                 raise ValidationException('The given UVA handle does not exist')
         return value

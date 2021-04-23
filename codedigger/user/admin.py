@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models import User,Profile,UserFriends
-# Register your models here.
-admin.site.register(User)
-admin.site.register(Profile)
+
+class UserAdmin(admin.ModelAdmin):
+    search_fields = ('username',)
+
+class ProfileAdmin(admin.ModelAdmin):
+    search_fields = ('owner__username','name',)
+
+admin.site.register(User,UserAdmin)
+admin.site.register(Profile,ProfileAdmin)
 admin.site.register(UserFriends)
