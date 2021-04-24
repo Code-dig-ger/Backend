@@ -227,10 +227,13 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
         """
         serializer = self.serializer_class(data=request.data)
 
-        email = request.data.get('email', '')
-
+        email = request.data.get('email', None)
+        if email is None:
+            return Response({'status': 'Failed','error' :'Email has not been provided'}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
+            if user.auth_provider != 'email':
+                return Response({'status': 'Failed','error' :'You cannot reset password if you registered with google'}, status=status.HTTP_400_BAD_REQUEST)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             current_site = get_current_site(
@@ -247,7 +250,8 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Codedigger - Password Reset'}
             Util.send_email(data)
-        return Response({'status': 'OK','result' :'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+            return Response({'status': 'OK','result' :'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+        return Response({'status': 'Failed','error' :'The given email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
