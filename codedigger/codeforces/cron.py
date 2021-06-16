@@ -245,10 +245,14 @@ def codeforces_update_problems():
 	if(data["status"] != 'OK') :
 		return 
 
-	for codeforces_contest in data['result'][:50] : 
+	for codeforces_contest in data['result'][:100] : 
 
 		url = "https://codeforces.com/api/contest.standings?contestId=" + str(codeforces_contest['id']) + "&from=1&count=1"
 		res = requests.get(url)
+		
+		if res.status_code != 200 :
+			continue
+
 		data= res.json()
 
 		if(data["status"] != 'OK') :
@@ -290,7 +294,7 @@ def codeforces_update_problems():
 	if(data["status"] != 'OK') :
 		return 
 
-	for codeforces_contest in data['result'][-50:] : 
+	for codeforces_contest in data['result'][-100:] : 
 
 		url = "https://codeforces.com/api/contest.standings?contestId=" + str(codeforces_contest['id']) + "&from=1&count=1"
 		res = requests.get(url)
