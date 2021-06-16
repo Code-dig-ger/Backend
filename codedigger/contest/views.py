@@ -42,7 +42,7 @@ class ContestAPIView(
 		timeline =request.GET.get('timeline')
 
 		gurus = Profile.objects.get(owner=self.request.user).gurus.split(',')[1:-1]
-		students = Profile.objects.get(owner=self.request.user).codeforces
+		students = [Profile.objects.get(owner=self.request.user).codeforces]
 		#TODO convert to list
 
 		#fetch student data from api
@@ -88,6 +88,7 @@ class ContestAPIView(
 			for contestId in student_contests:
 				q|=Q(contestId=contestId)
 			contest_qs=contest.objects.exclude(q)
+
 
 		if gym != 'true':
 			contest_qs=contest_qs.filter(Type='R')
