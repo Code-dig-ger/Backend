@@ -335,7 +335,7 @@ class SearchUser(generics.GenericAPIView):
             data['username'] = profile.owner.username
             data['email'] = profile.owner.email
             if request.user.is_authenticated :
-                if request.user.username == username:
+                if request.user.username == profile.owner.username:
                     data['about_user'] = 'Logged In User Itself'
                     data['about_mentor'] = 'Logged In User Itself'
                 else :

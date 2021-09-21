@@ -100,6 +100,8 @@ class ContestAPIView(
 				q|=Q(name__icontains=div)
 			contest_qs = contest_qs.filter(q)
 
+
+		# TODO Timeline 
 		if timeline!=None:
 			time = current_time - timeline*month_time
 			contest_qs = contest_qs.filter(startTime__gt>time)
