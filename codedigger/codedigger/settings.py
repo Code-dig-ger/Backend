@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['localhost' , 'api.codedigger.tech','127.0.0.1' , '128.199.26.91']
+ALLOWED_HOSTS = ['localhost' , 'api.codedigger.tech','127.0.0.1' , '128.199.26.91', '165.232.186.106']
 
 AUTH_USER_MODEL = 'user.User'
 
