@@ -4,6 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 def login():    
+    # To Login to Codeforces
     url = "https://codeforces.com/enter"
     res = requests.get(url)
     soup = bs(res.content,features="html5lib")
@@ -36,9 +37,11 @@ def login():
     return Cookie;
 
 def clean(s):
+    # Remove Space Tab Newline
     return re.sub(r"[\n\t\s\r]*", "", s)
 
 def penalty(cookie, contestId, subId, groupId):
+    # Short Code Contest Penalty
     url = "https://codeforces.com/group/"+str(groupId)+"/contest/"+str(contestId)+"/submission/"+str(subId)
     res = requests.get(url , headers = {'Cookie' : cookie})
     soup = bs(res.content,features="html5lib")

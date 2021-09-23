@@ -192,7 +192,9 @@ CRONJOBS = [
     ('0 13 * * *'    , 'lists.cron.atcoder_updater'),
     ('0 17 * * *'    , 'lists.cron.spoj_updater'),
     ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder'), # Every 10th minute 
-    ('*/15 * * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
+
+    # Short Code Contest
+    #('*/15 * * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
 ]
 CRONTAB_LOCK_JOBS= True
 

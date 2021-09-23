@@ -26,7 +26,6 @@ from .models import Contest,ContestProblem,ContestParticipation
 from user.models import Profile
 from problem.models import Problem
 
-# Create your views here.
 
 class ContestAPIView(
     mixins.CreateModelMixin,
@@ -36,6 +35,7 @@ class ContestAPIView(
 	serializer_class = GuruSerializer
 
 	def get(self,request):
+		# Contest Filter
 		gym=request.GET.get('gym')
 		divs = request.GET.get('divs')
 		mentor=request.GET.get('mentor')
@@ -112,16 +112,7 @@ class ContestAPIView(
 		return JsonResponse( context )
 
 
-
-# def testing(request):
-
-#     contest = Contest.objects.all()[0]
-
-#     prepareResult(contest)
-
-#     return JsonResponse({'status' :  'OK'})
-
-
+# Costum Contest
 
 problem_rating = {
 
@@ -138,9 +129,6 @@ problem_rating = {
 # this will return a list of problem according to the contest
 # assign also 
 # isProblem = true
-
-
-
 
 
 def get_mentor_problems(mentor_codeforces):
@@ -165,9 +153,6 @@ def get_mentor_problems(mentor_codeforces):
 	return mentor_solved
 
 
-
-
-
 def get_participant_problem(participants_codeforces):
 	participants_solved = set() 
 	
@@ -187,9 +172,6 @@ def get_participant_problem(participants_codeforces):
 				participants_solved.add(str(submission["problem"]['contestId'])+submission["problem"]['index'])	
 	
 	return participants_solved
-
-
-
 
 
 def makeContest( contest ):
@@ -261,44 +243,43 @@ def makeContest( contest ):
 	return
 
 
-
 ## Short Code Contest 
-from .cron import update_codeforces_short_code_contests
-from .serializers import *
+# from .cron import update_codeforces_short_code_contests
+# from .serializers import *
 
-def testing(requests):
-	update_codeforces_short_code_contests()
-	return JsonResponse({'status' :  'OK'})
+# def testing(requests):
+# 	update_codeforces_short_code_contests()
+# 	return JsonResponse({'status' :  'OK'})
 
 
-class ShortCodeContestAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView,
-    ):
-	permission_classes = [AuthenticatedOrReadOnly]
-	serializer_class = CodeforcesContestSerializer
+# class ShortCodeContestAPIView(
+#     mixins.CreateModelMixin,
+#     generics.ListAPIView,
+#     ):
+# 	permission_classes = [AuthenticatedOrReadOnly]
+# 	serializer_class = CodeforcesContestSerializer
 
-	def get(self,request):
-		shortCodeContest = CodeforcesContest.objects.filter(Type = 'Short Code')
-		return JsonResponse({'status' : 'OK' , 'results' : CodeforcesContestSerializer(shortCodeContest, many=True).data})
+# 	def get(self,request):
+# 		shortCodeContest = CodeforcesContest.objects.filter(Type = 'Short Code')
+# 		return JsonResponse({'status' : 'OK' , 'results' : CodeforcesContestSerializer(shortCodeContest, many=True).data})
 
-class ShortCodeContestStandingAPIView(
-    mixins.CreateModelMixin,
-    generics.ListAPIView,
-    ):
-	permission_classes = [AuthenticatedOrReadOnly]
-	serializer_class = CodeforcesContestParticipationSerializer
+# class ShortCodeContestStandingAPIView(
+#     mixins.CreateModelMixin,
+#     generics.ListAPIView,
+#     ):
+# 	permission_classes = [AuthenticatedOrReadOnly]
+# 	serializer_class = CodeforcesContestParticipationSerializer
 
-	def get(self,request,contestId):
-		contest = CodeforcesContest.objects.filter(Type = 'Short Code' , contestId = contestId)
-		if not contest.exists() :
-			return JsonResponse({'status' :'FAILED' , 'error' : 'No such Contest Found'})
+# 	def get(self,request,contestId):
+# 		contest = CodeforcesContest.objects.filter(Type = 'Short Code' , contestId = contestId)
+# 		if not contest.exists() :
+# 			return JsonResponse({'status' :'FAILED' , 'error' : 'No such Contest Found'})
 
-		participants = CodeforcesContestParticipation.objects.filter(contest = contest[0])
-		return JsonResponse({
-			'status' : 'OK',
-			'results' : {
-				'contest' : CodeforcesContestSerializer(contest, many=True).data,
-				'standing' : CodeforcesContestParticipationSerializer(participants, many=True).data
-			}
-		})
+# 		participants = CodeforcesContestParticipation.objects.filter(contest = contest[0])
+# 		return JsonResponse({
+# 			'status' : 'OK',
+# 			'results' : {
+# 				'contest' : CodeforcesContestSerializer(contest, many=True).data,
+# 				'standing' : CodeforcesContestParticipationSerializer(participants, many=True).data
+# 			}
+# 		})
