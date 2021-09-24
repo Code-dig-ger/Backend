@@ -21,6 +21,7 @@ from .cron import updater,cron_atcoder,cron_codechef,cron_codeforces,cron_spoj,c
 from django.core.paginator import Paginator
 from user.permissions import *
 from user.exception import *
+from .utils import *
 
 def getqs(qs,page_size,page):
     qs = qs[page_size*(page-1):page_size*page]
@@ -46,170 +47,35 @@ class TopicWiseRetrieveView(views.APIView):
 
     def get(self,request,slug):
         curr_list = self.get_object(slug)
-        page = self.request.GET.get('page',None)
-        page_size = 6
-        description = curr_list.description
-        name= curr_list.name
-        difficulty = None
-        video_link = None
-        contest_link = None
-        editorial = None
-        if ListExtraInfo.objects.filter(curr_list=curr_list).exists():
-            qs = ListExtraInfo.objects.get(curr_list=curr_list)
-            difficulty = qs.difficulty
-            video_link = qs.video_link
-            contest_link = qs.contest_link
-            editorial = qs.editorial
-        
+        page_number = self.request.GET.get('page',None)
+        page_size = self.request.GET.get('pageSize',6)
+
         problem_qs = curr_list.problem.all().order_by('rating','id')
-        total = curr_list.problem.all().count()
-        cnt = total//page_size
-        if total % page_size != 0:
-            cnt += 1
-        path = request.build_absolute_uri('/lists/topicwise/list/' + str(slug) + '?')
+        total_problems = problem_qs.count()
+        if total_problems == 0 :
+            return response.Response({'status' : 'OK' , 'result' : []})
+
+        url = request.build_absolute_uri('/lists/topicwise/list/' + str(slug))
         user = self.request.user
         if user.is_anonymous:
             user = None
-        completed = True
-        if not page:
-            if cnt == 0 :
-                return response.Response({'status' : 'OK' , 'result' : []})
-            page = 1
-            temp = { 'F' : True, 'A' : True, 'U' : True}
-            while page <= cnt:
-                qs = getqs(problem_qs,page_size,page)
-                for ele in qs:
-                    solve = Solved.objects.filter(user=user,problem=ele)
-                    if not solve.exists():
-                        if ele.platform == 'F' and temp['F']:
-                            temp['F'] = False
-                            codeforces(user)
-                        elif ele.platform == 'A' and temp['A']:
-                            temp['A'] = False
-                            atcoder(user)
-                        elif ele.platform == 'U' and temp['U']:
-                            temp['U'] = False
-                            uva(user)
-                        elif ele.platform == 'S':
-                            spoj(user,ele)
-                        elif ele.platform == 'C':
-                            codechef(user,ele)
-                for ele in qs:
-                    solve = Solved.objects.filter(user = user,problem=ele)
-                    if not solve.exists():
-                        completed = False
-                        break
-                if not completed : 
-                    break
-                page += 1
-            if completed :
-                page = 1
-            qs = getqs(problem_qs,page_size,page)
-            if page == cnt :
-                Next = None
-            else :
-                Next = path + 'page='+str(page+1)
-            if page == 1:
-                Prev = None
-            else :
-                Prev = path + 'page='+str(page-1)
-            res= {
-                'status' : "OK",
-                'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
-                'link' : {
-                    'first' : path + "page=1",
-                    'last' : path + "page=" + str(cnt),
-                    'prev' : Prev,
-                    'next' : Next,
-                },
-                'meta' : {
-                    'user' : user,
-                    'completed' : True,
-                    'name' : name,
-                    'description' : description,
-                    'difficulty' : difficulty,
-                    'video_link' : video_link,
-                    'contest_link' : contest_link,
-                    'editorial' : editorial,
-                    'current_page' : page,
-                    'from' : (page-1)*page_size + 1,
-                    'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
-                    'per_page' : page_size,
-                    'to' : page*page_size,
-                    'total' : total
-                }
-            }
-            if user :
-                res['meta']['user'] = user.username
-            if not completed:
-                res['meta']['completed'] = False
-            return response.Response(res)
+
+        if not page_number:
+            page_number, isCompleted = get_page_number(problem_qs, user, page_size)
         else:
-            if cnt == 0 :
-                return response.Response({'status' : 'OK' , 'result' : []})
-            if page.isdigit():
-                page = int(page)
+            isCompleted = False
+            if page_number.isdigit():
+                page_number = int(page_number)
             else: 
-                return response.Response({'status' : 'FAILED' , 'error' : 'Page must be an integer.'},status=status.HTTP_400_BAD_REQUEST)
-            if page > cnt : 
-                return response.Response({'status' : 'FAILED' , 'error' : 'Page Out of Bound'},status=status.HTTP_400_BAD_REQUEST)
-            if page == cnt :
-                Next = None
-            else :
-                Next = path + 'page='+str(page+1)
-            if page == 1:
-                Prev = None
-            else :
-                Prev = path + 'page='+str(page-1)
-            qs = getqs(problem_qs,page_size,page)
-            temp = { 'F' : True, 'A' : True, 'U' : True}
-            for ele in qs:
-                solve = Solved.objects.filter(user=user,problem=ele)
-                if not solve.exists():
-                    if ele.platform == 'F' and temp['F']:
-                        temp['F'] = False
-                        codeforces(user)
-                    elif ele.platform == 'A' and temp['A']:
-                        temp['A'] = False
-                        atcoder(user)
-                    elif ele.platform == 'U' and temp['U']:
-                        temp['U'] = False
-                        uva(user)
-                    elif ele.platform == 'S':
-                        spoj(user,ele)
-                    elif ele.platform == 'C':
-                        codechef(user,ele)
-            res = {
-                'status' : "OK",
-                'result' : ProblemSerializer(qs,many=True,context = {"slug" : curr_list,"user" : user}).data,
-                'link' : {
-                    'first' : path + "page=1",
-                    'last' : path + "page=" + str(cnt),
-                    'prev' : Prev,
-                    'next' : Next,
-                },
-                'meta' : {
-                    'user' : user,
-                    'completed' : False,
-                    'name' : name,
-                    'description' : description,
-                    'difficulty' : difficulty,
-                    'video_link' : video_link,
-                    'contest_link' : contest_link,
-                    'editorial' : editorial,
-                    'current_page' : page,
-                    'from' : (page-1)*page_size + 1,
-                    'last_page' : cnt,
-                    'path' : request.build_absolute_uri('/lists/topicwise/list/' + str(slug)),
-                    'per_page' : page_size,
-                    'to' : page*page_size,
-                    'total' : total
-                }
-            }
-            if user: 
-                res['meta']['user'] = user.username
-            return response.Response(res)
+                raise ValidationException('Page must be an integer')
+            total_page = get_total_page(total_problems, page_size) 
+            if page_number > total_page : 
+                raise ValidationException('Page Out of Bound')
+            update_page_submission(problem_qs, user, page_size, page_number)
+
+        res = get_json_response(curr_list, user, page_number, page_size, 
+                                 url, problem_qs, isCompleted)
+        return response.Response(res)
 
 
 class TopicwiseGetLadderView(generics.ListAPIView):
