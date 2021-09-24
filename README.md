@@ -104,6 +104,6 @@ Project Link: [https://github.com/Code-dig-ger/Backend](https://github.com/Code-
 [license-shield]: https://img.shields.io/github/license/Code-dig-ger/Backend.svg?style=for-the-badge
 [license-url]: https://github.com/Code-dig-ger/Backend/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/
+[linkedin-url]: https://www.linkedin.com/company/codedigger
 [code-of-conduct-shield]: https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg
 [code-of-conduct-url]: CODE_OF_CONDUCT.md
