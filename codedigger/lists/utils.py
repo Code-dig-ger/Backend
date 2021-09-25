@@ -1,5 +1,10 @@
-from .serializers import ProblemSerializer
+# Models Import
 from .models import Solved, ListExtraInfo
+from user.models import Profile
+
+# Serializers Import
+from .serializers import ProblemSerializer
+
 from .solved_update import codeforces,uva,atcoder,codechef,spoj,atcoder_scraper_check
 
 def update_submissions(qs, user, help_dict):
@@ -29,6 +34,21 @@ def update_submissions(qs, user, help_dict):
 def getqs(qs,page_size,page):
     qs = qs[page_size*(page-1):page_size*page]
     return qs
+
+def get_list_platform(user):
+	# Param :
+		# user : Object of User Model
+	user_profile = Profile.objects.get(owner = user)
+	temp = ['F']
+	if user_profile.spoj != None:
+		temp.append('S')
+	if user_profile.uva_handle != None:
+		temp.append('U')
+	if user_profile.atcoder != None:
+		temp.append('A')
+	if user_profile.codechef != None:
+		temp.append('C')
+	return temp
 
 def get_total_page(total_problems, page_size):
 	# param :
@@ -60,7 +80,7 @@ def get_next_url(page, url, total_page):
 		Next = url + '?page='+str(page+1)
 	return Next
 
-def get_page_number(problem_qs, user, page_size):
+def get_unsolved_page_number(problem_qs, user, page_size):
 	# param : 
 		# problem_qs : 	List of Problems Total
 		# user : 		Object of User Model
@@ -71,6 +91,7 @@ def get_page_number(problem_qs, user, page_size):
 
 	page_number = 1
 	isCompleted = True
+	unsolved_prob = None
 	help_dict = { 'F' : True, 'A' : True, 'U' : True}
 	while page_number <= total_page:
 		qs = getqs(problem_qs,page_size,page_number)
@@ -78,6 +99,7 @@ def get_page_number(problem_qs, user, page_size):
 		for ele in qs:
 			solve = Solved.objects.filter(user = user,problem=ele)
 			if not solve.exists():
+				unsolved_prob = ele.prob_id
 				isCompleted = False
 				break
 		if not isCompleted : 
@@ -85,7 +107,7 @@ def get_page_number(problem_qs, user, page_size):
 		page_number += 1
 	if isCompleted :
 		page_number = 1
-	return (page_number, isCompleted)
+	return (page_number, unsolved_prob, isCompleted)
 
 def update_page_submission(problem_qs, user, page_size, page_number):
 	# param : 
@@ -98,8 +120,8 @@ def update_page_submission(problem_qs, user, page_size, page_number):
 	help_dict = { 'F' : True, 'A' : True, 'U' : True}
 	update_submissions(qs, user, help_dict)
 
-def get_json_response(curr_list, user, page_number, page_size, 
-						 url, problem_qs, isCompleted):
+def get_response_dict(curr_list, user, page_number, page_size, url, 
+					problem_qs, isCompleted, unsolved_page = None, unsolved_prob = None):
 	# param:
 		# curr_list: 	Object of List Model 
 		# user:			Object of User Model 
@@ -108,6 +130,8 @@ def get_json_response(curr_list, user, page_number, page_size,
 		# url:			Base url
 		# problem_qs:	List of Problems Total
 		# isCompleted: 	is List Completed 
+		# unsolved_page: First Unsolved Page
+		# unsolved_prob: First Unsolved Problem
 
 	total_problems = problem_qs.count()
 	total_page = get_total_page(total_problems, page_size)
@@ -141,6 +165,8 @@ def get_json_response(curr_list, user, page_number, page_size,
 		},
 		'meta' : {
 			'user' : None if user is None else user.username,
+			'curr_prob' : unsolved_prob,
+			'curr_unsolved_page' : unsolved_page,
 			'completed' : isCompleted,
 			'name' : name,
 			'description' : description,
@@ -158,6 +184,3 @@ def get_json_response(curr_list, user, page_number, page_size,
 		}
 	}
 	return res
-
-
-
