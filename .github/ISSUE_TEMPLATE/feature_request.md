@@ -1,7 +1,6 @@
 ---
 name: Feature request
 about: Do you need a new feature?
-title: ''
 labels: 'Issue Type: Feature Request'
 
 ---
