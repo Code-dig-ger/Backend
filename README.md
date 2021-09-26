@@ -18,18 +18,18 @@
 
 1. [Introduction](#introduction)
 1. [Getting Started](#getting-started)
-	1. [Fork, clone locally and create a branch]
-	1. [Setting Environment First Time]
-		1. [Basic Requirements]
-		1. [Creating Virtual Environment]
-		1. [Installing Requirements]
-		1. [Setting up Database and Environment File]
-		1. [Migrating Database]
-		1. [Create Superuser]
-	1. [Starting Development Server]
-	1. [Leaving the virtual environment]
-	1. [Update requirements file]
-	1. [Update Database]  
+	1. [Fork, clone locally and create a branch](#fork-clone-locally--create-a-branch)
+	1. [Setting Environment First Time](#setting-environment-first-time)
+		1. [Basic Requirements](#basic-requirements)
+		1. [Creating Virtual Environment](#creating-virtual-environment)
+		1. [Installing Requirements](#installing-requirements)
+		1. [Setting up Database and Environment File](#setting-up-database-and-environment-file)
+		1. [Migrating Database](#migrating-database)
+		1. [Create Superuser](#create-superuser)
+	1. [Starting Development Server](#starting-development-server)
+	1. [Leaving the virtual environment](#leaving-the-virtual-environment)
+	1. [Update requirements file](#update-requirements-file-critical)
+	1. [Update Database](#update-database)  
 1. [Code of Conduct](#code-of-conduct)
 1. [Contributing](#contributing)
 1. [License](#license)
@@ -79,7 +79,10 @@ A virtual environment is a tool that helps keep dependencies required and the pr
 pip install name_of_library
 ``` 
 on the terminal without activating an environment, all the packages will be installed globally which is not a good practice if you’re working with different projects on your computer.
+
 If this sounds a bit complicated, don’t worry so much because a virtual environment is just a directory that will contain all the necessary files for our project to run.
+
+**Installing venv (required once)**
 
 **Windows**
 ```
@@ -92,9 +95,10 @@ python3 -m pip install --user virtualenv
 python3 -m venv env
 ```
 
-You have to start a virtual environment everytime you start new terminal -
+You have to start virtual environment everytime you start new terminal -
 
 **Windows**
+
 Using gitbash
 ```
 . env/Scripts/activate
@@ -120,7 +124,8 @@ pip3 install -r requirements.txt
 
 #### Setting up Database and Environment File
 
-**Requirements- MySQL**
+**Requirement- MySQL**
+
 You can download MySQL from [here](https://www.mysql.com/downloads/) or download [XAMPP](https://www.apachefriends.org/download.html).
 
 Start MySQL server and create a database.
@@ -147,6 +152,7 @@ DB_PORT = 3306
 ```
 
 **GMAIL Settings**
+
 You need to [turn on less secure app access](https://support.google.com/accounts/answer/6010255?hl=en) for sending mails. 
 ```
 EMAIL_HOST_USER = your_mail_id
