@@ -11,7 +11,7 @@ def update_submissions(qs, user, help_dict):
 	# param :
 		# qs : Problem QuerySet (List of Problems Object)
 		# user: Object of User Model 
-		# help_dict: Helper Dictionary to check for Codeforces, Atcoder, UVA
+		# help_dict: Helper Dictionary to check for Codeforces, UVA
 
 	for ele in qs:
 		solve = Solved.objects.filter(user=user,problem=ele)
@@ -19,12 +19,11 @@ def update_submissions(qs, user, help_dict):
 			if ele.platform == 'F' and help_dict['F']:
 				help_dict['F'] = False
 				codeforces(user)
-			elif ele.platform == 'A' and help_dict['A']:
-				help_dict['A'] = False
-				atcoder(user)
 			elif ele.platform == 'U' and help_dict['U']:
 				help_dict['U'] = False
 				uva(user)
+			elif ele.platform == 'A':
+				atcoder_scraper_check(user,ele)
 			elif ele.platform == 'S':
 				spoj(user,ele)
 			elif ele.platform == 'C':
@@ -92,7 +91,7 @@ def get_unsolved_page_number(problem_qs, user, page_size):
 	page_number = 1
 	isCompleted = True
 	unsolved_prob = None
-	help_dict = { 'F' : True, 'A' : True, 'U' : True}
+	help_dict = { 'F' : True, 'U' : True}
 	while page_number <= total_page:
 		qs = getqs(problem_qs,page_size,page_number)
 		help_dict = update_submissions(qs, user, help_dict)
@@ -117,7 +116,7 @@ def update_page_submission(problem_qs, user, page_size, page_number):
 		# page_number: 	Page Number to Update
 
 	qs = getqs(problem_qs,page_size,page_number)
-	help_dict = { 'F' : True, 'A' : True, 'U' : True}
+	help_dict = { 'F' : True, 'U' : True}
 	update_submissions(qs, user, help_dict)
 
 def get_response_dict(curr_list, user, page_number, page_size, url, 

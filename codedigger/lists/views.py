@@ -52,7 +52,7 @@ class TopicWiseRetrieveView(views.APIView):
             raise ValidationException('Page Size must be an integer')
 
         problem_qs = curr_list.problem.all().order_by('rating','id')
-        total_problems = problem_qs.count()
+        total_problems = problem_qsatcoder_scraper_check(user,ele).count()
         if total_problems == 0 :
             return response.Response({'status' : 'OK' , 'result' : []})
 
