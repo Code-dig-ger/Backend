@@ -3,9 +3,9 @@ from . import google
 from .register import register_social_user
 import os
 from dotenv import load_dotenv, find_dotenv
+
 load_dotenv(find_dotenv())
 from rest_framework.exceptions import AuthenticationFailed
-
 
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
@@ -17,8 +17,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
             user_data['sub']
         except:
             raise serializers.ValidationError(
-                'The token is invalid or expired. Please login again.'
-            )
+                'The token is invalid or expired. Please login again.')
 
         if user_data['aud'] != os.getenv('GOOGLE_CLIENT_ID'):
             raise AuthenticationFailed('oops, who are you?')
@@ -28,4 +27,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         name = user_data['name']
         provider = 'google'
 
-        return register_social_user(provider=provider, user_id=user_id, email=email, name=name)
+        return register_social_user(provider=provider,
+                                    user_id=user_id,
+                                    email=email,
+                                    name=name)
