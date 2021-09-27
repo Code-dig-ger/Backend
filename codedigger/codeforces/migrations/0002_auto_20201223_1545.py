@@ -58,10 +58,6 @@ class Migration(migrations.Migration):
             model_name='user_contest_rank',
             name='organizationRank',
         ),
-        migrations.DeleteModel(
-            name='country_contest_participation',
-        ),
-        migrations.DeleteModel(
-            name='organization_contest_participation',
-        ),
+        migrations.DeleteModel(name='country_contest_participation', ),
+        migrations.DeleteModel(name='organization_contest_participation', ),
     ]

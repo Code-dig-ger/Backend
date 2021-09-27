@@ -3,6 +3,11 @@ from .models import Problem
 
 
 class ProblemAdmin(admin.ModelAdmin):
-    search_fields = ('prob_id','platform','name',)
+    search_fields = (
+        'prob_id',
+        'platform',
+        'name',
+    )
 
-admin.site.register(Problem,ProblemAdmin)
+
+admin.site.register(Problem, ProblemAdmin)
