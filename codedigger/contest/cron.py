@@ -1,13 +1,13 @@
 # Cron Job -
-# Problem Assign -- Contest with isProblem False -- Assign Problem 
-# Result Assign -- Contest with isResult False 
-# contest end -- (startTime + duration) <= time.now 
+# Problem Assign -- Contest with isProblem False -- Assign Problem
+# Result Assign -- Contest with isResult False
+# contest end -- (startTime + duration) <= time.now
 
 #Email
-from django.core.mail import send_mail	
+from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
 
-## Short Code Contest 
+## Short Code Contest
 # from .utils import login, clean, penalty
 # from .models import CodeforcesContest, CodeforcesContestSubmission, CodeforcesContestParticipation
 # import requests, random, re
@@ -41,7 +41,7 @@ from codedigger.settings import EMAIL_HOST_USER
 # 					prevHandle = user_handle
 # 					isFirst = False
 # 			contest_user,created = CodeforcesUser.objects.get_or_create(handle = user_handle)
-# 			if created : 
+# 			if created :
 # 				url = "https://codeforces.com/api/user.info?handles="+user_handle
 # 				res = requests.get(url)
 # 				if res.status_code == 200:
@@ -90,8 +90,8 @@ from codedigger.settings import EMAIL_HOST_USER
 # 		if isBreak:
 # 			break
 
-# def update_codeforces_short_code_contests() : 
+# def update_codeforces_short_code_contests() :
 # 	cookie = login()
 # 	codeforcescontest = CodeforcesContest.objects.filter(Type = "Short Code")
-# 	for contest in codeforcescontest : 
+# 	for contest in codeforcescontest :
 # 		update_penalty(contest, cookie)
