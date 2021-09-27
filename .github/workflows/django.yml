@@ -27,7 +27,7 @@ jobs:
         pip install -r requirements.txt
     - name: Change Directory
       run: |
-        cd codedigger/
+        ls
     - name: Run Tests
       run: |
         python manage.py test
