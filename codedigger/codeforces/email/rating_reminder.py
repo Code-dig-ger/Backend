@@ -1,5 +1,5 @@
 def get_rating_reminder_string():
-	return """<!DOCTYPE html>
+    return """<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -60,7 +60,7 @@ def get_rating_reminder_string():
             mso-margin-bottom-alt: 0px;
             mso-padding-alt: 0px 0px 0px 0px;
         }
-        
+
         p,
         h1,
         h2,
@@ -71,16 +71,16 @@ def get_rating_reminder_string():
             padding-top: 0;
             padding-bottom: 0;
         }
-        
+
         span.preheader {
             display: none;
             font-size: 1px;
         }
-        
+
         html {
             width: 100%;
         }
-        
+
         table {
             font-size: 14px;
             border: 0;
@@ -98,7 +98,7 @@ def get_rating_reminder_string():
         }
 
         /* ----------- responsivity ----------- */
-        
+
         @media only screen and (max-width: 640px) {
             /*------ top header ------ */
             .main-header {
@@ -148,7 +148,7 @@ def get_rating_reminder_string():
                 height: auto !important;
             }
         }
-        
+
         @media only screen and (max-width: 479px) {
             /*------ top header ------ */
             .main-header {
@@ -199,7 +199,7 @@ def get_rating_reminder_string():
             <td align="center">
                 <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
                     <tr>
-                       <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td> 
+                       <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
                     </tr>
                     <tr>
                         <td align="center">
@@ -233,9 +233,9 @@ def get_rating_reminder_string():
                     <tr>
                         <td align="center" style="color: #343434; font-size: 24px; font-family: Quicksand, Calibri, sans-serif; font-weight:700;letter-spacing: 3px; line-height: 35px;" class="main-header">
                             <div style="line-height: 35px" >
- 
+
                                 HI CODER! <a href="https://codeforces.com/profile/{{rating_change.handle}}">{% if rating_change.isnewlegendary %}
-                                <span class="legendary-user-first-letter rated-user">{{rating_change.handle.0}}</span><span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle|slice:"1:"}}</span>{% else %}<span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle}}</span>{% endif %}</a>, 
+                                <span class="legendary-user-first-letter rated-user">{{rating_change.handle.0}}</span><span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle|slice:"1:"}}</span>{% else %}<span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle}}</span>{% endif %}</a>,
 
                             </div>
                         </td>
@@ -261,17 +261,17 @@ def get_rating_reminder_string():
                                 <tr>
                                     <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
                                         <div id="rating-change" style="line-height: 24px">
-											The Rating Change of 
-                                            <br> <a href="https://codeforces.com/contest/{{rating_change.contestId}}/ratings/friends/true">{{rating_change.contestName}}</a> 
+											The Rating Change of
+                                            <br> <a href="https://codeforces.com/contest/{{rating_change.contestId}}/ratings/friends/true">{{rating_change.contestName}}</a>
                                             <br>
                                             are out now...
 
 											<br>
 
 											{% if rating_change.newRank != rating_change.oldRank and rating_change.newRating > rating_change.oldRating  %}
-												Congratulations on becoming  
+												Congratulations on becoming
                                             <br>
-											{% if rating_change.isnewlegendary %} 
+											{% if rating_change.isnewlegendary %}
 											<span class="legendary-user-first-letter rated-user">{{rating_change.newRank.0}}</span><span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRank|slice:"1:"}}</span>
 											{% else %}
 											<span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRank}}</span>
@@ -296,7 +296,7 @@ def get_rating_reminder_string():
                                         <div style="line-height: 24px">
 
                                         <span id = 'old-rank' style="display: inline-block;width: 90px;height: 60px;">
-                                            {% if rating_change.isoldlegendary %} 
+                                            {% if rating_change.isoldlegendary %}
                                             <span class="{{rating_change.oldcolor}} rated-user">{{rating_change.oldRating}}</span>
                                             <br>
                                             <span class="legendary-user-first-letter rated-user" style="display: inline;">{{rating_change.oldRank.0}}</span><span class="{{rating_change.oldcolor}} rated-user" style="display: inline;">{{rating_change.oldRank|slice:"1:"}}</span>
@@ -312,11 +312,11 @@ def get_rating_reminder_string():
                                             <img width="100%" height="70%" border="0" src="https://lh3.googleusercontent.com/WTiHNG2tfrdXKkpIf_qyjSF7kfzVGKGAUZVBX6S1ZrtQKocKnN6jn66IOwSvAoeehBmpjwVdlz2RdZoAcZqEwCR9cKaoMng3V10DstLbQVZ9Kb4RN6qmHGdx3K516bGnmX5kgz9VVoRFgERk3aEEkyivHz80tilxtEVePWEMkPY5ZhXruwmrZiZ8zDkkcgzuqN7nYpfjZQ4a061YHnW-6RxCOnZD84daoRn90nDowCgSE2hyRB49t1tt3uWRbgQwlCi0iO_lKrdJpRbNfSlrKdKT-_wuwb5d7uv8CAdXCKaK3BC7hQRfq28q7hJOozv3qohM1gb4byTMCtUJN7pMf2Fcts3i9mzzqoCdgpW_tOHm59n5oR60Ckn3gwaOIjCeEqD1Wge0Pkz79CU_j-ey67HbrEUpQCwDiCOLR3gf6Un1dYVMBgB0QjePwdJLa8N5D7WmIj3pOjQcRo2ljhRjNZ8bgMgI1o2osKhyl4r34VzdM6vRYWC1bU16iVDNySG4pLbMTDmbt77BxSKv2BFqwbaO884JMLYVsojSKZfncZk8FzDJRDMxlXJJCMVEJgcZBGwRpeVq0kyJ2UTZ3Uslqlaxp8cZk0tH-REeUwqzoke3nap4tAA8p3hZfDkWH33giqVTxYJPD0t0lmH5_Wt8BMOBjvetxfnkXKwYYDdmzTrO77_fDAw0rYuR_sysWA=w378-h170" alt="To" />
                                         </span>
                                         <span id = "new-rating" style="display: inline-block;width: 90px;height: 60px;">
-                                            {% if rating_change.isnewlegendary %} 
+                                            {% if rating_change.isnewlegendary %}
                                             <span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRating}}</span>
                                             <br>
                                             <span class="legendary-user-first-letter rated-user"style="display: inline;">{{rating_change.newRank.0}}</span><span class="{{rating_change.newcolor}} rated-user"style="display: inline;">{{rating_change.newRank|slice:"1:"}}</span>
-                                            
+
                                             {% else %}
                                             <span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRating}} <br>{{rating_change.newRank}}</span>
                                             {% endif %}
@@ -350,7 +350,7 @@ def get_rating_reminder_string():
                                             {% endif %}
                                             <!--Sharable Link
 
-                                            Created by Codedigger 
+                                            Created by Codedigger
 
                                             // Information about codedigger -->
                                         </div>

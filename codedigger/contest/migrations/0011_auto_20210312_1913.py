@@ -6,7 +6,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contest', '0010_codeforcescontest_codeforcescontestparticipation_codeforcescontestsubmission'),
+        ('contest',
+         '0010_codeforcescontest_codeforcescontestparticipation_codeforcescontestsubmission'),
     ]
 
     operations = [

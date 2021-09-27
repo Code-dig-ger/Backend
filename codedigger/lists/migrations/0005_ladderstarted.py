@@ -16,9 +16,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LadderStarted',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ladder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ladder', to='lists.list')),
-                ('ladder_user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ladder_user', to=settings.AUTH_USER_MODEL)),
+                ('id',
+                 models.AutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
+                ('ladder',
+                 models.ForeignKey(
+                     on_delete=django.db.models.deletion.CASCADE,
+                     related_name='ladder',
+                     to='lists.list')),
+                ('ladder_user',
+                 models.ForeignKey(
+                     on_delete=django.db.models.deletion.CASCADE,
+                     related_name='ladder_user',
+                     to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

@@ -6,6 +6,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+from pathlib import Path
 import datetime
 
 # for env file
@@ -13,7 +14,6 @@ import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +28,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['localhost' , 'api.codedigger.tech','127.0.0.1' , '128.199.26.91', '165.232.186.106']
+ALLOWED_HOSTS = [
+    'localhost',
+    'api.codedigger.tech',
+    '127.0.0.1',
+    '128.199.26.91',
+    '165.232.186.106']
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -43,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #Local
+    # Local
     'social_auth',
     'user',
     'codeforces',
@@ -52,7 +57,7 @@ INSTALLED_APPS = [
     'blog',
     'contest',
 
-    #Third Party
+    # Third Party
     'rest_framework',
     'corsheaders',
     'drf_yasg',
@@ -78,7 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    #extra
+    # extra
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -87,8 +92,8 @@ ROOT_URLCONF = 'codedigger.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 
-        'templates'
+        'DIRS': [
+            'templates'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -116,7 +121,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-        'OPTIONS' : { 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+        'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
@@ -166,7 +171,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 
 REST_FRAMEWORK = {
-    'NON_FIELD_ERRORS_KEY' : 'error',
+    'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
@@ -178,25 +183,28 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-    ('0 15 1 * *'    , 'problem.cron.update_spoj'), # Every month at day 1 at 3:00 PM
-    ('0 13 * * 2'   , 'codeforces.cron.codeforces_update_users'), # Every week on Tuesday at 1:00PM
-    ('0 22 * * *'   , 'problem.cron.update_codechef'), # Everyday 22:00
-    ('0 21 * * *'   , 'problem.cron.update_atcoder'),  # Everyday 21:00
-    ('0 20 * * *'   , 'problem.cron.update_uva'), # Everyday 20:00
-    ('0 10 * * 2'  , 'codeforces.cron.codeforces_update_contest'), # Every week on Tuesday at 10:00
-    ('0 0 * * *'    , 'codeforces.cron.codeforces_update_problems'), # Every day at 00:00 
-    #('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM,
-    ('0 1 * * *'    , 'lists.cron.codeforces_updater'),
-    ('0 5 * * *'    , 'lists.cron.uva_updater'),
-    ('0 9 * * *'    , 'lists.cron.codechef_updater'),
-    ('0 13 * * *'    , 'lists.cron.atcoder_updater'),
-    ('0 17 * * *'    , 'lists.cron.spoj_updater'),
-    ('*/10 * * * *' , 'codeforces.cron.ratingChangeReminder'), # Every 10th minute 
+    # Every month at day 1 at 3:00 PM
+    ('0 15 1 * *', 'problem.cron.update_spoj'),
+    # Every week on Tuesday at 1:00PM
+    ('0 13 * * 2', 'codeforces.cron.codeforces_update_users'),
+    ('0 22 * * *', 'problem.cron.update_codechef'),  # Everyday 22:00
+    ('0 21 * * *', 'problem.cron.update_atcoder'),  # Everyday 21:00
+    ('0 20 * * *', 'problem.cron.update_uva'),  # Everyday 20:00
+    # Every week on Tuesday at 10:00
+    ('0 10 * * 2', 'codeforces.cron.codeforces_update_contest'),
+    ('0 0 * * *', 'codeforces.cron.codeforces_update_problems'),  # Every day at 00:00
+    # ('30 1 * * *'    , 'lists.cron.updater'), # Every day at 1:30 AM,
+    ('0 1 * * *', 'lists.cron.codeforces_updater'),
+    ('0 5 * * *', 'lists.cron.uva_updater'),
+    ('0 9 * * *', 'lists.cron.codechef_updater'),
+    ('0 13 * * *', 'lists.cron.atcoder_updater'),
+    ('0 17 * * *', 'lists.cron.spoj_updater'),
+    ('*/10 * * * *', 'codeforces.cron.ratingChangeReminder'),  # Every 10th minute
 
     # Short Code Contest
-    #('*/15 * * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute 
+    # ('*/15 * * * *' , 'contest.cron.update_codeforces_short_code_contests'), # Every 15th minute
 ]
-CRONTAB_LOCK_JOBS= True
+CRONTAB_LOCK_JOBS = True
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

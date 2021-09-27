@@ -1,7 +1,7 @@
-from rest_framework import serializers,status
-from .models import ListInfo,Solved,List,ListInfo,LadderStarted
+from rest_framework import serializers, status
+from .models import ListInfo, Solved, List, ListInfo, LadderStarted
 from problem.models import Problem
-from user.models import User,Profile
+from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -10,26 +10,26 @@ from .solved_update import *
 from user.exception import ValidationException
 from django.template.defaultfilters import slugify
 
+
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     platform = serializers.SerializerMethodField()
 
-    def get_description(self,obj):
+    def get_description(self, obj):
         slug = self.context.get("slug")
-        qs = ListInfo.objects.filter(p_list = slug,problem = obj)
+        qs = ListInfo.objects.filter(p_list=slug, problem=obj)
         if qs.exists():
             for ele in qs.values('description'):
                 return ele['description']
         return " "
 
-
-    def get_solved(self,obj):
+    def get_solved(self, obj):
         user = self.context.get("user")
-        solve = Solved.objects.filter(user = user,problem = obj)
+        solve = Solved.objects.filter(user=user, problem=obj)
         return solve.exists()
 
-    def get_platform(self,obj):
+    def get_platform(self, obj):
         if obj.platform == 'F':
             return "Codeforces"
         elif obj.platform == 'A':
@@ -40,34 +40,46 @@ class ProblemSerializer(serializers.ModelSerializer):
             return "Spoj"
         elif obj.platform == 'U':
             return "UVA"
-        
-
 
     class Meta:
         model = Problem
-        fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','description','solved',)
+        fields = (
+            'id',
+            'name',
+            'prob_id',
+            'url',
+            'contest_id',
+            'rating',
+            'index',
+            'tags',
+            'platform',
+            'difficulty',
+            'editorial',
+            'description',
+            'solved',
+        )
+
 
 class GetSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField()
     user_solved = serializers.SerializerMethodField()
 
-    def get_total(self,attrs):
+    def get_total(self, attrs):
         return attrs.problem.count()
 
-    def get_user_solved(self,attrs):
+    def get_user_solved(self, attrs):
         cnt = 0
-        user = self.context.get('user',None)
+        user = self.context.get('user', None)
         if user is None or user.is_anonymous:
             return None
         for ele in attrs.problem.all():
-            if Solved.objects.filter(user=user,problem=ele).exists():
+            if Solved.objects.filter(user=user, problem=ele).exists():
                 cnt += 1
         return cnt
 
-
     class Meta:
         model = List
-        fields = ('id','name','description','total','user_solved','slug')
+        fields = ('id', 'name', 'description', 'total', 'user_solved', 'slug')
 
 
 class GetLadderSerializer(serializers.ModelSerializer):
@@ -75,73 +87,100 @@ class GetLadderSerializer(serializers.ModelSerializer):
     user_solved = serializers.SerializerMethodField()
     first_time = serializers.SerializerMethodField()
 
-    def get_total(self,attrs):
+    def get_total(self, attrs):
         return attrs.problem.count()
 
-    def get_user_solved(self,attrs):
+    def get_user_solved(self, attrs):
         cnt = 0
-        user = self.context.get('user',None)
+        user = self.context.get('user', None)
         if user is None or user.is_anonymous:
             return None
         for ele in attrs.problem.all():
-            if Solved.objects.filter(user=user,problem=ele).exists():
+            if Solved.objects.filter(user=user, problem=ele).exists():
                 cnt += 1
         return cnt
 
-    def get_first_time(self,attrs):
-        user = self.context.get('user',None)
-        if user is None or user.is_anonymous :
+    def get_first_time(self, attrs):
+        user = self.context.get('user', None)
+        if user is None or user.is_anonymous:
             return True
-        if LadderStarted.objects.filter(ladder_user = user,ladder=attrs).exists():
+        if LadderStarted.objects.filter(
+                ladder_user=user, ladder=attrs).exists():
             return False
         return True
 
     class Meta:
         model = List
-        fields = ('id','name','description','total','user_solved','first_time','slug')
+        fields = (
+            'id',
+            'name',
+            'description',
+            'total',
+            'user_solved',
+            'first_time',
+            'slug')
 
 
 class GetUserlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id','name','description','slug','public')
+        fields = ('id', 'name', 'description', 'slug', 'public')
+
 
 class CreateUserlistSerializer(serializers.ModelSerializer):
 
     slug = serializers.SlugField(read_only=True)
     name = serializers.CharField(required=True)
-    
-    def validate_name(self,value):
+
+    def validate_name(self, value):
         user = self.context.get('user')
         slug = slugify(value) + "-" + str(User.objects.get(username=user).id)
-        if List.objects.filter(name=value,owner__username=user).exists() or List.objects.filter(slug=slug,owner__username=user).exists():
-            raise ValidationException('List with the name or slug and user already exists')
+        if List.objects.filter(
+                name=value,
+                owner__username=user).exists() or List.objects.filter(
+                slug=slug,
+                owner__username=user).exists():
+            raise ValidationException(
+                'List with the name or slug and user already exists')
         return value
-
 
     class Meta:
         model = List
-        fields = ('id','name','description','slug','public')
+        fields = ('id', 'name', 'description', 'slug', 'public')
 
 
 class ProblemUserlisterializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
 
-    def get_solved(self,obj):
+    def get_solved(self, obj):
         user = self.context.get("user")
-        solve = Solved.objects.filter(user__username=user,problem = obj)
+        solve = Solved.objects.filter(user__username=user, problem=obj)
         return solve.exists()
 
     class Meta:
         model = Problem
-        fields = ('id','name','prob_id','url','contest_id','rating','index','tags','platform','difficulty','editorial','solved',)
+        fields = (
+            'id',
+            'name',
+            'prob_id',
+            'url',
+            'contest_id',
+            'rating',
+            'index',
+            'tags',
+            'platform',
+            'difficulty',
+            'editorial',
+            'solved',
+        )
+
 
 class EditUserlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('name','description','public',)
+        fields = ('name', 'description', 'public',)
 
 
 class UserlistAddSerializer(serializers.Serializer):
@@ -150,7 +189,8 @@ class UserlistAddSerializer(serializers.Serializer):
     platform = serializers.CharField(required=True)
 
     class Meta:
-        fields = ('prob_id','slug','platform',)
+        fields = ('prob_id', 'slug', 'platform',)
+
 
 class UpdateLadderSerializer(serializers.Serializer):
     prob_id = serializers.CharField(required=True)
@@ -158,12 +198,14 @@ class UpdateLadderSerializer(serializers.Serializer):
     class Meta:
         fields = ('prob_id',)
 
+
 class UpdateListSerializer(serializers.Serializer):
     slug = serializers.CharField(required=True)
     page = serializers.CharField(required=True)
 
     class Meta:
-        fields = ('slug','page',)
+        fields = ('slug', 'page',)
+
 
 class AddProblemsAdminSerializer(serializers.Serializer):
     slug = serializers.SlugField(required=True)

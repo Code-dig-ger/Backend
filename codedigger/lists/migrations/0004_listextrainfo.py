@@ -12,14 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ListExtraInfo',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('difficulty', models.IntegerField(blank=True, null=True)),
-                ('video_link', models.CharField(blank=True, max_length=200, null=True)),
-                ('contest_link', models.CharField(blank=True, max_length=200, null=True)),
-                ('editorial', models.CharField(blank=True, max_length=200, null=True)),
-                ('curr_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='curr_list_extra', to='lists.list')),
-            ],
-        ),
-    ]
+            name='ListExtraInfo', fields=[
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')), ('difficulty', models.IntegerField(
+                        blank=True, null=True)), ('video_link', models.CharField(
+                            blank=True, max_length=200, null=True)), ('contest_link', models.CharField(
+                                blank=True, max_length=200, null=True)), ('editorial', models.CharField(
+                                    blank=True, max_length=200, null=True)), ('curr_list', models.ForeignKey(
+                                        on_delete=django.db.models.deletion.CASCADE, related_name='curr_list_extra', to='lists.list')), ], ), ]
