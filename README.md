@@ -137,7 +137,7 @@ cd to codedigger directory, this is our working directory. For now we will run a
 cd codedigger/
 ```
 
-Make environment file in codedigger repository by copying the example file -
+Make environment file in codedigger directory by copying the example file -
 ```
 cp codedigger/.env.example codedigger/.env
 ``` 
@@ -195,7 +195,8 @@ deactivate
 ```
 
 ### Update requirements file (Critical)
-If you have installed new depcodendency, the pip freeze command lists the third-party packages and versions installed in the environment. 
+If you have installed new dependency, the pip freeze command lists the third-party packages and versions installed in the environment. 
+
 **Windows**
 ```
 pip freeze > requirements.txt
