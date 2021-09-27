@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from .serializers import GoogleSocialAuthSerializer
 
+
 class GoogleSocialAuthView(GenericAPIView):
 
     serializer_class = GoogleSocialAuthSerializer

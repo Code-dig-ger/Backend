@@ -1,14 +1,15 @@
 from rest_framework import serializers
 
-from .models import user,country,organization,contest ,user_contest_rank
+from .models import user, country, organization, contest, user_contest_rank
 from problem.models import Problem
+
 
 class CountrySerializer(serializers.ModelSerializer):
 
     total = serializers.SerializerMethodField()
 
-    def get_total(self , obj):
-        return user.objects.filter(country = obj).count()
+    def get_total(self, obj):
+        return user.objects.filter(country=obj).count()
 
     class Meta:
         model = country
@@ -17,12 +18,13 @@ class CountrySerializer(serializers.ModelSerializer):
             'total',
         ]
 
+
 class OrganizationSerializer(serializers.ModelSerializer):
 
     total = serializers.SerializerMethodField()
 
-    def get_total(self , obj):
-        return user.objects.filter(organization = obj).count()
+    def get_total(self, obj):
+        return user.objects.filter(organization=obj).count()
 
     class Meta:
         model = organization
@@ -31,23 +33,21 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'total',
         ]
 
+
 class ContestSerializer(serializers.ModelSerializer):
-    Type = serializers.CharField(source='get_Type_display') 
+    Type = serializers.CharField(source='get_Type_display')
     participants = serializers.SerializerMethodField()
 
-    def get_participants(self , obj):
-        return user_contest_rank.objects.filter(contest = obj).count()
+    def get_participants(self, obj):
+        return user_contest_rank.objects.filter(contest=obj).count()
 
     class Meta:
         model = contest
         fields = [
-            'name',
-            'contestId',
-            'duration',
-            'startTime',
-            'Type',
+            'name', 'contestId', 'duration', 'startTime', 'Type',
             'participants'
         ]
+
 
 class contestRankSerializer(serializers.ModelSerializer):
     contest = ContestSerializer()
@@ -56,25 +56,35 @@ class contestRankSerializer(serializers.ModelSerializer):
     countryRank = serializers.SerializerMethodField()
     organizationRank = serializers.SerializerMethodField()
 
-    def get_totalCountryParticipants(self , obj):
-        if obj.user.country == None :
+    def get_totalCountryParticipants(self, obj):
+        if obj.user.country == None:
             return None
-        return user_contest_rank.objects.filter(user__in = user.objects.filter(country = obj.user.country) , contest = obj.contest).count()
+        return user_contest_rank.objects.filter(
+            user__in=user.objects.filter(country=obj.user.country),
+            contest=obj.contest).count()
 
-    def get_totalOrganizationParticipants(self , obj):
-        if obj.user.organization == None :
+    def get_totalOrganizationParticipants(self, obj):
+        if obj.user.organization == None:
             return None
-        return user_contest_rank.objects.filter(user__in = user.objects.filter(organization = obj.user.organization) , contest = obj.contest).count()
+        return user_contest_rank.objects.filter(
+            user__in=user.objects.filter(organization=obj.user.organization),
+            contest=obj.contest).count()
 
-    def get_countryRank(self , obj):
-        if obj.user.country == None :
+    def get_countryRank(self, obj):
+        if obj.user.country == None:
             return None
-        return user_contest_rank.objects.filter(user__in = user.objects.filter(country = obj.user.country) , contest = obj.contest , worldRank__lt = obj.worldRank).count()+1
+        return user_contest_rank.objects.filter(
+            user__in=user.objects.filter(country=obj.user.country),
+            contest=obj.contest,
+            worldRank__lt=obj.worldRank).count() + 1
 
-    def get_organizationRank(self , obj):
-        if obj.user.organization == None :
+    def get_organizationRank(self, obj):
+        if obj.user.organization == None:
             return None
-        return user_contest_rank.objects.filter(user__in = user.objects.filter(organization = obj.user.organization) , contest = obj.contest , worldRank__lt = obj.worldRank).count()+1
+        return user_contest_rank.objects.filter(
+            user__in=user.objects.filter(organization=obj.user.organization),
+            contest=obj.contest,
+            worldRank__lt=obj.worldRank).count() + 1
 
     class Meta:
         model = user_contest_rank
@@ -86,6 +96,7 @@ class contestRankSerializer(serializers.ModelSerializer):
             'totalCountryParticipants',
             'totalOrganizationParticipants',
         ]
+
 
 class UserSerializer(serializers.ModelSerializer):
     country = CountrySerializer()
@@ -101,28 +112,31 @@ class UserSerializer(serializers.ModelSerializer):
     def get_totalUsers(self, obj):
         return user.objects.all().count()
 
-    def get_worldRank(self , obj):
-        return user.objects.filter(rating__gt = obj.rating).count()+1
+    def get_worldRank(self, obj):
+        return user.objects.filter(rating__gt=obj.rating).count() + 1
 
     def get_countryRank(self, obj):
-        if obj.country == None :
+        if obj.country == None:
             return None
-        return user.objects.filter(rating__gt = obj.rating , country = obj.country).count()+1
+        return user.objects.filter(rating__gt=obj.rating,
+                                   country=obj.country).count() + 1
 
     def get_organizationRank(self, obj):
-        if obj.organization == None :
+        if obj.organization == None:
             return None
-        return user.objects.filter(rating__gt = obj.rating , organization = obj.organization).count()+1
+        return user.objects.filter(rating__gt=obj.rating,
+                                   organization=obj.organization).count() + 1
 
-    def get_contestCount(self,obj):
-        return user_contest_rank.objects.filter(user = obj).count()
+    def get_contestCount(self, obj):
+        return user_contest_rank.objects.filter(user=obj).count()
 
     def get_contestRank(self, obj):
-        qs = user_contest_rank.objects.filter(user = obj).order_by('worldRank')[:3]
-        return contestRankSerializer(qs , many = True ).data
+        qs = user_contest_rank.objects.filter(
+            user=obj).order_by('worldRank')[:3]
+        return contestRankSerializer(qs, many=True).data
 
     class Meta:
-        model= user
+        model = user
         fields = [
             'name',
             'handle',
@@ -141,13 +155,8 @@ class UserSerializer(serializers.ModelSerializer):
             'contestRank',
         ]
 
-class MiniUserSerializer(serializers.ModelSerializer):
 
+class MiniUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model= user
-        fields = [
-            'name',
-            'handle',
-            'rating',
-            'rank'
-        ]
+        model = user
+        fields = ['name', 'handle', 'rating', 'rank']
