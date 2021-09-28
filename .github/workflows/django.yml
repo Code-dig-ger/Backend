@@ -37,5 +37,5 @@ jobs:
     - name: Run Tests
       run: |
         cd codedigger
-        ls
+        cp codedigger/.env.example codedigger/.env
         python3 manage.py test
