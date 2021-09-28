@@ -10,5 +10,4 @@ class Migration(migrations.Migration):
         ('user', '0003_profile_gurus'),
     ]
 
-    operations = [
-    ]
+    operations = []
