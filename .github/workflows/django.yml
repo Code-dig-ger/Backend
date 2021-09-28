@@ -39,8 +39,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       run: |
+        sudo apt-get install build-dep python-psycopg2
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install psycopg2-binary 
     #- name: Lint with flake8
       #run: |
         #pip install flake8
