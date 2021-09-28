@@ -11,8 +11,8 @@ class TestViews(TestSetUp):
         res = self.client.post(self.register_url,
                                self.user_data,
                                format="json")
-        self.assertEqual(res.data['email'], self.user_data['email'])
-        self.assertEqual(res.data['username'], self.user_data['username'])
+        self.assertEqual(res.data['result']['email'], self.user_data['email'])
+        self.assertEqual(res.data['result']['username'], self.user_data['username'])
         self.assertEqual(res.status_code, 201)
 
     def test_user_cannot_login_with_unverified_email(self):
@@ -24,7 +24,7 @@ class TestViews(TestSetUp):
         response = self.client.post(self.register_url,
                                     self.user_data,
                                     format="json")
-        email = response.data['email']
+        email = response.data['result']['email']
         user = User.objects.get(email=email)
         user.is_verified = True
         user.save()

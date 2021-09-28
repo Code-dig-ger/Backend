@@ -1,0 +1,56 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8.10]
+    services:
+      postgres: 
+        image: postgres
+        env: 
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github-actions
+        ports:
+          - 5432:5432 
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache dependency
+      uses: actions/cache@v2 
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        sudo apt-get install python3-psycopg2
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install psycopg2-binary psycopg2 
+    - name: Coverage report
+      run: |
+        cd codedigger
+        cp codedigger/.env.example codedigger/.env
+        pip install coverage
+        coverage run manage.py test
+        coverage report
+    - name: Run Tests
+      run: |
+        cd codedigger
+        python3 manage.py test
