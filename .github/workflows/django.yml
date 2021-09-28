@@ -43,15 +43,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install psycopg2-binary psycopg2 
-    #- name: Lint with flake8
-      #run: |
-        #pip install flake8
-        #flake8
-    #- name: Coverage report
-      #run: |
-        #pip install coverage
-        #coverage run manage.py test
-        #coverage report
+    - name: Coverage report
+      run: |
+        pip install coverage
+        coverage run manage.py test
+        coverage report
     - name: Run Tests
       run: |
         cd codedigger
