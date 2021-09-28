@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v2
       - run: |
           ls
-          date > generated.txt
-          git checkout ${{github.head_ref}}
+          git switch ${{github.head_ref}}
+          date > generated.txt         
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
