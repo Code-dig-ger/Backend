@@ -11,10 +11,9 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      #- uses: actions/checkout@v2
       - run: |
-          ls
-          git switch -c refactor/autoyapf
+          git branch
           date > generated.txt         
           git config user.name github-actions
           git config user.email github-actions@github.com
