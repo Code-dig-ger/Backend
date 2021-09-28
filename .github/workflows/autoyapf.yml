@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          ls
           date > generated.txt
           git checkout ${{github.head_ref}}
           git config user.name github-actions
