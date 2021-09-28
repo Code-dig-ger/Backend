@@ -17,10 +17,10 @@ from django.template.loader import render_to_string
 from rest_framework import generics, status, permissions, views
 from user.permissions import *
 
-from .contestMaker import makeContest
-from .resultMaker import prepareResult
+# from .contestMaker import makeContest
+# from .resultMaker import prepareResult
 import requests
-from .models import Contest, ContestProblem, ContestParticipation
+# from .models import Contest, ContestProblem, ContestParticipation
 from user.models import Profile
 from problem.models import Problem
 
@@ -206,78 +206,78 @@ def get_participant_problem(participants_codeforces):
     return participants_solved
 
 
-def makeContest(contest):
+# def makeContest(contest):
 
-    nProblems = request.POST.get('nProblems')
-    platforms = request.POST.get(
-        'platforms')  # TODO Till now  we are using only codeforces
-    tags = request.POST.get('tags')
-    rating = request.POST.get(
-        'rating')  # TODO We will take  count this too later
-    difficulty = request.POST.get('difficulty')
-    isMentorOn = request.POST.get('isMentorOn')
-    isGym = request.POST.get(
-        'isGym'
-    )  #TODO if false -> remove problems with -> platform='F' and len(contestId)>=6
+#     nProblems = request.POST.get('nProblems')
+#     platforms = request.POST.get(
+#         'platforms')  # TODO Till now  we are using only codeforces
+#     tags = request.POST.get('tags')
+#     rating = request.POST.get(
+#         'rating')  # TODO We will take  count this too later
+#     difficulty = request.POST.get('difficulty')
+#     isMentorOn = request.POST.get('isMentorOn')
+#     isGym = request.POST.get(
+#         'isGym'
+#     )  #TODO if false -> remove problems with -> platform='F' and len(contestId)>=6
 
-    participants = ContestParticipation.objects.filter(
-        contest=contest).values_list('user', flat=True)
-    participants_codeforces = list(
-        Profile.objects.filter(owner__in=participants).values_list(
-            'codeforces', flat=True))
-    participants_solved = get_participant_problem(participants_codeforces)
+#     participants = ContestParticipation.objects.filter(
+#         contest=contest).values_list('user', flat=True)
+#     participants_codeforces = list(
+#         Profile.objects.filter(owner__in=participants).values_list(
+#             'codeforces', flat=True))
+#     participants_solved = get_participant_problem(participants_codeforces)
 
-    problems = Problem.objects.filter(platform='F')  # TODO all  platform
+#     problems = Problem.objects.filter(platform='F')  # TODO all  platform
 
-    if isMentorOn:
-        mentor_codeforces = Profile.objects.get(
-            owner=contest.owner).gurus.split(',')[1:-1]
-        mentor_solved = get_mentor_problems(mentor_codeforces)
-        for ps in participants_solved:
-            if ps in mentor_solved:
-                mentor_solved.remove(ps)
+#     if isMentorOn:
+#         mentor_codeforces = Profile.objects.get(
+#             owner=contest.owner).gurus.split(',')[1:-1]
+#         mentor_solved = get_mentor_problems(mentor_codeforces)
+#         for ps in participants_solved:
+#             if ps in mentor_solved:
+#                 mentor_solved.remove(ps)
 
-    if isMentorOn and len(mentor_solved) > 10:
-        problems = problems.filter(prob_id__in=mentor_solved)
-    else:
-        problems = problems.exclude(prob_id__in=participants_solved)
+#     if isMentorOn and len(mentor_solved) > 10:
+#         problems = problems.filter(prob_id__in=mentor_solved)
+#     else:
+#         problems = problems.exclude(prob_id__in=participants_solved)
 
-    if tags is not None:
-        tags = tags.split(',')
-        q = Q()
-        for tag in tags:
-            q |= Q(tags__icontains=tag)
-            problems = problems.filter(q)
+#     if tags is not None:
+#         tags = tags.split(',')
+#         q = Q()
+#         for tag in tags:
+#             q |= Q(tags__icontains=tag)
+#             problems = problems.filter(q)
 
-    # TODO more filter on problems  e.g. by TAG
+#     # TODO more filter on problems  e.g. by TAG
 
-    # TODO Assuming  Div2 only
+#     # TODO Assuming  Div2 only
 
-    div = difficulty
+#     div = difficulty
 
-    nProblems = min(nProblems, problems.count())
+#     nProblems = min(nProblems, problems.count())
 
-    for i in range(0, nProblems):
+#     for i in range(0, nProblems):
 
-        l, r = problem_rating[div][i]
-        newProblem = ContestProblem()
-        newProblem.contest = contest
+#         l, r = problem_rating[div][i]
+#         newProblem = ContestProblem()
+#         newProblem.contest = contest
 
-        while not problems.filter(rating__gte=l, rating__lt=r).exists():
-            l -= 100
-            r += 100
-            if l < 0:
-                break
+#         while not problems.filter(rating__gte=l, rating__lt=r).exists():
+#             l -= 100
+#             r += 100
+#             if l < 0:
+#                 break
 
-        if problems.filter(rating__gte=l, rating__lt=r).exists():
-            newProblem.problem = problems.filter(rating__gte=l,
-                                                 rating__lt=r).order_by('?')[0]
-            newProblem.index = i
-            newProblem.save()
+#         if problems.filter(rating__gte=l, rating__lt=r).exists():
+#             newProblem.problem = problems.filter(rating__gte=l,
+#                                                  rating__lt=r).order_by('?')[0]
+#             newProblem.index = i
+#             newProblem.save()
 
-    contest.isProblem = True
-    contest.save()
-    return
+#     contest.isProblem = True
+#     contest.save()
+#     return
 
 
 ## Short Code Contest
