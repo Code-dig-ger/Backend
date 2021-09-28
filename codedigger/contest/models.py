@@ -3,7 +3,6 @@ from user.models import User
 from problem.models import Problem
 from codeforces.models import user as CodeforcesUser
 
-
 # Create your models here.
 # class Contest(models.Model):
 #     owner = models.ForeignKey(to=User,
@@ -36,7 +35,6 @@ from codeforces.models import user as CodeforcesUser
 #     def __str__(self):
 #         return self.name
 
-
 # class ContestProblem(models.Model):
 #     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
 #     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
@@ -45,14 +43,12 @@ from codeforces.models import user as CodeforcesUser
 #     def __str__(self):
 #         return self.problem.prob_id + ' is there in ' + self.contest.name
 
-
 # class ContestParticipation(models.Model):
 #     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 #     def __str__(self):
 #         return self.user.username + ' is participating in ' + self.contest.name
-
 
 # class ContestResult(models.Model):
 #     contestProblem = models.ForeignKey(ContestProblem,
@@ -67,11 +63,9 @@ from codeforces.models import user as CodeforcesUser
 #             self.penalty
 #         ) + " " + self.contestProblem.problem.prob_id + " " + self.contestProblem.contest.name
 
-
 # These Models are to deal with Codeforces Group Contest
 # And to store Submission of these contest
 # Example - Short Code Contest Format
-
 
 # class CodeforcesContest(models.Model):
 #     contestId = models.IntegerField()
@@ -84,7 +78,6 @@ from codeforces.models import user as CodeforcesUser
 #     def __str__(self):
 #         return self.name
 
-
 # class CodeforcesContestParticipation(models.Model):
 #     contest = models.ForeignKey(CodeforcesContest, on_delete=models.CASCADE)
 #     user = models.ForeignKey(CodeforcesUser, on_delete=models.CASCADE)
@@ -94,7 +87,6 @@ from codeforces.models import user as CodeforcesUser
 
 #     def __str__(self):
 #         return self.user.handle + " participated in " + self.contest.name
-
 
 # class CodeforcesContestSubmission(models.Model):
 #     participant = models.ForeignKey(CodeforcesContestParticipation,
@@ -112,6 +104,5 @@ from codeforces.models import user as CodeforcesUser
 #         else:
 #             return self.participant.user.handle + " not solved " + self.participant.contest.name + " - " + str(
 #                 self.problemIndex)
-
 
 # END of Models Codeforces Contest
