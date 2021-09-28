@@ -33,11 +33,11 @@ jobs:
       #run: |
         #pip install flake8
         #flake8
-    - name: Coverage report
-      run: |
-        pip install coverage
-        coverage run manage.py test
-        coverage report
+    #- name: Coverage report
+      #run: |
+        #pip install coverage
+        #coverage run manage.py test
+        #coverage report
     - name: Run Tests
       run: |
         python3 manage.py test
