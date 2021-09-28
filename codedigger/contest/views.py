@@ -279,7 +279,6 @@ def get_participant_problem(participants_codeforces):
 #     contest.save()
 #     return
 
-
 ## Short Code Contest
 # from .cron import update_codeforces_short_code_contests
 # from .serializers import *
