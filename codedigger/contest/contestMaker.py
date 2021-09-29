@@ -22,7 +22,6 @@
 # # assign also
 # # isProblem = true
 
-
 # def get_mentor_problems(mentor_codeforces):
 #     mentor_solved = set()
 
@@ -47,7 +46,6 @@
 
 #     return mentor_solved
 
-
 # def get_participant_problem(participants_codeforces):
 #     participants_solved = set()
 
@@ -70,7 +68,6 @@
 #                     submission["problem"]['index'])
 
 #     return participants_solved
-
 
 # def makeContest(contest):
 

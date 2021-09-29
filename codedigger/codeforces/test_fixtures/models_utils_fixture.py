@@ -5,9 +5,11 @@ cf_user = {
     "city": "New Delhi",
     "rating": 1783,
     "friendOfCount": 322,
-    "titlePhoto": "https://userpic.codeforces.org/876150/title/f6dbeb71b3f2f7fa.jpg",
+    "titlePhoto":
+    "https://userpic.codeforces.org/876150/title/f6dbeb71b3f2f7fa.jpg",
     "handle": "shivamsinghal1012",
-    "avatar": "https://userpic.codeforces.org/876150/avatar/81895ac4772f2c3b.jpg",
+    "avatar":
+    "https://userpic.codeforces.org/876150/avatar/81895ac4772f2c3b.jpg",
     "firstName": "Shivam",
     "contribution": 21,
     "organization": "Delhi Technological University",
@@ -38,23 +40,20 @@ cf_problem = {
     "tags": ["greedy", "implementation"],
 }
 
-rating_change_data = [
-    {
-        "contestId": 1540,
-        "contestName": "Codeforces Round #728 (Div. 1)",
-        "handle": "shivamsinghal1012",
-        "rank": 1,
-        "ratingUpdateTimeSeconds": 1624643400,
-        "oldRating": 3446,
-        "newRating": 3606,
-    },
-    {
-        "contestId": 1540,
-        "contestName": "Codeforces Round #728 (Div. 1)",
-        "handle": "tourist",
-        "rank": 2,
-        "ratingUpdateTimeSeconds": 1624643400,
-        "oldRating": 3723,
-        "newRating": 3748,
-    }
-]
+rating_change_data = [{
+    "contestId": 1540,
+    "contestName": "Codeforces Round #728 (Div. 1)",
+    "handle": "shivamsinghal1012",
+    "rank": 1,
+    "ratingUpdateTimeSeconds": 1624643400,
+    "oldRating": 3446,
+    "newRating": 3606,
+}, {
+    "contestId": 1540,
+    "contestName": "Codeforces Round #728 (Div. 1)",
+    "handle": "tourist",
+    "rank": 2,
+    "ratingUpdateTimeSeconds": 1624643400,
+    "oldRating": 3723,
+    "newRating": 3748,
+}]

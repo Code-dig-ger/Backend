@@ -1,25 +1,25 @@
 from user.exception import ValidationException
 
-from .api import ( contest_list, contest_ratingChanges, 
-                    contest_standings, user_ratedList )
-from .models_utils import ( create_or_update_contest, create_or_update_problem, 
-                            create_or_update_user, update_and_save_contest_data )
+from .api import (contest_list, contest_ratingChanges, contest_standings,
+                  user_ratedList)
+from .models_utils import (create_or_update_contest, create_or_update_problem,
+                           create_or_update_user, update_and_save_contest_data)
 from .models import contest, user_contest_rank
 from .utils import send_error_mail, sendMailToUsers
 
 
 def ratingChangeReminder():
 
-    try :
+    try:
         contests = contest_list()
-    except :
+    except:
         return
-    
+
     limit = 1
 
     for codeforces_contest in contests:
 
-        try : 
+        try:
             response = contest_ratingChanges(codeforces_contest['id'])
             new_contest = create_or_update_contest(codeforces_contest)
 
@@ -35,7 +35,7 @@ def ratingChangeReminder():
             else:
                 break
 
-        except : 
+        except:
             check_contest = contest.objects.filter(contestId=id)
             if not check_contest.exists():
                 continue
@@ -44,9 +44,10 @@ def ratingChangeReminder():
             else:
                 continue
 
+
 def codeforces_update_users():
 
-    try :
+    try:
         response = user_ratedList(activeOnly=True)
     except ValidationException as err:
         send_error_mail(str(err))
@@ -58,30 +59,32 @@ def codeforces_update_users():
 
 def codeforces_update_problems():
 
-    try : 
+    try:
         contests = contest_list()
-    except ValidationException as err :
+    except ValidationException as err:
         return
 
     for codeforces_contest in contests[:50]:
 
-        try : 
-            response = contest_standings(contestId=codeforces_contest['id'], count=1)
+        try:
+            response = contest_standings(contestId=codeforces_contest['id'],
+                                         count=1)
         except ValidationException as err:
             continue
 
         create_or_update_contest(codeforces_contest)
         for contest_problem in response['problems']:
             create_or_update_problem(contest_problem)
-    
-    try : 
+
+    try:
         contests = contest_list(gym=True)
-    except ValidationException as err :
+    except ValidationException as err:
         return
-    
+
     for codeforces_contest in contests[-50:]:
-        try : 
-            response = contest_standings(contestId=codeforces_contest['id'], count=1)
+        try:
+            response = contest_standings(contestId=codeforces_contest['id'],
+                                         count=1)
         except ValidationException as err:
             continue
 
@@ -92,19 +95,20 @@ def codeforces_update_problems():
 
 def codeforces_update_contest():
 
-    try : 
+    try:
         response = contest_list()
     except ValidationException as err:
         send_error_mail(str(err))
-        return 
+        return
 
     response.reverse()
 
     for codeforces_contest in response[-50:]:
-        
-        try: 
-            contest_rating_change = contest_ratingChanges(codeforces_contest['id'])
-        except: 
+
+        try:
+            contest_rating_change = contest_ratingChanges(
+                codeforces_contest['id'])
+        except:
             continue
 
         new_contest = create_or_update_contest(codeforces_contest)

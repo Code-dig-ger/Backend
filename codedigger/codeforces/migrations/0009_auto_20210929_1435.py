@@ -13,7 +13,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='maxRank',
-            field=models.CharField(blank=True, default='UnRated', max_length=50, null=True),
+            field=models.CharField(blank=True,
+                                   default='UnRated',
+                                   max_length=50,
+                                   null=True),
         ),
         migrations.AlterField(
             model_name='user',
@@ -23,7 +26,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='rank',
-            field=models.CharField(blank=True, default='UnRated', max_length=50, null=True),
+            field=models.CharField(blank=True,
+                                   default='UnRated',
+                                   max_length=50,
+                                   null=True),
         ),
         migrations.AlterField(
             model_name='user',
