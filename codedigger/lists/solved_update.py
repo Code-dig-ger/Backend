@@ -8,6 +8,8 @@ django.setup()
 from lists.models import Solved
 from user.models import Profile, User
 from problem.models import Problem
+from codeforces.api import user_status
+from user.exception import ValidationException
 
 
 def codechef(user, prob):
@@ -52,12 +54,9 @@ def codeforces(user):
     cf_handle = Profile.objects.get(owner=user).codeforces
     if cf_handle == None:
         return
-    url = 'https://codeforces.com/api/user.status?handle=' + str(cf_handle)
-    res = requests.get(url)
-    if res.status_code != 200:
-        return
-    req = res.json()
-    if req['status'] != 'OK':
+    try:
+        req = user_status(cf_handle)
+    except ValidationException:
         return
     limit = 10
     for ele in req['result']:
@@ -70,12 +69,20 @@ def codeforces(user):
         if not prob.exists():
             continue
         solve, created = Solved.objects.get_or_create(user=user,
-                                                      problem=prob[0])
+                                                    problem=prob[0])
         if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
+    # url = 'https://codeforces.com/api/user.status?handle=' + str(cf_handle)
+    # res = requests.get(url)
+    # if res.status_code != 200:
+        # return
+    # req = res.json()
+    # if req['status'] != 'OK':
+        # return
+
 
 
 def uva(user):

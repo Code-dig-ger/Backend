@@ -108,3 +108,18 @@ def contest_ratingChanges(contestId):
     payload = {'contestId': contestId}
     response = requests.get(url=url, params=payload)
     return validated_response(response)
+
+def user_status(handle):
+    # param :
+    # handle : Codeforces user handle.
+    # returns :
+    # list of results if exists else raise exception 
+
+    url = "https://codeforces.com/api/user.status?handle="+str(handle)
+    res = requests.get(url)
+    if res.status_code != 200:
+        raise ValidationException('Codeforces API is not working')
+    data = res.json()
+    if data['status'] != 'OK' :
+        raise ValidationException('Codeforces API is not working')
+    return data['result']

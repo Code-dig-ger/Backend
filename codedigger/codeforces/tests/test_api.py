@@ -1,6 +1,8 @@
+from rest_framework import response
 from .test_setup import TestSetUp
+from user.exception import ValidationException
 from codeforces.api import (user_info, contest_list, contest_standings,
-                            contest_ratingChanges)
+                            contest_ratingChanges, user_status)
 
 
 class TestAPI(TestSetUp):
@@ -27,3 +29,10 @@ class TestAPI(TestSetUp):
     def test_contest_ratingChanges(self):
         response = contest_ratingChanges(566)
         self.assertEqual(response[0]['rank'], 1)
+
+    def test_user_status(self):
+        handle = 'shivamsinghal1012'
+        wrong_handle = 'er'
+        response = user_status(handle=handle)
+        self.assertEqual(len(response[0]),12)
+        self.assertRaises(ValidationException,user_status,wrong_handle)
