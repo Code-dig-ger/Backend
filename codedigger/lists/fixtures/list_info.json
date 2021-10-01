@@ -1,0 +1,10 @@
+[
+	{
+		"model": "lists.listinfo",
+		"pk": 1,
+		"fields": {
+			"p_list": 1,
+			"problem": 1
+		}
+	}
+]

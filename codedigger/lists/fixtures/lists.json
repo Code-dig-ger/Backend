@@ -1,0 +1,15 @@
+[
+	{
+		"model": "lists.list",
+		"pk": 1,
+		"fields": {
+			"name": "testinglist_topicwise",
+			"owner": 1,
+			"isAdmin": true,
+			"isTopicWise": true,
+			"type_list": "1",
+			"public": true,
+			"slug": "testinglist_topicwise"
+		}
+	}
+]

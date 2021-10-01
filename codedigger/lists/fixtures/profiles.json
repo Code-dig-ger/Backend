@@ -1,0 +1,11 @@
+[
+	{
+		"model": "user.profile",
+		"pk": 1,
+		"fields": {
+			"owner": 1,
+			"name": "testing",
+			"codeforces": "aaradhya0707"
+		}
+	}
+]

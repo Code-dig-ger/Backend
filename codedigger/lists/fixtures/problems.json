@@ -1,0 +1,18 @@
+[
+	{
+		"model": "problem.problem",
+		"pk": 1,
+		"fields": {
+			"name": "Watermelon",
+			"url": "https://codeforces.com/problemset/problem/4/A",
+			"prob_id": "4A",
+			"tags": null,
+			"contest_id": "4",
+			"rating": 800,
+			"index": "n",
+			"platform": "F",
+			"difficulty": null,
+			"editorial": null
+		}
+	}
+]
