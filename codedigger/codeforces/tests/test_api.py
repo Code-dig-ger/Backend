@@ -33,6 +33,9 @@ class TestAPI(TestSetUp):
     def test_user_status(self):
         handle = 'shivamsinghal1012'
         wrong_handle = 'er'
-        response = user_status(handle=handle)
+        starting_from = 1
+        count = 10
+        response = user_status(handle=handle,starting_from=starting_from,count=count)
         self.assertEqual(len(response[0]),12)
+        self.assertEqual(len(response),10)
         self.assertRaises(ValidationException,user_status,wrong_handle)

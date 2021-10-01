@@ -55,11 +55,11 @@ def codeforces(user):
     if cf_handle == None:
         return
     try:
-        req = user_status(cf_handle)
+        submission_user = user_status(cf_handle)
     except ValidationException:
         return
     limit = 10
-    for ele in req['result']:
+    for ele in submission_user:
         if 'verdict' not in ele or 'contestId' not in ele or ele[
                 'verdict'] != 'OK':
             continue

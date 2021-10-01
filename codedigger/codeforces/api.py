@@ -109,17 +109,22 @@ def contest_ratingChanges(contestId):
     response = requests.get(url=url, params=payload)
     return validated_response(response)
 
-def user_status(handle):
+def user_status(handle,
+                starting_from=1,
+                count=None):
     # param :
     # handle : Codeforces user handle.
+    # from : 1-based index of the first submission to return.
+    # count: Number of returned submissions.
     # returns :
     # list of results if exists else raise exception 
 
-    url = "https://codeforces.com/api/user.status?handle="+str(handle)
-    res = requests.get(url)
-    if res.status_code != 200:
-        raise ValidationException('Codeforces API is not working')
-    data = res.json()
-    if data['status'] != 'OK' :
-        raise ValidationException('Codeforces API is not working')
-    return data['result']
+    payload = {
+        'handle':handle,
+        'from':starting_from
+    }
+    if count!=None:
+        payload['count'] = count
+    url = "https://codeforces.com/api/user.status"
+    response = requests.get(url,params=payload)
+    return validated_response(response)

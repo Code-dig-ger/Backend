@@ -49,31 +49,14 @@ class ContestAPIView(
         #fetch student data from api
         student_contests = set()
         for student in students:
-            try:
-                submissions_student = user_status(handle=student)
-            except ValidationException as err:
-                return Response(
-                    {
-                        'status':'FAILED',
-                        'error':err
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+            submissions_student = user_status(handle=student)
             for submission in submissions_student:
                 if (submission['verdict'] == 'OK'):
                     student_contests.add(submission["problem"]["contestId"])
         if mentor == 'true':
             guru_contests = set()
             for guru in gurus:
-                try:
-                    res = user_status(handle=guru)
-                    submissions_guru = res['result']
-                except ValidationException as err:
-                    return Response(
-                        {
-                            'status':'FAILED',
-                            'error':err
-                        },
-                        status=status.HTTP_400_BAD_REQUEST)
+                submissions_guru = user_status(handle=guru)
                 for submission in submissions_guru:
                     if 'contestId' not in submission['problem']:
                         continue

@@ -20,11 +20,11 @@ def cron_codeforces(user):
     if cf_handle == None:
         return
     try:
-        req = user_status(handle=cf_handle)
+        elements = user_status(handle=cf_handle)
     except ValidationException:
         return
     limit = 10
-    for ele in req['result']:
+    for ele in elements:
         if 'verdict' not in ele or 'contestId' not in ele or ele[
                 'verdict'] != 'OK':
             continue

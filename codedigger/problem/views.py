@@ -37,15 +37,7 @@ class MentorProblemAPIView(
         student = Profile.objects.get(owner=self.request.user).codeforces
 
         #fetch student  submissions from api
-        try:
-            submissions_student = user_status(handle=student)
-        except ValidationException as err:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': err
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+        submissions_student = user_status(handle=student)
         student_solved_set = set()
         for submission in submissions_student:
             if 'contestId' in submission['problem']:
@@ -64,15 +56,7 @@ class MentorProblemAPIView(
 
         #print(gurus)
         for guru in gurus:
-            try:
-                submissions_guru = user_status(handle=guru)
-            except ValidationException as err:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+            submissions_guru = user_status(handle=guru)
             for submission in submissions_guru:
 
                 if 'contestId' in submission['problem']:

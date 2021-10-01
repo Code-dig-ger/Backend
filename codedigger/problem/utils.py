@@ -14,10 +14,10 @@ def codeforces_status(handle):
     Upsolved = set()
     Wrong = set()
     try:
-        data = user_status(handle=handle)
+        submissions = user_status(handle=handle)
     except ValidationError:
         return (RContest, VContest, SolvedInContest, Upsolved, Wrong)
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             # to be sure this is a contest problem
             contestId = submission['contestId']
@@ -38,7 +38,7 @@ def codeforces_status(handle):
                         Upsolved.add(
                             str(submission['problem']['contestId']) +
                             submission['problem']['index'])
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             if 'verdict' in submission:
                 # to be sure verdict is present
