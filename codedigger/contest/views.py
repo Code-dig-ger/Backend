@@ -23,6 +23,8 @@ import requests
 # from .models import Contest, ContestProblem, ContestParticipation
 from user.models import Profile
 from problem.models import Problem
+from codeforces.api import user_status
+from user.exception import ValidationException
 
 
 class ContestAPIView(
@@ -47,57 +49,20 @@ class ContestAPIView(
         #fetch student data from api
         student_contests = set()
         for student in students:
-            res = requests.get(
-                "https://codeforces.com/api/user.status?handle=" + student)
-            if res.status_code != 200:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-            res = res.json()
-            if res['status'] != "OK":
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-            submissions_student = res["result"]
-            #student submissions in set
+            submissions_student = user_status(handle=student)
             for submission in submissions_student:
                 if (submission['verdict'] == 'OK'):
                     student_contests.add(submission["problem"]["contestId"])
-
         if mentor == 'true':
             guru_contests = set()
             for guru in gurus:
-                res = requests.get(
-                    "https://codeforces.com/api/user.status?handle=" + guru)
-                if res.status_code != 200:
-                    return Response(
-                        {
-                            'status': 'FAILED',
-                            'error': 'Codeforces API not working'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST)
-                res = res.json()
-                if res['status'] != "OK":
-                    return Response(
-                        {
-                            'status': 'FAILED',
-                            'error': 'Codeforces API not working'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST)
-                submissions_guru = res['result']
+                submissions_guru = user_status(handle=guru)
                 for submission in submissions_guru:
                     if 'contestId' not in submission['problem']:
                         continue
                     if (submission['author']['participantType'] !=
                             'PRACTICE') & (submission['verdict'] == 'OK'):
                         guru_contests.add(submission["problem"]["contestId"])
-
             #Select contest Ids which are not in student set
             contest_list = []
             for contest_ in guru_contests:
@@ -161,24 +126,16 @@ def get_mentor_problems(mentor_codeforces):
     mentor_solved = set()
 
     for mentor in mentor_codeforces:
-        res = requests.get("https://codeforces.com/api/user.status?handle=" +
-                           mentor)
-
-        if res.status_code != 200:
+        try:
+            submissions_mentor = user_status(handle=mentor)
+        except ValidationException:
             return mentor_solved
-
-        res = res.json()
-
-        if res['status'] != "OK":
-            return mentor_solved
-
-        for submission in res["result"]:
+        for submission in submissions_mentor:
             if 'contestId' in submission['problem']:
                 if submission['verdict'] == 'OK':
                     mentor_solved.add(
                         str(submission["problem"]['contestId']) +
                         submission["problem"]['index'])
-
     return mentor_solved
 
 
@@ -186,23 +143,15 @@ def get_participant_problem(participants_codeforces):
     participants_solved = set()
 
     for participants in participants_codeforces:
-        res = requests.get("https://codeforces.com/api/user.status?handle=" +
-                           participants)
-
-        if res.status_code != 200:
+        try:
+            submissions_participant = user_status(handle=participants)
+        except ValidationException:
             return participants_solved
-
-        res = res.json()
-
-        if res['status'] != "OK":
-            return participants_solved
-
-        for submission in res["result"]:
+        for submission in submissions_participant:
             if 'contestId' in submission['problem']:
                 participants_solved.add(
                     str(submission["problem"]['contestId']) +
                     submission["problem"]['index'])
-
     return participants_solved
 
 

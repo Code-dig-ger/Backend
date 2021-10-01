@@ -18,6 +18,8 @@ import json, requests
 from django.http import JsonResponse
 import random
 from user.permissions import *
+from codeforces.api import user_status
+from user.exception import ValidationException
 
 
 class MentorProblemAPIView(
@@ -35,31 +37,9 @@ class MentorProblemAPIView(
         student = Profile.objects.get(owner=self.request.user).codeforces
 
         #fetch student  submissions from api
-        res = requests.get("https://codeforces.com/api/user.status?handle=" +
-                           student)
-        if res.status_code != 200:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Codeforces API not working'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
-
-        res = res.json()
-
-        if res['status'] != "OK":
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Codeforces API not working'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
-
-        submissions_student = res["result"]
-
+        submissions_student = user_status(handle=student)
         student_solved_set = set()
         for submission in submissions_student:
-
             if 'contestId' in submission['problem']:
                 if submission['verdict'] == 'OK':
                     student_solved_set.add(
@@ -76,28 +56,7 @@ class MentorProblemAPIView(
 
         #print(gurus)
         for guru in gurus:
-            res = requests.get(
-                "https://codeforces.com/api/user.status?handle=" + guru)
-
-            if res.status_code != 200:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-
-            res = res.json()
-
-            if res['status'] != "OK":
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-
-            submissions_guru = res["result"]
+            submissions_guru = user_status(handle=guru)
             for submission in submissions_guru:
 
                 if 'contestId' in submission['problem']:
@@ -112,7 +71,6 @@ class MentorProblemAPIView(
                             str(submission["problem"]['contestId']) +
                             submission["problem"]['index'])
                         guru_solved_list.append(submission["problem"])
-
         #print(guru_solved_list)
         problems_data = []
         for problem in guru_solved_list:
