@@ -8,8 +8,11 @@ from problem.models import Problem
 
 
 class TestSetUp(APITestCase):
-    fixtures = ["user.json","problems.json","lists.json","profiles.json","list_info.json"]
-    
+    fixtures = [
+        "user.json", "problems.json", "lists.json", "profiles.json",
+        "list_info.json"
+    ]
+
     def setUp(self):
         self.register_url = reverse('register')
         self.login_url = reverse('login')
@@ -17,8 +20,8 @@ class TestSetUp(APITestCase):
 
         self.user_data = {
             # 'email': 'testing@gmail.com',#self.fake.email(),
-            'username': 'testing',#self.fake.email().split('@')[0],
-            'password': 'QWERTY@123'#self.fake.email(),
+            'username': 'testing',  #self.fake.email().split('@')[0],
+            'password': 'QWERTY@123'  #self.fake.email(),
         }
         return super().setUp()
 
@@ -31,4 +34,3 @@ class TestSetUp(APITestCase):
         User.objects.all().delete()
         Profile.objects.all().delete()
         return super().tearDown()
-
