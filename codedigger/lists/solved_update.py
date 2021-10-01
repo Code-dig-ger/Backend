@@ -69,7 +69,7 @@ def codeforces(user):
         if not prob.exists():
             continue
         solve, created = Solved.objects.get_or_create(user=user,
-                                                    problem=prob[0])
+                                                      problem=prob[0])
         if not created:
             limit -= 1
             if limit <= 0:
@@ -78,11 +78,10 @@ def codeforces(user):
     # url = 'https://codeforces.com/api/user.status?handle=' + str(cf_handle)
     # res = requests.get(url)
     # if res.status_code != 200:
-        # return
+    # return
     # req = res.json()
     # if req['status'] != 'OK':
-        # return
-
+    # return
 
 
 def uva(user):

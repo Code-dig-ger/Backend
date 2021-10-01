@@ -13,6 +13,7 @@ from codedigger.settings import EMAIL_HOST_USER
 from codeforces.api import user_status
 from user.exception import ValidationException
 
+
 def cron_codeforces(user):
     if user is None:
         return
@@ -34,12 +35,13 @@ def cron_codeforces(user):
         if not prob.exists():
             continue
         solve, created = Solved.objects.get_or_create(user=user,
-                                                    problem=prob[0])
+                                                      problem=prob[0])
         if not created:
             limit -= 1
             if limit <= 0:
                 break
             continue
+
 
 def cron_uva(user):
     if user is None:
