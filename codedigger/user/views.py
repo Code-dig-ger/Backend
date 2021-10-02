@@ -33,6 +33,10 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+# Validations
+from .param_validators import isValidRequest
+# Return Response
+from .response import response
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
 from codeforces.models import user as CodeforcesUser
@@ -80,11 +84,7 @@ class RegisterView(generics.GenericAPIView):
             'to_email': user.email
         }
         Util.send_email(data)
-        return Response({
-            'status': "OK",
-            'result': user_data
-        },
-                        status=status.HTTP_201_CREATED)
+        return response(user_data, Status=status.HTTP_201_CREATED)
 
 
 class VerifyEmail(views.APIView):
@@ -138,11 +138,7 @@ class CheckAuthView(views.APIView):
         """
         Endpoint for checking if user is authenticated or not by checking if the JWT token is valid or not.
         """
-        return Response({
-            'status': 'OK',
-            "result": "Token is Valid"
-        },
-                        status=status.HTTP_200_OK)
+        return response(Data="Token is Valid")
 
 
 class SendVerificationMail(generics.GenericAPIView):
@@ -185,12 +181,7 @@ class SendVerificationMail(generics.GenericAPIView):
             'to_email': user.email
         }
         Util.send_email(data)
-        return Response(
-            {
-                'status': 'OK',
-                'result': 'A Verification Email has been sent'
-            },
-            status=status.HTTP_200_OK)
+        return response(Data="A Verification Email has been sent")
 
 
 class ProfileGetView(ListAPIView):
@@ -271,11 +262,7 @@ class ChangePassword(generics.GenericAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_pass)
         user.save()
-        return Response({
-            'status': 'OK',
-            'result': "Password Change Complete"
-        },
-                        status=status.HTTP_200_OK)
+        return response(Data="Password Change Complete")
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
@@ -327,12 +314,8 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'email_subject': 'Codedigger - Password Reset'
             }
             Util.send_email(data)
-            return Response(
-                {
-                    'status': 'OK',
-                    'result': 'We have sent you a link to reset your password'
-                },
-                status=status.HTTP_200_OK)
+            return response(
+                Data="We have sent you a link to reset your password")
         return Response(
             {
                 'status': 'Failed',
@@ -367,12 +350,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 else:
                     return redirect(
                         os.getenv('FRONTEND_URL', '') + '?token_valid=False')
-                return Response({
-                    'status':
-                    'FAILED',
-                    'error':
-                    'Token is invalid. Please request a new one'
-                })
             if redirect_url and len(redirect_url) > 3:
                 return redirect(
                     redirect_url +
@@ -412,11 +389,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({
-            'status': 'OK',
-            'result': 'Password reset success'
-        },
-                        status=status.HTTP_200_OK)
+        return response(Data="Password reset success")
 
 
 class SearchUser(generics.GenericAPIView):
@@ -450,8 +423,9 @@ class SearchUser(generics.GenericAPIView):
             data = ProfileSerializer(profile).data
             data['username'] = profile.owner.username
             data['email'] = profile.owner.email
+            username = profile.owner.username
             if request.user.is_authenticated:
-                if request.user.username == profile.owner.username:
+                if request.user.username == username:
                     data['about_user'] = 'Logged In User Itself'
                     data['about_mentor'] = 'Logged In User Itself'
                 else:
@@ -656,7 +630,7 @@ class UserProfileGetView(generics.GenericAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'status': 'OK', 'result': data})
+        return response(Data=data)
 
 
 # Friends Related View Start
@@ -748,19 +722,13 @@ class SendFriendRequest(generics.GenericAPIView):
                         status=status.HTTP_400_BAD_REQUEST)
                 else:
                     status.status = True
-                    return Response({
-                        'status': 'OK',
-                        'result': 'You are now Friends'
-                    })
+                    return response(Data="You are now Friends")
 
             except UserFriends.DoesNotExist:
                 UserFriends.objects.create(from_user=request.user,
                                            to_user=to_user,
                                            status=False)
-                return Response({
-                    'status': 'OK',
-                    'result': 'Friend Request Sent!'
-                })
+                return response(Data="Friend Request Sent")
 
 
 class RemoveFriend(generics.GenericAPIView):
@@ -815,19 +783,13 @@ class RemoveFriend(generics.GenericAPIView):
             except UserFriends.DoesNotExist:
                 its_ok = True
             uf.delete()
-            return Response({
-                'status': 'OK',
-                'result': 'Removed Successfully!'
-            })
+            return response(Data="Removed Successfully!")
         except UserFriends.DoesNotExist:
             try:
                 opp_status = UserFriends.objects.get(from_user=user,
                                                      to_user=request.user)
                 opp_status.delete()
-                return Response({
-                    'status': 'OK',
-                    'result': 'Removed Successfully!'
-                })
+                return response(Data="Removed Successfully!")
             except UserFriends.DoesNotExist:
                 return Response(
                     {
@@ -940,7 +902,7 @@ class FriendsShowView(generics.GenericAPIView):
                                                 many=True).data
 
         friends = friendsbyrequest + friendsbyaccept
-        return Response({'status': 'OK', 'result': friends})
+        return response(Data=friends)
 
 
 class FriendRequestShowView(generics.GenericAPIView):
@@ -969,7 +931,7 @@ class FriendRequestShowView(generics.GenericAPIView):
                                                     'by_to_user': False
                                                 },
                                                 many=True).data
-        return Response({'status': 'OK', 'result': friendsbyaccept})
+        return response(Data=friendsbyaccept)
 
 
 class RequestSendShowView(generics.GenericAPIView):
@@ -998,7 +960,7 @@ class RequestSendShowView(generics.GenericAPIView):
                                                      'by_to_user': True
                                                  },
                                                  many=True).data
-        return Response({'status': 'OK', 'result': friendsbyrequest})
+        return response(Data=friendsbyrequest)
 
 
 # Friends Related View Ends
