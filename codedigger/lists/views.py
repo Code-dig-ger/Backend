@@ -409,9 +409,11 @@ class UserlistAddProblemView(generics.CreateAPIView):
         slug = data.get('slug', None)
         platform = data.get('platform', None)
         if prob_id is None or slug is None or platform is None:
-            raise ValidationException("prob_id or slug or platform not provided")
+            raise ValidationException(
+                "prob_id or slug or platform not provided")
         if not List.objects.filter(slug=slug).exists():
-            raise ValidationException("List with the provided slug does not exist")
+            raise ValidationException(
+                "List with the provided slug does not exist")
         if not Problem.objects.filter(prob_id=prob_id,
                                       platform=platform).exists():
             raise ValidationException(
@@ -421,7 +423,8 @@ class UserlistAddProblemView(generics.CreateAPIView):
         if curr_list.problem.filter(prob_id=prob_id,
                                     platform=platform).exists():
             raise ValidationException(
-                "Problem with the given prob_id and platform already exists within the list")
+                "Problem with the given prob_id and platform already exists within the list"
+            )
         curr_list.problem.add(curr_prob)
         return response.Response(
             {
@@ -475,10 +478,8 @@ class EditUserlistView(generics.GenericAPIView):
         if page > cnt:
             raise ValidationException("Page Out of Bound")
         url = request.build_absolute_uri('/lists/userlist/edit/' + str(slug))
-        res = get_response_dict(
-            curr_list, self.request.user, page, 
-            page_size, url, problem_qs
-        )
+        res = get_response_dict(curr_list, self.request.user, page, page_size,
+                                url, problem_qs)
         return response.Response(res)
 
     def put(self, request, slug):
@@ -490,7 +491,8 @@ class EditUserlistView(generics.GenericAPIView):
         if name is not None:
             if List.objects.filter(owner=self.request.user,
                                    name=name).exists():
-                raise ValidationException("You already have a created a list with the same name.")
+                raise ValidationException(
+                    "You already have a created a list with the same name.")
             else:
                 curr_list.name = name
         if description is not None:
@@ -509,16 +511,14 @@ class EditUserlistView(generics.GenericAPIView):
                                               platform=platform).exists():
                     raise ValidationException(
                         "Problem with the given prob_id {} \
-                        does not exists within the list".format(ele)
-                    )
+                        does not exists within the list".format(ele))
                 curr_prob = Problem.objects.get(prob_id=prob_id,
                                                 platform=platform)
                 if not curr_list.problem.filter(prob_id=prob_id,
                                                 platform=platform).exists():
                     raise ValidationException(
                         "Problem with the given prob_id {} \
-                        does not exists within the list".format(ele)
-                    )
+                        does not exists within the list".format(ele))
                 curr_list.problem.remove(curr_prob)
         curr_list.save()
         return response.Response(
@@ -587,7 +587,8 @@ class AddProblemsAdminView(generics.GenericAPIView):
         if not slug:
             raise ValidationException("slug not provided")
         if not List.objects.filter(slug=slug).exists():
-            raise ValidationException("List with the provided slug does not exist")
+            raise ValidationException(
+                "List with the provided slug does not exist")
         curr_list = List.objects.get(slug=slug)
         final = set()
         wrong = set()
