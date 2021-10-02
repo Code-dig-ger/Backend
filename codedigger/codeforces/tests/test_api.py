@@ -15,7 +15,7 @@ class TestAPI(TestSetUp):
     def test_user_rating_api(self):
         handle = 'Fefer_Ivan'
         response = user_rating(handle)
-        self.assertEqual(len(response), 85)
+        self.assertTrue(len(response) > 0)
         self.assertEqual(response[0]['handle'], handle)
 
     def test_contest_list(self):
