@@ -41,10 +41,16 @@ class user(models.Model):
         null=True,
     )
     handle = models.CharField(max_length=50, unique=True, db_index=True)
-    rating = models.IntegerField(blank=True, null=True)
-    maxRating = models.IntegerField(blank=True, null=True)
-    rank = models.CharField(max_length=50, blank=True, null=True)
-    maxRank = models.CharField(max_length=50, blank=True, null=True)
+    rating = models.IntegerField(blank=True, null=True, default=0)
+    maxRating = models.IntegerField(blank=True, null=True, default=0)
+    rank = models.CharField(max_length=50,
+                            blank=True,
+                            null=True,
+                            default='UnRated')
+    maxRank = models.CharField(max_length=50,
+                               blank=True,
+                               null=True,
+                               default='UnRated')
     country = models.ForeignKey(
         country,
         on_delete=models.SET_NULL,

@@ -10,6 +10,8 @@ from user.models import Profile, User
 from problem.models import Problem
 from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
+from codeforces.api import user_status
+from user.exception import ValidationException
 
 
 def cron_codeforces(user):
@@ -18,15 +20,12 @@ def cron_codeforces(user):
     cf_handle = Profile.objects.get(owner=user).codeforces
     if cf_handle == None:
         return
-    url = 'https://codeforces.com/api/user.status?handle=' + cf_handle
-    req = requests.get(url)
-    if req.status_code != 200:
-        return
-    req = req.json()
-    if req['status'] != 'OK':
+    try:
+        elements = user_status(handle=cf_handle)
+    except ValidationException:
         return
     limit = 10
-    for ele in req['result']:
+    for ele in elements:
         if 'verdict' not in ele or 'contestId' not in ele or ele[
                 'verdict'] != 'OK':
             continue
@@ -254,5 +253,5 @@ def codechef_list(user):
         #testing purposes
         if not Problem.objects.filter(prob_id=ele.text, platform='C').exists():
             continue
-        prob_list.add(prob_id)
+        prob_list.add(ele.text)
     return prob_list

@@ -2,9 +2,6 @@ from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
 from rest_framework.test import APIClient
-from lists.models import List,ListInfo, Solved
-from problem.models import Problem
-
 
 
 class TestViews(TestSetUp):
@@ -14,17 +11,17 @@ class TestViews(TestSetUp):
         test_url = reverse('topicwise-list')
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
-        
+
     def test_check_topicwise_ladder_all_ladders_view(self):
         test_url = reverse('topicwise-ladder')
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
-        
+
     def test_check_levelwise_list_all_lists_view(self):
         test_url = reverse('levelwise-list')
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
-    
+
     def test_check_levelwise_ladder_all_ladder_view(self):
         test_url = reverse('levelwise-ladder')
         res = self.client.get(test_url)
@@ -40,7 +37,7 @@ class TestViews(TestSetUp):
         token = res.data['tokens']['access']
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        res = client.get(test_url,format = "json")
+        res = client.get(test_url, format="json")
         self.assertEqual(res.status_code, 200)
 
     def test_auth_check_topicwise_ladder_view(self):

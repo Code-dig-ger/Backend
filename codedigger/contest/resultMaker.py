@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import requests
 import pytz
 
-
 # def get_problemSubmission(participant_handle, prob_id, startTime, endTime):
 
 #     problemSubmission = {}
@@ -44,7 +43,6 @@ import pytz
 #                         problemSubmission[problem_id]['penalty'] += 1
 
 #     return problemSubmission
-
 
 # def prepareResult(contest):
 
