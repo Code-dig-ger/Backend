@@ -253,5 +253,5 @@ def codechef_list(user):
         #testing purposes
         if not Problem.objects.filter(prob_id=ele.text, platform='C').exists():
             continue
-        prob_list.add(prob_id)
+        prob_list.add(ele.text)
     return prob_list

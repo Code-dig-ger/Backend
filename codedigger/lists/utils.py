@@ -134,7 +134,7 @@ def get_response_dict(curr_list,
                       page_size,
                       url,
                       problem_qs,
-                      isCompleted,
+                      isCompleted=False,
                       unsolved_page=None,
                       unsolved_prob=None):
     # param:
