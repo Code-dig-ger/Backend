@@ -33,6 +33,17 @@ def user_info(handles):
     return validated_response(response)
 
 
+def user_rating(handle):
+    # param : Codeforces user handle
+    # handle : Codeforces user handle.
+    # return : Returns rating history of the specified user
+
+    url = "https://codeforces.com/api/user.rating"
+    payload = {'handle': handle}
+    response = requests.get(url=url, params=payload)
+    return validated_response(response)
+
+
 def user_ratedList(activeOnly=False):
     # params :
     # If true then only users, who participated in rated contest
