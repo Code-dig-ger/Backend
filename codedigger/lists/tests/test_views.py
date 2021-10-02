@@ -30,9 +30,45 @@ class TestViews(TestSetUp):
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
    
-   #same as above but with an authenticated user 
-    def test_auth_check_topicwise_list_all_lists_view(self):
-        test_url = "http://127.0.0.1:8000/lists/topicwise/list/testinglist_topicwise"
+   #checking lists with an authenticated user 
+    def test_auth_check_topicwise_list_view(self):
+        test_url = reverse('topicwise-list') + "testinglist_topicwise"        
+        here = User.objects.get(username = "testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url,format = "json")
+        self.assertEqual(res.status_code, 200)
+
+    def test_auth_check_topicwise_ladder_view(self):
+        test_url = reverse('topicwise-ladder') + "testinglist_topicwise"        
+        here = User.objects.get(username = "testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url,format = "json")
+        self.assertEqual(res.status_code, 200)
+        
+    def test_auth_check_levelwise_list_view(self):
+        test_url = reverse('levelwise-list') + "testinglist_levelwise"        
+        here = User.objects.get(username = "testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url,format = "json")
+        self.assertEqual(res.status_code, 200)
+
+    def test_auth_check_levelwise_ladder_view(self):
+        test_url = reverse('levelwise-ladder') + "testinglist_levelwise"        
         here = User.objects.get(username = "testing")
         here.set_password(self.user_data['password'])
         here.save()

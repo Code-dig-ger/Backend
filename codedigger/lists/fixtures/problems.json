@@ -4,14 +4,94 @@
 		"pk": 1,
 		"fields": {
 			"name": "Watermelon",
-			"url": "https://codeforces.com/problemset/problem/4/A",
 			"prob_id": "4A",
-			"tags": null,
+			"url": "https://codeforces.com/contest/4/problem/A",
 			"contest_id": "4",
 			"rating": 800,
-			"index": "n",
+			"index": "A",
+			"tags": "['brute force', 'math']",
 			"platform": "F",
-			"difficulty": null,
+			"difficulty": "B",
+			"editorial": null
+		}
+	},
+	{
+		"model": "problem.problem",
+		"pk": 2,
+		"fields": {
+			"name": "A. Brick",
+			"prob_id": "abc186_a",
+			"url": "https://atcoder.jp/contests/abc186/tasks/abc186_a",
+			"contest_id": "abc186",
+			"rating": 847,
+			"index": "a",
+			"tags": null,
+			"platform": "A",
+			"difficulty": "B",
+			"editorial": null
+		}
+	},
+	{
+		"model": "problem.problem",
+		"pk": 3,
+		"fields": {
+			"name": "Relational Operator",
+			"prob_id": "2113",
+			"url": "https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=2113",
+			"contest_id": null,
+			"rating": 878,
+			"index": "11172",
+			"tags": "['Introduction', 'Getting Started: The Easy Problems', 'Super Easy']",
+			"platform": "U",
+			"difficulty": "B",
+			"editorial": null
+		}
+	},
+	{
+		"model": "problem.problem",
+		"pk": 4,
+		"fields": {
+			"name": "Add Two Numbers",
+			"prob_id": "FLOW001",
+			"url": "https://www.codechef.com/problems/FLOW001",
+			"contest_id": "",
+			"rating": 1082,
+			"index": "",
+			"tags": "[]",
+			"platform": "C",
+			"difficulty": "B",
+			"editorial": null
+		}
+	},
+	{
+		"model": "problem.problem",
+		"pk": 5,
+		"fields": {
+			"name": "A. Simple Math",
+			"prob_id": "arc107_a",
+			"url": "https://atcoder.jp/contests/arc107/tasks/arc107_a",
+			"contest_id": "arc107",
+			"rating": 1190,
+			"index": "a",
+			"tags": null,
+			"platform": "A",
+			"difficulty": "E",
+			"editorial": null
+		}
+	},
+	{
+		"model": "problem.problem",
+		"pk": 6,
+		"fields": {
+			"name": "Combination Lock",
+			"prob_id": "1491",
+			"url": "https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=1491",
+			"contest_id": null,
+			"rating": 1231,
+			"index": "10550",
+			"tags": "['Introduction', 'Getting Started: The Easy Problems', 'Super Easy']",
+			"platform": "U",
+			"difficulty": "E",
 			"editorial": null
 		}
 	}
