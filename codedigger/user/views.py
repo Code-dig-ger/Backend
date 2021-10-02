@@ -33,9 +33,9 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
-# Validations 
+# Validations
 from .param_validators import isValidRequest
-# Return Response 
+# Return Response
 from .response import response
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
@@ -314,7 +314,8 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'email_subject': 'Codedigger - Password Reset'
             }
             Util.send_email(data)
-            return response(Data="We have sent you a link to reset your password")
+            return response(
+                Data="We have sent you a link to reset your password")
         return Response(
             {
                 'status': 'Failed',
@@ -959,7 +960,7 @@ class RequestSendShowView(generics.GenericAPIView):
                                                      'by_to_user': True
                                                  },
                                                  many=True).data
-        return response(Data=friendsbyrequest)                                      
+        return response(Data=friendsbyrequest)
 
 
 # Friends Related View Ends

@@ -1,7 +1,8 @@
 from .exception import ValidationException
 from . import validator_functions as validators
 
-def isValidRequest(request, validation_dict) :
+
+def isValidRequest(request, validation_dict):
     """
     :param request: Request Object 
     :param validation_dict: a dictionary of validators
@@ -17,13 +18,13 @@ def isValidRequest(request, validation_dict) :
     """
 
     param = request.query_params
-    for key,val_method in validation_dict:
+    for key, val_method in validation_dict:
 
         methods = val_method.split('|')
 
         if key in param:
             for method in methods:
-                param = getattr(validators, method)(param = param, key = key)
+                param = getattr(validators, method)(param=param, key=key)
 
         elif 'required' in methods:
             raise ValidationException('{} is required', key)
