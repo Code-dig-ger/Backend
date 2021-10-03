@@ -2,7 +2,7 @@ import re
 import json
 import requests
 from bs4 import BeautifulSoup as bs4
-
+from rest_framework.response import Response
 
 def codeforces_status(handle):
 
@@ -157,3 +157,26 @@ def atcoder_status(handle):
             wrong.add(sub["problem_id"])
 
     return (contests_details, all_contest, solved, wrong)
+
+def get_upsolve_response_dict(platform_name, user_contest_details, path, page, Prev, Next, NumPage, request, total):
+    return Response({
+            'status' :  'OK' , 
+            'result' :  user_contest_details ,
+            'links' : {
+                'first' : path + 'page=1',
+                'last' :  path + 'page='+str(NumPage),
+                'prev' :  Prev,
+                'next' :  Next
+            },
+
+            'meta' : {
+                'current_page' :  page,
+                'from' : (page-1)*10 + 1,
+                'last_page' : NumPage,
+                'path' : request.build_absolute_uri('/problems/upsolve/{}'.format(platform_name)),
+                'per_page' : 10,
+                'to' : page*10,
+                'total' :  total
+            }
+        
+    })
