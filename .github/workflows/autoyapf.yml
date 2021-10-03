@@ -29,7 +29,11 @@ jobs:
           pip install yapf
           URL="https://api.github.com/repos/${{github.repository}}/pulls/${{ github.event.pull_request.number }}/files?per_page=100"
           FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename')
-          yapf -i -r -vv -p $FILES
+          for i in $FILES;do
+            if [[ $i =~ .*\.py$ ]];then
+              yapf -i -r -vv -p $i
+            fi
+          done
           # URL="https://api.github.com/repos/${{github.repository}}/pulls/${{ github.event.pull_request.number }}/files?per_page=100"
           # FILES=$(curl -s -X GET -G $URL | jq -r '.[] | .filename')
           # echo $FILES
