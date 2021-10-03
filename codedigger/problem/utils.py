@@ -1,8 +1,10 @@
+from codeforces.api import user_status
 import re
 import json
 import requests
 from bs4 import BeautifulSoup as bs4
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
 def codeforces_status(handle):
 
@@ -11,21 +13,11 @@ def codeforces_status(handle):
     SolvedInContest = set()
     Upsolved = set()
     Wrong = set()
-
-    url = "https://codeforces.com/api/user.status?handle=" + handle
-    res = requests.get(url)
-
-    if res.status_code != 200:
+    try:
+        submissions = user_status(handle=handle)
+    except ValidationError:
         return (RContest, VContest, SolvedInContest, Upsolved, Wrong)
-
-    data = res.json()
-
-    if data['status'] != 'OK':
-        return (RContest, VContest, SolvedInContest, Upsolved, Wrong)
-
-    del res
-
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             # to be sure this is a contest problem
             contestId = submission['contestId']
@@ -46,8 +38,7 @@ def codeforces_status(handle):
                         Upsolved.add(
                             str(submission['problem']['contestId']) +
                             submission['problem']['index'])
-
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             if 'verdict' in submission:
                 # to be sure verdict is present
