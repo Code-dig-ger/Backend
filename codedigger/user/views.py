@@ -222,13 +222,16 @@ class ChangePassword(generics.GenericAPIView):
         old_pass = data.get('old_pass', None)
         new_pass = data.get('new_pass', None)
         if old_pass is None or new_pass is None:
-            raise ValidationException('Either the old or new password was not provided')
+            raise ValidationException(
+                'Either the old or new password was not provided')
         user = authenticate(username=self.request.user.username,
                             password=old_pass)
         if new_pass == old_pass:
-            raise ValidationException("The new password is same as the old password")
+            raise ValidationException(
+                "The new password is same as the old password")
         if len(new_pass) < 6:
-            raise ValidationException("The password is too short, should be of minimum length 6")
+            raise ValidationException(
+                "The password is too short, should be of minimum length 6")
         if user is None:
             raise ValidationException("Wrong Password")
         user.set_password(new_pass)
@@ -251,7 +254,8 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             if user.auth_provider != 'email':
-                raise ValidationException('You cannot reset password if you registered with google')
+                raise ValidationException(
+                    'You cannot reset password if you registered with google')
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             current_site = get_current_site(request=request).domain
@@ -314,9 +318,11 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                     return redirect(redirect_url + '?token_valid=False')
 
             except UnboundLocalError as e:
-                raise ValidationException('Token is not valid, please request a new one')
+                raise ValidationException(
+                    'Token is not valid, please request a new one')
             if not PasswordResetTokenGenerator().check_token(user, token):
-                raise ValidationException('Token is invalid. Please request a new one')
+                raise ValidationException(
+                    'Token is invalid. Please request a new one')
 
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
@@ -421,12 +427,15 @@ class UserProfileGetView(generics.GenericAPIView):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise ValidationException('Requested User doesn\'t exists in our database. Register Now! :)')
+            raise ValidationException(
+                'Requested User doesn\'t exists in our database. Register Now! :)'
+            )
 
         profile = Profile.objects.get(owner=user)
 
         if profile.codeforces == None:
-            raise ValidationException('Requested User haven\'t activated his/her account. :( ')
+            raise ValidationException(
+                'Requested User haven\'t activated his/her account. :( ')
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
 
@@ -550,19 +559,24 @@ class SendFriendRequest(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         if request.user.username == to_user:
-            raise ValidationException('You cannot send a friend request to yourself.')
+            raise ValidationException(
+                'You cannot send a friend request to yourself.')
 
         try:
             to_user = User.objects.get(username=to_user, is_verified=True)
             if Profile.objects.get(
                     owner=to_user).codeforces == "" or Profile.objects.get(
                         owner=to_user).codeforces == None:
-                raise ValidationException('Requested User have not activated his account.')
+                raise ValidationException(
+                    'Requested User have not activated his account.')
         except User.DoesNotExist:
-            raise ValidationException('Requested User Does not Exists in our database.')
+            raise ValidationException(
+                'Requested User Does not Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
@@ -571,7 +585,8 @@ class SendFriendRequest(generics.GenericAPIView):
             if uf.status == True:
                 raise ValidationException('You are already Friends.')
             else:
-                raise ValidationException('You have already Sent a Friend Request to this User.')
+                raise ValidationException(
+                    'You have already Sent a Friend Request to this User.')
         except UserFriends.DoesNotExist:
             # Check for Opposite
 
@@ -601,7 +616,9 @@ class RemoveFriend(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         user = request.data["user"]
 
@@ -611,9 +628,11 @@ class RemoveFriend(generics.GenericAPIView):
             if Profile.objects.get(
                     owner=user).codeforces == "" or Profile.objects.get(
                         owner=user).codeforces == None:
-                raise ValidationException('Requested User haven\'t activated his account.')
+                raise ValidationException(
+                    'Requested User haven\'t activated his account.')
         except User.DoesNotExist:
-            raise ValidationException('Requested User Doesn\'t Exists in our database.')
+            raise ValidationException(
+                'Requested User Doesn\'t Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
@@ -646,7 +665,9 @@ class AcceptFriendRequest(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         from_user = request.data["from_user"]
 
@@ -656,9 +677,11 @@ class AcceptFriendRequest(generics.GenericAPIView):
             if Profile.objects.get(
                     owner=from_user).codeforces == "" or Profile.objects.get(
                         owner=from_user).codeforces == None:
-                raise ValidationException('Requested User haven\'t activated his account.')
+                raise ValidationException(
+                    'Requested User haven\'t activated his account.')
         except User.DoesNotExist:
-            raise ValidationException('Requested User Doesn\'t Exists in our database.')
+            raise ValidationException(
+                'Requested User Doesn\'t Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
@@ -670,7 +693,8 @@ class AcceptFriendRequest(generics.GenericAPIView):
             uf.save()
             return Response({'status': 'OK', 'result': 'You are now Friends!'})
         except UserFriends.DoesNotExist:
-            raise ValidationException('No Request Found! It seems User have removed Request.')
+            raise ValidationException(
+                'No Request Found! It seems User have removed Request.')
 
 
 class FriendsShowView(generics.GenericAPIView):
@@ -683,7 +707,9 @@ class FriendsShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         friendsbyrequest = UserFriends.objects.filter(status=True,
                                                       from_user=request.user)
@@ -715,7 +741,9 @@ class FriendRequestShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         friendsbyaccept = UserFriends.objects.filter(status=False,
                                                      to_user=request.user)
@@ -737,7 +765,9 @@ class RequestSendShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
+            raise ValidationException(
+                'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
+            )
 
         friendsbyrequest = UserFriends.objects.filter(status=False,
                                                       from_user=request.user)
