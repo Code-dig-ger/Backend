@@ -37,6 +37,7 @@ load_dotenv(find_dotenv())
 from .param_validators import isValidRequest
 # Return Response
 from .response import response
+from .exception import ValidationException
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
 from codeforces.models import user as CodeforcesUser
@@ -150,18 +151,9 @@ class SendVerificationMail(generics.GenericAPIView):
         """
         email = request.data.get('email', None)
         if email is None:
-            return Response({
-                'status': 'FAILED',
-                'error': 'Email not provided'
-            },
-                            status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Email not provided')
         if not User.objects.filter(email=email).exists():
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'The given email does not exist'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('The given email does not exist')
         user = User.objects.get(email=email)
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
@@ -230,36 +222,15 @@ class ChangePassword(generics.GenericAPIView):
         old_pass = data.get('old_pass', None)
         new_pass = data.get('new_pass', None)
         if old_pass is None or new_pass is None:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Either the old or new password was not provided'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Either the old or new password was not provided')
         user = authenticate(username=self.request.user.username,
                             password=old_pass)
         if new_pass == old_pass:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': "The new password is same as the old password"
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException("The new password is same as the old password")
         if len(new_pass) < 6:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    "The password is too short, should be of minimum length 6"
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException("The password is too short, should be of minimum length 6")
         if user is None:
-            return Response({
-                'status': 'FAILED',
-                'error': "Wrong Password"
-            },
-                            status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException("Wrong Password")
         user.set_password(new_pass)
         user.save()
         return response(Data="Password Change Complete")
@@ -276,23 +247,11 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 
         email = request.data.get('email', None)
         if email is None:
-            return Response(
-                {
-                    'status': 'Failed',
-                    'error': 'Email has not been provided'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Email has not been provided')
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             if user.auth_provider != 'email':
-                return Response(
-                    {
-                        'status':
-                        'Failed',
-                        'error':
-                        'You cannot reset password if you registered with google'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('You cannot reset password if you registered with google')
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             current_site = get_current_site(request=request).domain
@@ -316,12 +275,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             Util.send_email(data)
             return response(
                 Data="We have sent you a link to reset your password")
-        return Response(
-            {
-                'status': 'Failed',
-                'error': 'The given email does not exist'
-            },
-            status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationException('The given email does not exist')
 
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
@@ -336,12 +290,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
             if not User.objects.filter(id=id).exists():
-                return Response(
-                    {
-                        "status": 'FAILED',
-                        'error': "UIDB Token is invalid"
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException("UIDB Token is invalid")
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
@@ -365,19 +314,9 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                     return redirect(redirect_url + '?token_valid=False')
 
             except UnboundLocalError as e:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Token is not valid, please request a new one'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Token is not valid, please request a new one')
             if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Token is invalid. Please request a new one'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Token is invalid. Please request a new one')
 
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
@@ -482,26 +421,12 @@ class UserProfileGetView(generics.GenericAPIView):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'Requested User doesn\'t exists in our database. Register Now! :)'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Requested User doesn\'t exists in our database. Register Now! :)')
 
         profile = Profile.objects.get(owner=user)
 
         if profile.codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'Requested User haven\'t activated his/her account. :( '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Requested User haven\'t activated his/her account. :( ')
 
         ermsg = "You haven\'t entered {} handle in your Profile. Update Profile Now! "
 
@@ -581,12 +506,7 @@ class UserProfileGetView(generics.GenericAPIView):
             if profile.codechef != "" and profile.codechef != None:
                 data = get_codechef_profile(profile.codechef)
             else:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': ermsg.format('codechef')
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException(ermsg.format('codechef'))
 
         elif request.GET.get('platform') == "atcoder":
             if profile.atcoder != "" and profile.atcoder != None:
@@ -594,41 +514,21 @@ class UserProfileGetView(generics.GenericAPIView):
                 data['solvedCount'] = Solved.objects.filter(
                     user=profile.owner, problem__platform='A').count()
             else:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': ermsg.format('atcoder')
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException(ermsg.format('atcoder'))
 
         elif request.GET.get('platform') == "uva":
             if profile.uva_handle != "" and profile.uva_handle != None:
                 data = get_uva_profile(profile.uva_id, profile.uva_handle)
             else:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': ermsg.format('uva')
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException(ermsg.format('uva'))
 
         elif request.GET.get('platform') == "spoj":
             if profile.spoj != "" and profile.spoj != None:
                 data = get_spoj_profile(profile.spoj)
             else:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': ermsg.format('spoj')
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException(ermsg.format('spoj'))
         else:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Invalid GET Request'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Invalid GET Request')
 
         return response(Data=data)
 
@@ -650,63 +550,28 @@ class SendFriendRequest(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         if request.user.username == to_user:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'You cannot send a friend request to yourself.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You cannot send a friend request to yourself.')
 
         try:
             to_user = User.objects.get(username=to_user, is_verified=True)
             if Profile.objects.get(
                     owner=to_user).codeforces == "" or Profile.objects.get(
                         owner=to_user).codeforces == None:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error':
-                        'Requested User have not activated his account.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Requested User have not activated his account.')
         except User.DoesNotExist:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Requested User Does not Exists in our database.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Requested User Does not Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
             uf = UserFriends.objects.get(from_user=request.user,
                                          to_user=to_user)
             if uf.status == True:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'You are already Friends.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('You are already Friends.')
             else:
-                return Response(
-                    {
-                        'status':
-                        'FAILED',
-                        'error':
-                        'You have already Sent a Friend Request to this User.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('You have already Sent a Friend Request to this User.')
         except UserFriends.DoesNotExist:
             # Check for Opposite
 
@@ -714,12 +579,7 @@ class SendFriendRequest(generics.GenericAPIView):
                 uf = UserFriends.objects.get(from_user=to_user,
                                              to_user=request.user)
                 if uf.status == True:
-                    return Response(
-                        {
-                            'status': 'FAILED',
-                            'error': 'You are already Friends.'
-                        },
-                        status=status.HTTP_400_BAD_REQUEST)
+                    raise ValidationException('You are already Friends.')
                 else:
                     status.status = True
                     return response(Data="You are now Friends")
@@ -741,14 +601,7 @@ class RemoveFriend(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have not activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         user = request.data["user"]
 
@@ -758,20 +611,9 @@ class RemoveFriend(generics.GenericAPIView):
             if Profile.objects.get(
                     owner=user).codeforces == "" or Profile.objects.get(
                         owner=user).codeforces == None:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error':
-                        'Requested User haven\'t activated his account.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Requested User haven\'t activated his account.')
         except User.DoesNotExist:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Requested User Doesn\'t Exists in our database.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Requested User Doesn\'t Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
@@ -791,12 +633,7 @@ class RemoveFriend(generics.GenericAPIView):
                 opp_status.delete()
                 return response(Data="Removed Successfully!")
             except UserFriends.DoesNotExist:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Already Deleted!'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Already Deleted!')
 
 
 class AcceptFriendRequest(generics.GenericAPIView):
@@ -809,14 +646,7 @@ class AcceptFriendRequest(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         from_user = request.data["from_user"]
 
@@ -826,44 +656,21 @@ class AcceptFriendRequest(generics.GenericAPIView):
             if Profile.objects.get(
                     owner=from_user).codeforces == "" or Profile.objects.get(
                         owner=from_user).codeforces == None:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error':
-                        'Requested User haven\'t activated his account.'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('Requested User haven\'t activated his account.')
         except User.DoesNotExist:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Requested User Doesn\'t Exists in our database.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('Requested User Doesn\'t Exists in our database.')
 
         # Check whether this have sent a request already or not
         try:
             uf = UserFriends.objects.get(from_user=from_user,
                                          to_user=request.user)
             if uf.status:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'You are already Friends!'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationException('You are already Friends!')
             uf.status = True
             uf.save()
             return Response({'status': 'OK', 'result': 'You are now Friends!'})
         except UserFriends.DoesNotExist:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'No Request Found! It seems User have removed Request.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('No Request Found! It seems User have removed Request.')
 
 
 class FriendsShowView(generics.GenericAPIView):
@@ -876,14 +683,7 @@ class FriendsShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         friendsbyrequest = UserFriends.objects.filter(status=True,
                                                       from_user=request.user)
@@ -915,14 +715,7 @@ class FriendRequestShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         friendsbyaccept = UserFriends.objects.filter(status=False,
                                                      to_user=request.user)
@@ -944,14 +737,7 @@ class RequestSendShowView(generics.GenericAPIView):
         if Profile.objects.get(
                 owner=request.user).codeforces == "" or Profile.objects.get(
                     owner=request.user).codeforces == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. '
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException('You have\'n activated your account. Please activate your account by putting your name and codeforces handle in your profile.. ')
 
         friendsbyrequest = UserFriends.objects.filter(status=False,
                                                       from_user=request.user)
