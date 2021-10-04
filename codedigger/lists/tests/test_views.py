@@ -27,6 +27,7 @@ class TestViews(TestSetUp):
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
 
+
 #checking lists with an authenticated user
 
     def test_auth_check_topicwise_list_view(self):
