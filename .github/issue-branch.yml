@@ -5,14 +5,14 @@ autoCloseIssue: true
 branchName: 'issue-${issue.number}/${issue.title,}'
 branches:
   - label: enhancement
-    prefix: feature/${issue.user.login}/
+    prefix: feature/${sender.login}/
   - label: bug
-    prefix: bugfix/${issue.user.login}/
+    prefix: bugfix/${sender.login}/
   - label: refactor
-    prefix: refactor/${issue.user.login}/
+    prefix: refactor/${sender.login}/
   - label: documentation
-    prefix: docs/${issue.user.login}/
+    prefix: docs/${sender.login}/
   - label: '*' 
-    prefix: issues/${issue.user.login}/
+    prefix: issues/${sender.login}/
 experimental:
   branchNameArgument: true
