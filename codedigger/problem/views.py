@@ -284,29 +284,6 @@ class UpsolveContestAPIView(
             Prev = path + 'page=' + str(page - 1)
 
         c = c[10 * (page - 1):10 * page]
-
-        # return Response({
-        #     'status':
-        #     'OK',
-        #     'result':
-        #     UpsolveContestSerializer(c, many=True, context=data).data,
-        #     'links': {
-        #         'first': path + 'page=1',
-        #         'last': path + 'page=' + str(NumPage),
-        #         'prev': Prev,
-        #         'next': Next
-        #     },
-        #     'meta': {
-        #         'current_page': page,
-        #         'from': (page - 1) * 10 + 1,
-        #         'last_page': NumPage,
-        #         'path':
-        #         request.build_absolute_uri('/problems/upsolve/codeforces'),
-        #         'per_page': 10,
-        #         'to': page * 10,
-        #         'total': total
-        #     }
-        # })
         user_contest_details =UpsolveContestSerializer(c, many=True, context=data).data
         get_upsolve_response_dict(platform_name, user_contest_details, path, page, Prev, Next, NumPage, request, total)
 
@@ -395,28 +372,6 @@ class CCUpsolveContestAPIView(
             Prev = path + 'page=' + str(page - 1)
 
         user_contest_details = user_contest_details[10 * (page - 1):10 * page]
-
-        # return Response({
-        #     'status': 'OK',
-        #     'result': user_contest_details,
-        #     'links': {
-        #         'first': path + 'page=1',
-        #         'last': path + 'page=' + str(NumPage),
-        #         'prev': Prev,
-        #         'next': Next
-        #     },
-        #     'meta': {
-        #         'current_page': page,
-        #         'from': (page - 1) * 10 + 1,
-        #         'last_page': NumPage,
-        #         'path':
-        #         request.build_absolute_uri('/problems/upsolve/codechef'),
-        #         'per_page': 10,
-        #         'to': page * 10,
-        #         'total': total
-        #     }
-        # })
-
         get_upsolve_response_dict(platform_name, user_contest_details, path, page, Prev, Next, NumPage, request, total)
 
 class ATUpsolveContestAPIView(
@@ -495,29 +450,5 @@ class ATUpsolveContestAPIView(
             Prev = path + 'page=' + str(page - 1)
 
         qs = qs[10 * (page - 1):10 * page]
-
-        # return Response({
-        #     'status':
-        #     'OK',
-        #     'result':
-        #     AtcoderUpsolveContestSerializer(qs, many=True, context=data).data,
-        #     'links': {
-        #         'first': path + 'page=1',
-        #         'last': path + 'page=' + str(NumPage),
-        #         'prev': Prev,
-        #         'next': Next
-        #     },
-        #     'meta': {
-        #         'current_page': page,
-        #         'from': (page - 1) * 10 + 1,
-        #         'last_page': NumPage,
-        #         'path':
-        #         request.build_absolute_uri('/problems/upsolve/atcoder'),
-        #         'per_page': 10,
-        #         'to': page * 10,
-        #         'total': total
-        #     }
-        # })
-
         user_contest_details = AtcoderUpsolveContestSerializer(qs, many=True, context=data).data
         get_upsolve_response_dict(platform_name, user_contest_details, path, page, Prev, Next, NumPage, request, total)
