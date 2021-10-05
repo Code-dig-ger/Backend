@@ -502,6 +502,10 @@ class EditUserlistView(generics.GenericAPIView):
                 raise ValidationException(
                     "public field can only be true or false (with the lowercase initial character)"
                 )
+            if curr_list.public == True and public == False:
+                raise ValidationException(
+                    "A list once made public cannot be made private again"
+                )
             curr_list.public = public
         if data.get('delete_probs', None):
             for ele in data.get('delete_probs', None):
