@@ -6,19 +6,17 @@ from user.models import User, Profile
 from lists.models import List, Solved, ListInfo
 from problem.models import Problem
 
-from lists.test_fixtures.profile_fixtures import profile1, profile2 
+from lists.test_fixtures.profile_fixtures import profile1, profile2
 
 
 class TestSetUp(APITestCase):
-    fixtures = [
-        "user.json", "problems.json", "lists.json", "list_info.json"
-    ]
+    fixtures = ["user.json", "problems.json", "lists.json", "list_info.json"]
 
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
-        Profile.objects.filter(owner = 1).update(**profile1)
-        Profile.objects.filter(owner = 2).update(**profile2)
+        Profile.objects.filter(owner=1).update(**profile1)
+        Profile.objects.filter(owner=2).update(**profile2)
 
     def setUp(self):
         self.register_url = reverse('register')

@@ -11,6 +11,7 @@ from user.exception import *
 from .utils import *
 from user.models import User
 
+
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class = GetSerializer
     permission_classes = [AuthenticatedOrReadOnly]
@@ -428,8 +429,7 @@ class UserlistAddProblemView(generics.CreateAPIView):
             )
         if curr_list.owner != here:
             raise ValidationException(
-                "Only the owner of the list can add problems to this list"
-            )
+                "Only the owner of the list can add problems to this list")
         curr_list.problem.add(curr_prob)
         return response.Response(
             {
@@ -509,8 +509,7 @@ class EditUserlistView(generics.GenericAPIView):
                 )
             if curr_list.public == True and public == False:
                 raise ValidationException(
-                    "A list once made public cannot be made private again"
-                )
+                    "A list once made public cannot be made private again")
             curr_list.public = public
         if data.get('delete_probs', None):
             for ele in data.get('delete_probs', None):

@@ -8,7 +8,4 @@ profile1 = {
     "uva_id": "1143870"
 }
 
-profile2 = {
-    "name": "testinguser",
-    "codeforces": "shivam1012"
-}
+profile2 = {"name": "testinguser", "codeforces": "shivam1012"}
