@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class DiscordWebhook(models.Model):
     TYPE_CHOICES = (
         ("0", "Contest Notification"),
