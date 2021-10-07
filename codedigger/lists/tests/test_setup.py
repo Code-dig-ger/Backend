@@ -6,12 +6,17 @@ from user.models import User, Profile
 from lists.models import List, Solved, ListInfo
 from problem.models import Problem
 
+from lists.test_fixtures.profile_fixtures import profile1, profile2
+
 
 class TestSetUp(APITestCase):
-    fixtures = [
-        "user.json", "problems.json", "lists.json", "profiles.json",
-        "list_info.json"
-    ]
+    fixtures = ["user.json", "problems.json", "lists.json", "list_info.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        # Set up data for the whole TestCase
+        Profile.objects.filter(owner=1).update(**profile1)
+        Profile.objects.filter(owner=2).update(**profile2)
 
     def setUp(self):
         self.register_url = reverse('register')
@@ -26,11 +31,4 @@ class TestSetUp(APITestCase):
         return super().setUp()
 
     def tearDown(self):
-        #delete all data in models if you want to use --keepdb
-        Solved.objects.all().delete()
-        ListInfo.objects.all().delete()
-        List.objects.all().delete()
-        Problem.objects.all().delete()
-        User.objects.all().delete()
-        Profile.objects.all().delete()
         return super().tearDown()
