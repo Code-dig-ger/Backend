@@ -56,22 +56,27 @@ class TestViews(TestSetUp):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         data1 = {
-            'prob_id' : "4A",
-            'slug' : 'testinglist_userlist',
-            'platform' : 'F'
+            'prob_id': "4A",
+            'slug': 'testinglist_userlist',
+            'platform': 'F'
         }
-        res = client.post(test_url,data1, format="json")
+        res = client.post(test_url, data1, format="json")
         user = User.objects.get(username="testinguser")
         user.set_password(self.user_data['password'])
         user.save()
-        res2 = self.client.post(self.login_url, {'username' : 'testinguser','password' : self.user_data['password']}, format="json")
+        res2 = self.client.post(self.login_url, {
+            'username': 'testinguser',
+            'password': self.user_data['password']
+        },
+                                format="json")
         token2 = res2.data['tokens']['access']
         client2 = APIClient()
         client2.credentials(HTTP_AUTHORIZATION='Bearer ' + token2)
         data2 = {
-            'prob_id' : "abc186_a",
-            'slug' : 'testinglist_userlist',
-            'platform' : 'A'
+            'prob_id': "abc186_a",
+            'slug': 'testinglist_userlist',
+            'platform': 'A'
         }
-        res2 = client2.post(test_url,data2,format="json")
-        self.assertEqual(res.status_code, 200) and self.assertEqual(res2.status_code, 400)
+        res2 = client2.post(test_url, data2, format="json")
+        self.assertEqual(res.status_code, 200) and self.assertEqual(
+            res2.status_code, 400)
