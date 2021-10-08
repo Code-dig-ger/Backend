@@ -94,5 +94,13 @@
 			"p_list": 2,
 			"problem": 6
 		}
+	},
+	{
+		"model": "lists.listinfo",
+		"pk": 13,
+		"fields": {
+			"p_list": 3,
+			"problem": 6
+		}
 	}
 ]

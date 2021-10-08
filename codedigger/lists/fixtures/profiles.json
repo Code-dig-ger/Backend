@@ -12,5 +12,14 @@
 			"spoj": "aaradhya777",
 			"uva_id": "1143870"
 		}
+	},
+	{
+		"model": "user.profile",
+		"pk": 2,
+		"fields": {
+			"owner": 2,
+			"name": "testinguser",
+			"codeforces": "shivam1012"
+		}
 	}
 ]
