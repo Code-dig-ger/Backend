@@ -9,7 +9,7 @@ profile1 = {
 }
 
 profile2 = {
-    "name": "testinguser", 
+    "name": "testinguser",
     "codeforces": "shivamsinghal1012",
     "codechef": "shivam1012"
 }

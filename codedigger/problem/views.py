@@ -245,16 +245,17 @@ class UpsolveContestAPIView(
         total_contest = c.count()
         if total_contest == 0:
             return Response({'status': 'OK', 'result': []})
-        
+
         total_page = get_total_page(total_contest, per_page)
         if page > total_page:
             raise ValidationException('Page Out of Bound')
 
-        user_contest_details = UpsolveContestSerializer(
-                                getqs(c, per_page, page), 
-                                many=True, context=data).data
-        res = get_upsolve_response_dict(user_contest_details, path, 
-                                        page, total_contest, per_page)
+        user_contest_details = UpsolveContestSerializer(getqs(
+            c, per_page, page),
+                                                        many=True,
+                                                        context=data).data
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
         return Response(res)
 
 
@@ -293,10 +294,13 @@ class CCUpsolveContestAPIView(
 
             if qs.count() > 0:
                 user_contest_details.append({
-                    'contestId': contest,
-                    'name': ContestName[contest],
-                    'problems': CCUpsolveContestSerializer(
-                                    qs, many=True, context=data).data
+                    'contestId':
+                    contest,
+                    'name':
+                    ContestName[contest],
+                    'problems':
+                    CCUpsolveContestSerializer(qs, many=True,
+                                               context=data).data
                 })
 
         total_contest = len(user_contest_details)
@@ -307,9 +311,10 @@ class CCUpsolveContestAPIView(
             raise ValidationException('Page Out of Bound')
 
         user_contest_details = getqs(user_contest_details, per_page, page)
-        res = get_upsolve_response_dict(user_contest_details, path, page, 
-                                            total_contest, per_page)
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
         return Response(res)
+
 
 class ATUpsolveContestAPIView(
         mixins.CreateModelMixin,
@@ -353,7 +358,8 @@ class ATUpsolveContestAPIView(
             raise ValidationException('Page Out of Bound')
 
         qs = getqs(qs, per_page, page)
-        user_contest_details = AtcoderUpsolveContestSerializer(qs, many=True, context=data).data
-        res = get_upsolve_response_dict(user_contest_details, path, 
-                                page, total_contest, per_page)
+        user_contest_details = AtcoderUpsolveContestSerializer(
+            qs, many=True, context=data).data
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
         return Response(res)

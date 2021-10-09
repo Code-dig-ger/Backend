@@ -5,10 +5,12 @@ from django.urls import reverse
 from user.models import User, Profile
 from lists.test_fixtures.profile_fixtures import profile1, profile2
 
+
 class TestSetUp(APITestCase):
-    fixtures = ["user.json", "cf_contest.json", 
-                "cf_problems.json", "cc_problems.json", 
-                "at_problems.json", "atcoder_contests.json"]
+    fixtures = [
+        "user.json", "cf_contest.json", "cf_problems.json", "cc_problems.json",
+        "at_problems.json", "atcoder_contests.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):
@@ -17,12 +19,9 @@ class TestSetUp(APITestCase):
 
     def setUp(self):
         self.login_url = reverse('login')
-        self.user_data = {
-            'username': 'testing',
-            'password': 'QWERTY@123'
-        }
+        self.user_data = {'username': 'testing', 'password': 'QWERTY@123'}
         return super().setUp()
-    
+
     @classmethod
     def login(self, client, login_url, user_data):
         user = User.objects.get(username=user_data['username'])
@@ -30,7 +29,7 @@ class TestSetUp(APITestCase):
         user.save()
         response = client.post(login_url, user_data, format="json")
         return response.data['tokens']['access']
-    
+
     @classmethod
     def get_authenticated_client(self, token):
         client = APIClient()

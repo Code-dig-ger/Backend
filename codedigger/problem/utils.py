@@ -153,7 +153,8 @@ def atcoder_status(handle):
 
     return (contests_details, all_contest, solved, wrong)
 
-def get_page_number(page): 
+
+def get_page_number(page):
     if page == None:
         return 1
     elif page.isdigit():
@@ -161,29 +162,30 @@ def get_page_number(page):
     else:
         raise ValidationException('Page must be an integer.')
 
-def get_upsolve_response_dict(user_contest_details, path, 
-                            page, total_contest, per_page):
+
+def get_upsolve_response_dict(user_contest_details, path, page, total_contest,
+                              per_page):
 
     total_page = get_total_page(total_contest, per_page)
     Prev = get_prev_url(page, path)
     Next = get_next_url(page, path, total_page)
-    
+
     return {
-        'status' :  'OK' , 
-        'result' :  user_contest_details ,
-        'links' : {
-            'first' : path + 'page=1',
-            'last' :  path + 'page='+str(total_page),
-            'prev' :  Prev,
-            'next' :  Next
+        'status': 'OK',
+        'result': user_contest_details,
+        'links': {
+            'first': path + 'page=1',
+            'last': path + 'page=' + str(total_page),
+            'prev': Prev,
+            'next': Next
         },
-        'meta' : {
-            'current_page' :  page,
-            'from' : (page-1)*per_page + 1,
-            'last_page' : total_page,
-            'path' : path,
-            'per_page' : per_page,
-            'to' : total_contest if page == total_page else page*per_page,
-            'total' :  total_contest
+        'meta': {
+            'current_page': page,
+            'from': (page - 1) * per_page + 1,
+            'last_page': total_page,
+            'path': path,
+            'per_page': per_page,
+            'to': total_contest if page == total_page else page * per_page,
+            'total': total_contest
         }
     }

@@ -57,7 +57,7 @@ def get_total_page(total_problems, page_size):
     # param :
     # total_problems : total number of problems
     # page_size : number of problems in a page
-    return ((total_problems - 1)//page_size) + 1
+    return ((total_problems - 1) // page_size) + 1
 
 
 def get_prev_url(page, url):
