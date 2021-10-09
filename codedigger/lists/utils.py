@@ -57,21 +57,15 @@ def get_total_page(total_problems, page_size):
     # param :
     # total_problems : total number of problems
     # page_size : number of problems in a page
-    total_page = total_problems // page_size
-    if total_problems % page_size != 0:
-        total_page += 1
-    return total_page
+    return ((total_problems - 1)//page_size) + 1
 
 
 def get_prev_url(page, url):
     # param :
     # page: current page number
     # path: base url
-    if page == 1:
-        Prev = None
-    else:
-        Prev = url + '?page=' + str(page - 1)
-    return Prev
+    return None if page == 1 \
+                else '{}?page={}'.format(url, str(page-1))
 
 
 def get_next_url(page, url, total_page):
@@ -79,11 +73,8 @@ def get_next_url(page, url, total_page):
     # page: current page number
     # path: base url
     # total_page: total page in list
-    if page == total_page:
-        Next = None
-    else:
-        Next = url + '?page=' + str(page + 1)
-    return Next
+    return None if page == total_page \
+                else '{}?page={}'.format(url, str(page+1))
 
 
 def get_unsolved_page_number(problem_qs, user, page_size):

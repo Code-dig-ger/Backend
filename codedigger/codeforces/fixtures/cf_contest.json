@@ -1,0 +1,20 @@
+[
+    {
+        "model":"codeforces.contest",
+        "pk":1,
+        "fields":{
+            "name":"1549",
+            "contestId":"1549",
+            "Type":"R"
+        }
+    },
+    {
+        "model":"codeforces.contest",
+        "pk":2,
+        "fields":{
+            "name":"1345",
+            "contestId":"1345",
+            "Type":"R"
+        }
+    }
+]
