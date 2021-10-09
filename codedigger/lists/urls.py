@@ -15,6 +15,7 @@ from .views import (
     UserlistAddProblemView,
     EditUserlistView,
     AddProblemsAdminView,
+    ProblemsPublicListView,
     testing)
 
 urlpatterns = [
@@ -42,6 +43,7 @@ urlpatterns = [
     path('levelwise/ladder/<str:slug>',
          LevelwiseLadderRetrieveView.as_view(),
          name='levelwise-list-name'),
+    path('<str:slug>/problems',ProblemsPublicListView.as_view(),name = 'problem-publiclist'),
     #path('ladder-update',updateLadderview.as_view(),name='ladder-update'),
     #path('list-update',updateListView.as_view(),name='list-update'),
     path('add-problems-admin/',
