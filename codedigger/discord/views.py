@@ -9,10 +9,9 @@ from .utils import get_user, get_user_profile
 
 
 class VerifyView(generics.GenericAPIView):
-    
+
     permission_classes = [AuthenticatedBot]
     serializer_class = VerifySerializer
-    
 
     def put(self, request):
         """
@@ -35,5 +34,5 @@ class VerifyView(generics.GenericAPIView):
             raise ValidationException(
                 'Discord Tag not matched with your profile. Please login to https://codedigger.tech and update your profile.'
             )
-        
+
         return response('Thanks for verifying!')

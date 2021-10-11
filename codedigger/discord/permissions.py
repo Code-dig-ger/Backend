@@ -4,6 +4,7 @@ from rest_framework.permissions import BasePermission
 
 from user.permissions import Forbidden
 
+
 class ForbiddenBot(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_detail = {
