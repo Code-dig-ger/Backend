@@ -2,6 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db.models.signals import post_save
+from django.utils.translation import deactivate
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -34,6 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_bot = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField('self',
@@ -71,6 +73,8 @@ class Profile(models.Model):
     atcoder = models.CharField(max_length=50, null=True, blank=True)
     uva_handle = models.CharField(max_length=50, null=True, blank=True)
     uva_id = models.CharField(max_length=50, null=True, blank=True)
+    discord_tag = models.CharField(max_length=64, null=True, blank=True)
+    is_discord_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     gurus = models.CharField(max_length=300, default=",", blank=True)

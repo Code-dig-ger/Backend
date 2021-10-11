@@ -29,6 +29,7 @@ urlpatterns = [
     path('lists/', include('lists.urls')),
     path('blog/', include('blog.urls')),
     path('contest/', include('contest.urls')),
+    path('bot/', include('discord.urls')),
     path('',
          schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),

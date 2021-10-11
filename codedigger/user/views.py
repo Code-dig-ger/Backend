@@ -39,7 +39,9 @@ from .param_validators import isValidRequest
 from .response import response
 from .exception import ValidationException
 # Profile
-from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
+from .profile import ( get_atcoder_profile, get_spoj_profile, 
+                        get_uva_profile, get_codechef_profile, 
+                        get_codeforces_profile )
 from codeforces.models import user as CodeforcesUser
 from codeforces.models import user_contest_rank
 from codeforces.serializers import UserSerializer as CodeforcesUserSerializer
@@ -47,7 +49,8 @@ from django.db.models import Q
 from lists.models import Solved
 
 # Friends
-from .serializers import SendFriendRequestSerializer, RemoveFriendSerializer, AcceptFriendRequestSerializer, FriendsShowSerializer
+from .serializers import ( SendFriendRequestSerializer, RemoveFriendSerializer, 
+                            AcceptFriendRequestSerializer, FriendsShowSerializer )
 from .models import UserFriends
 
 
