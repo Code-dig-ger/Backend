@@ -9,6 +9,7 @@ from django.db.models import Q
 from user.permissions import *
 from user.exception import *
 from .utils import *
+from user.models import User
 
 
 class TopicwiseGetListView(generics.ListAPIView):
@@ -405,6 +406,7 @@ class UserlistAddProblemView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data
+        here = self.request.user
         prob_id = data.get('prob_id', None)
         slug = data.get('slug', None)
         platform = data.get('platform', None)
@@ -425,6 +427,9 @@ class UserlistAddProblemView(generics.CreateAPIView):
             raise ValidationException(
                 "Problem with the given prob_id and platform already exists within the list"
             )
+        if curr_list.owner != here:
+            raise ValidationException(
+                "Only the owner of the list can add problems to this list")
         curr_list.problem.add(curr_prob)
         return response.Response(
             {
@@ -502,6 +507,9 @@ class EditUserlistView(generics.GenericAPIView):
                 raise ValidationException(
                     "public field can only be true or false (with the lowercase initial character)"
                 )
+            if curr_list.public == True and public == False:
+                raise ValidationException(
+                    "A list once made public cannot be made private again")
             curr_list.public = public
         if data.get('delete_probs', None):
             for ele in data.get('delete_probs', None):
