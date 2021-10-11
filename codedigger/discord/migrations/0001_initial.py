@@ -7,18 +7,25 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='DiscordWebhook',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id',
+                 models.AutoField(auto_created=True,
+                                  primary_key=True,
+                                  serialize=False,
+                                  verbose_name='ID')),
                 ('username', models.CharField(max_length=20)),
                 ('webhook_id', models.CharField(max_length=20)),
                 ('webhook_token', models.CharField(max_length=64)),
-                ('type', models.CharField(choices=[('0', 'Contest Notification'), ('1', 'Job Notification'), ('2', 'Hackathon Notification')], max_length=1)),
+                ('type',
+                 models.CharField(choices=[('0', 'Contest Notification'),
+                                           ('1', 'Job Notification'),
+                                           ('2', 'Hackathon Notification')],
+                                  max_length=1)),
             ],
         ),
     ]
