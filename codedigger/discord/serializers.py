@@ -10,7 +10,4 @@ class VerifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = [
-            'username',
-            'discord_tag'
-        ]
+        fields = ['username', 'discord_tag']
