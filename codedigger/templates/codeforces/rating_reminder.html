@@ -1,429 +1,752 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
-    <!--[if !mso]--><!-- -->
-    <link href='https://fonts.googleapis.com/css?family=Work+Sans:300,400,500,600,700' rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel="stylesheet">
-    <!-- <![endif]-->
-
-    <title>Rating Change Reminder</title>
-
+  <head>
+    <title>Rating Change remainder</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,500,600,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700"
+      rel="stylesheet"
+    />
     <style type="text/css">
-    	/* Codeforces Rank Related*/
-		.rated-user {
-    		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    		text-decoration: none;
-    		font-weight: bold;
-    		display: inline-block;
-		}
-		.user-black {
-		    color: black !important;
-		}
-		.user-legendary {
-		    color: red !important;
-		}
-		.legendary-user-first-letter {
-		    color: black !important;
-		}
-		.user-red {
-		    color: red !important;
-		}
-		.user-violet {
-		    color: #a0a !important;
-		}
-		.user-orange {
-		    color: #FF8C00 !important;
-		}
-		.user-blue {
-		    color: blue !important;
-		}
-		.user-cyan {
-		    color: #03A89E !important;
-		}
-		.user-green {
-		    color: green !important;
-		}
-		.user-gray {
-		    color: gray !important;
-		}
-
-        body {
-            width: 100%;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
-            mso-margin-top-alt: 0px;
-            mso-margin-bottom-alt: 0px;
-            mso-padding-alt: 0px 0px 0px 0px;
-        }
-        
-        p,
-        h1,
-        h2,
-        h3,
-        h4 {
-            margin-top: 0;
-            margin-bottom: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-        
-        span.preheader {
-            display: none;
-            font-size: 1px;
-        }
-        
-        html {
-            width: 100%;
-        }
-        
-        table {
-            font-size: 14px;
-            border: 0;
+      @media screen {
+        @font-face {
+          font-family: "Lato";
+          font-style: normal;
+          font-weight: 400;
+          src: local("Lato Regular"), local("Lato-Regular"),
+            url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff)
+              format("woff");
         }
 
-        #rank-card{
-            border: 1px solid gray;
-            border-radius: 10px;
-            border-left: 5px solid #747474;
-        }
-        #rating-change{
-            border: 1px solid gray;
-            border-radius: 10px;
-            border-right: 5px solid #747474;
+        @font-face {
+          font-family: "Lato";
+          font-style: normal;
+          font-weight: 700;
+          src: local("Lato Bold"), local("Lato-Bold"),
+            url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff)
+              format("woff");
         }
 
-        /* ----------- responsivity ----------- */
-        
-        @media only screen and (max-width: 640px) {
-            /*------ top header ------ */
-            .main-header {
-                font-size: 20px !important;
-            }
-            .main-section-header {
-                font-size: 28px !important;
-            }
-            .show {
-                display: block !important;
-            }
-            .hide {
-                display: none !important;
-            }
-            .align-center {
-                text-align: center !important;
-            }
-            .no-bg {
-                background: none !important;
-            }
-            /*----- main image -------*/
-            .main-image img {
-                width: 440px !important;
-                height: auto !important;
-            }
-            /* ====== divider ====== */
-            .divider img {
-                width: 440px !important;
-            }
-            /*-------- container --------*/
-            .container590 {
-                width: 440px !important;
-            }
-            .container580 {
-                width: 400px !important;
-            }
-            .main-button {
-                width: 220px !important;
-            }
-            /*-------- secions ----------*/
-            .section-img img {
-                width: 320px !important;
-                height: auto !important;
-            }
-            .team-img img {
-                width: 100% !important;
-                height: auto !important;
-            }
+        @font-face {
+          font-family: "Lato";
+          font-style: italic;
+          font-weight: 400;
+          src: local("Lato Italic"), local("Lato-Italic"),
+            url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff)
+              format("woff");
         }
-        
-        @media only screen and (max-width: 479px) {
-            /*------ top header ------ */
-            .main-header {
-                font-size: 18px !important;
-            }
-            .main-section-header {
-                font-size: 26px !important;
-            }
-            /* ====== divider ====== */
-            .divider img {
-                width: 280px !important;
-            }
-            /*-------- container --------*/
-            .container590 {
-                width: 280px !important;
-            }
-            .container590 {
-                width: 280px !important;
-            }
-            .container580 {
-                width: 260px !important;
-            }
-            /*-------- secions ----------*/
-            .section-img img {
-                width: 280px !important;
-                height: auto !important;
-            }
+
+        @font-face {
+          font-family: "Lato";
+          font-style: italic;
+          font-weight: 700;
+          src: local("Lato Bold Italic"), local("Lato-BoldItalic"),
+            url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff)
+              format("woff");
         }
+      }
+
+      /* CLIENT-SPECIFIC STYLES */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+
+      img {
+        -ms-interpolation-mode: bicubic;
+      }
+
+      /* RESET STYLES */
+      img {
+        border: 0;
+        height: auto;
+        line-height: 100%;
+        outline: none;
+        text-decoration: none;
+      }
+
+      table {
+        border-collapse: collapse !important;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: Quicksand, Calibri, sans-serif;
+        font-weight: 700;
+      }
+
+      body {
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      /* iOS BLUE LINKS */
+      a[x-apple-data-detectors] {
+        color: inherit !important;
+        text-decoration: none !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+      }
+
+      /* MOBILE STYLES */
+      @media screen and (max-width: 600px) {
+        h1 {
+          font-size: 32px !important;
+          line-height: 32px !important;
+        }
+      }
+
+      /* ANDROID CENTER FIX */
+      div[style*="margin: 16px 0;"] {
+        margin: 0 !important;
+      }
     </style>
-</head>
+  </head>
 
-
-<body class="respond" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-    <!-- pre-header -->
-    <table style="display:none!important;">
-        <tr>
-            <td>
-                <div style="overflow:hidden;display:none;font-size:1px;color:#ffffff;line-height:1px;font-family:Arial;maxheight:0px;max-width:0px;opacity:0;">
-                    Codeforces Rating Update Mail
+  <body
+    style="
+      background-color: #f4f4f4;
+      margin: 0 !important;
+      padding: 0 !important;
+    "
+  >
+    <!-- HIDDEN PREHEADER TEXT -->
+    <div
+      style="
+        display: none;
+        font-size: 1px;
+        color: #fefefe;
+        line-height: 1px;
+        font-family: 'Lato', Helvetica, Arial, sans-serif;
+        max-height: 0px;
+        max-width: 0px;
+        opacity: 0;
+        overflow: hidden;
+      "
+    >
+      We're thrilled to have you here! Get ready to dive into your new account.
+    </div>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!-- LOGO -->
+      <tr>
+        <td bgcolor="#FFA73B" align="center">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                align="center"
+                valign="top"
+                style="padding: 20px 10px 20px 10px"
+              ></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFA73B" align="center" style="padding: 0px 10px 0px 10px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 30px 20px 2px 20px;
+                  border-radius: 4px 4px 0px 0px;
+                "
+              >
+                <a
+                  href="http://codedigger.tech/"
+                  style="
+                    display: block;
+                    border-style: none !important;
+                    border: 0 !important;
+                  "
+                  ><img
+                    width="50%"
+                    style="min-width: 250px"
+                    border="0"
+                    src="https://lh3.googleusercontent.com/pw/ACtC-3fvyif39GMTNTsxXveZB0z3nPAxcaaYnTAw-bVROn58ZTkqO2k-kJngoftU8_xNPBdI5QB-gXgoQKOfBAndXRJiAxY6UxT96IlPf_wv_AihsFI_7dtmqchmJ9OfifaZcdH6JgPMxU2w1qUKGVbQBEf3=w290-h49-no?authuser=0"
+                    alt="Codedigger"
+                  />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                valign="top"
+                style="
+                  padding: 0px 20px 20px 20px;
+                  border-radius: 0px;
+                  color: #111111;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  letter-spacing: 1px;
+                "
+              >
+                <h1
+                  style="
+                    font-size: 30px;
+                    font-weight: 600;
+                    margin: 2;
+                    line-height: 48px;
+                  "
+                >
+                  HI CODER!
+                  <a
+                    href="https://codeforces.com/profile/shivamsinghal1012"
+                    style="color: #ffa73b; text-decoration: none"
+                    >{{rating_change.handle}}</a
+                  >
+                </h1>
+                <p
+                  style="
+                    color: #666666;
+                    font-family: 'Lato', Helvetica, Arial, sans-serif;
+                    font-size: 18px;
+                    font-weight: 400;
+                    line-height: 25px;
+                  "
+                >
+                  The Rating Change of <br />
+                  <a
+                    href="https://codeforces.com/contest/{{rating_change.contestId}}/ratings/friends/true"
+                    style="color: #ffa73b; text-transform: capitalize"
+                    >{{rating_change.contestName}}</a
+                  >
+                  <br />are out now...
+                </p>
+                {% if rating_change.newRating > rating_change.oldRating %}
+                <img
+                  src="https://raw.githubusercontent.com/vishnu-sagubandi/Projects/main/achievement.svg"
+                  width="50%"
+                  style="display: block; border: 0px; min-width: 220px"
+                />
+                {% else %}
+                <img
+                  src="https://raw.githubusercontent.com/vishnu-sagubandi/Projects/main/result.svg"
+                  width="50%"
+                  style="display: block; border: 0px; min-width: 220px"
+                />
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <!--prettier-ignore-->
+              {% if rating_change.newRank != rating_change.oldRank and rating_change.newRating > rating_change.oldRating %}
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 20px 20px 20px 20px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 22px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">
+                  Congratulations on becoming
+                  <span
+                    style="
+                      color: #b92895;
+                      font-weight: 600;
+                      text-transform: capitalize;
+                    "
+                  >
+                    {{rating_change.newRank}}</span
+                  >!!
+                </p>
+              </td>
+              <!--prettier-ignore-->
+              {% elif rating_change.newRating > rating_change.oldRating %}
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 20px 20px 20px 20px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">
+                  We are happy to inform that your rating has been
+                  <span style="color: #b92895; font-weight: 600">Increased</span
+                  >!!
+                </p>
+              </td>
+              {% elif rating_change.newRating < rating_change.oldRating %}
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 20px 20px 20px 20px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">
+                  We are sorry to inform that your rating has been
+                  <span style="color: #b92895; font-weight: 600">Dropped</span
+                  >!!
+                </p>
+              </td>
+              {% else %}
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 20px 20px 20px 20px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">
+                  Your rating has been
+                  <span style="color: #b92895; font-weight: 600">Unchanged</span
+                  >!!
+                </p>
+              </td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 22px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td
+                      bgcolor="#ffffff"
+                      align="center"
+                      style="
+                        padding: 10px 30px 40px 30px;
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: center;
+                      "
+                    >
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tr
+                          style="display: flex; justify-content: space-around"
+                        >
+                          {% if rating_change.oldrating == 0 %}
+                          <div
+                            align="right"
+                            style="
+                              color: #666666;
+                              font-weight: 600;
+                              padding: 5px;
+                              flex-grow: 1;
+                              flex-basis: 0;
+                              text-transform: capitalize;
+                            "
+                          >
+                            <span style="color: #b92895">Unrated</span>
+                          </div>
+                          {% else %}
+                          <div
+                            align="right"
+                            style="
+                              color: #666666;
+                              font-weight: 600;
+                              padding: 5px;
+                              flex-grow: 1;
+                              flex-basis: 0;
+                              text-transform: capitalize;
+                            "
+                          >
+                            {{rating_change.oldRating}}<br /><span
+                              style="color: #b92895"
+                              >{{rating_change.oldRank}}</span
+                            >
+                          </div>
+                          {% endif %}
+                          <div
+                            style="
+                              color: #666666;
+                              font-weight: 600;
+                              padding: 5px;
+                              flex-grow: 1;
+                              flex-basis: 0;
+                            "
+                          >
+                            <img
+                              style="width: 100px"
+                              border="0"
+                              src="https://lh3.googleusercontent.com/d/1SZKvYIJlzwHMusR84Yw3FOyWTGWJrr4o=s220?authuser=1"
+                              alt="Codedigger"
+                            />
+                          </div>
+                          <div
+                            align="left"
+                            style="
+                              font-weight: 600;
+                              padding: 5px;
+                              color: #666666;
+                              flex-grow: 1;
+                              flex-basis: 0;
+                              text-transform: capitalize;
+                            "
+                          >
+                            {{rating_change.newRating}} <br /><span
+                              style="color: #b92895"
+                              >{{rating_change.newRank}}</span
+                            >
+                          </div>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <!-- COPY -->
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 0px 25px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 20px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <div
+                  style="
+                    max-width: 350px;
+                    padding: 10px;
+                    border: 1px solid #ffa73b;
+                    border-radius: 4px;
+                    border-top: 3px solid #ffa73b;
+                  "
+                >
+                  <span style="color: #ffa73b; font-weight: 500"
+                    >Your Standings</span
+                  >
+                  <div style="padding: 10px 0 0 0">
+                    <span style="font-size: 16px">
+                      World Rank - {{cdata.worldRank}} /
+                      {{cdata.contest.participants}}</span
+                    ><br />
+                    <span style="font-size: 16px">
+                      Country Rank - {{cdata.countryRank}} /
+                      {{cdata.totalCountryParticipants}}</span
+                    ><br />
+                    <span style="font-size: 16px">
+                      Organization Rank - {{cdata.organizationRank}} /
+                      {{cdata.totalOrganizationParticipants}}</span
+                    >
+                  </div>
                 </div>
-            </td>
-        </tr>
+              </td>
+            </tr>
+            {% if not rating_change.newRating > rating_change.oldRating %}
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                style="
+                  padding: 20px 10px 0px 10px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 20px;
+                  font-weight: 400;
+                  line-height: 24px;
+                "
+              >
+                <h5 style="margin: 0; max-width: 300px">
+                  "Never let the fear of striking out keep you from playing the
+                  game🙂"
+                </h5>
+              </td>
+            </tr>
+            {% endif %}
+            <!-- COPY -->
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="left"
+                style="
+                  padding: 20px 30px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 15px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">
+                  Finally, keep track of your motivations, whatever it is that
+                  you hope to get out of the experience. Good luck and have
+                  fun!!
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="left"
+                style="
+                  padding: 0px 30px 40px 30px;
+                  border-radius: 0px 0px 4px 4px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 15px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <p style="margin: 0">Cheers,<br />Codedigger Team</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td
+          bgcolor="#f4f4f4"
+          align="center"
+          style="padding: 30px 10px 0px 10px"
+        >
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                bgcolor="#FFECD1"
+                align="center"
+                style="
+                  padding: 30px 30px 30px 30px;
+                  border-radius: 4px 4px 4px 4px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <h2
+                  style="
+                    font-size: 20px;
+                    font-weight: 400;
+                    color: #111111;
+                    margin: 0;
+                  "
+                >
+                  Need more help?
+                </h2>
+                <p style="margin: 0">
+                  <a
+                    href="mailto:contact.codedigger@gmail.com"
+                    target="_blank"
+                    style="color: #ffa73b"
+                    >We&rsquo;re here to help you out</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+            bgcolor="#f4f4f4"
+          >
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 0px 30px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 14px;
+                  font-weight: 400;
+                  line-height: 18px;
+                "
+              >
+                <br />
+                <p style="margin: 0">
+                  If these emails get annoying, please feel free to
+                  <a
+                    href="mailto:contact.codedigger@gmail.com"
+                    target="_blank"
+                    style="color: #111111; font-weight: 700"
+                    >unsubscribe</a
+                  >.
+                </p>
+              </td>
+            </tr>
+            <tr align="center">
+              <th
+                class="column_shop_social_icons"
+                width="100%"
+                style="padding: 0 0 20px 0"
+                align="center"
+              >
+                <a
+                  class="social-link"
+                  href="https://www.facebook.com/tens"
+                  target="_blank"
+                  title="Facebook"
+                  style="
+                    color: #ecba78;
+                    text-decoration: none !important;
+                    font-size: 14px;
+                    text-align: center;
+                  "
+                >
+                  <img
+                    width="32"
+                    class="social-icons"
+                    alt="Facebook"
+                    src="https://orderlyemails.com/facebook_3.png"
+                    style="
+                      width: 32px;
+                      height: auto !important;
+                      vertical-align: middle;
+                      text-align: center;
+                      padding: 6px 6px 0 0px;
+                    "
+                  />
+                </a>
+                <a
+                  class="social-link"
+                  href="https://twitter.com/tens"
+                  target="_blank"
+                  title="Twitter"
+                  style="
+                    color: #ecba78;
+                    text-decoration: none !important;
+                    font-size: 14px;
+                    text-align: center;
+                  "
+                >
+                  <img
+                    width="32"
+                    class="social-icons"
+                    alt="Twitter"
+                    src="https://orderlyemails.com/twitter_3.png"
+                    style="
+                      width: 32px;
+                      height: auto !important;
+                      vertical-align: middle;
+                      text-align: center;
+                      padding: 6px 6px 0;
+                    "
+                  />
+                </a>
+                <a
+                  class="social-link"
+                  href="https://instagram.com/tens/"
+                  target="_blank"
+                  title="Instagram"
+                  style="
+                    color: #ecba78;
+                    text-decoration: none !important;
+                    font-size: 14px;
+                    text-align: center;
+                  "
+                >
+                  <img
+                    width="32"
+                    class="social-icons"
+                    alt="Instagram"
+                    src="https://orderlyemails.com/instagram_3.png"
+                    style="
+                      width: 32px;
+                      height: auto !important;
+                      vertical-align: middle;
+                      text-align: center;
+                      padding: 6px 6px 0;
+                    "
+                  />
+                </a>
+                <p
+                  style="
+                    color: #666666;
+                    font-family: 'Lato', Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: 400;
+                    line-height: 18px;
+                  "
+                >
+                  © 2020 CODEDIGGER. All Rights Reserved.
+                </p>
+              </th>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
-    <!-- pre-header end -->
-    <!-- header -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff">
-        <tr>
-            <td align="center">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                    <tr>
-                       <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td> 
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="height:70%;">
-                                        <a href="http://codedigger.tech/" style="display: block; border-style: none !important; border: 0 !important;"><img width="50%" border="0" src="https://lh3.googleusercontent.com/pw/ACtC-3fvyif39GMTNTsxXveZB0z3nPAxcaaYnTAw-bVROn58ZTkqO2k-kJngoftU8_xNPBdI5QB-gXgoQKOfBAndXRJiAxY6UxT96IlPf_wv_AihsFI_7dtmqchmJ9OfifaZcdH6JgPMxU2w1qUKGVbQBEf3=w290-h49-no?authuser=0" alt="Codedigger" />
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <!-- end header -->
-    <!-- big image section -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff" class="bg_color">
-
-        <tr>
-            <td align="center" style="background-color: #ffffff !important">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590">
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center" style="color: #343434; font-size: 24px; font-family: Quicksand, Calibri, sans-serif; font-weight:700;letter-spacing: 3px; line-height: 35px;" class="main-header">
-                            <div style="line-height: 35px" >
- 
-                                HI CODER! <a href="https://codeforces.com/profile/{{rating_change.handle}}">{% if rating_change.isnewlegendary %}
-                                <span class="legendary-user-first-letter rated-user">{{rating_change.handle.0}}</span><span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle|slice:"1:"}}</span>{% else %}<span class="{{rating_change.newcolor}} rated-user">{{rating_change.handle}}</span>{% endif %}</a>, 
-
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="40" align="center" cellpadding="0" cellspacing="0" bgcolor="eeeeee">
-                                <tr>
-                                    <td height="2" style="font-size: 2px; line-height: 2px;">&nbsp;</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <div id="rating-change" style="line-height: 24px">
-											The Rating Change of 
-                                            <br> <a href="https://codeforces.com/contest/{{rating_change.contestId}}/ratings/friends/true">{{rating_change.contestName}}</a> 
-                                            <br>
-                                            are out now...
-
-											<br>
-
-											{% if rating_change.newRank != rating_change.oldRank and rating_change.newRating > rating_change.oldRating  %}
-												Congratulations on becoming  
-                                            <br>
-											{% if rating_change.isnewlegendary %} 
-											<span class="legendary-user-first-letter rated-user">{{rating_change.newRank.0}}</span><span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRank|slice:"1:"}}</span>
-											{% else %}
-											<span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRank}}</span>
-											{% endif %}
-											{% endif %}
-                                            <br>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <div style="line-height: 24px">
-
-                                        <span id = 'old-rank' style="display: inline-block;width: 90px;height: 60px;">
-                                            {% if rating_change.isoldlegendary %} 
-                                            <span class="{{rating_change.oldcolor}} rated-user">{{rating_change.oldRating}}</span>
-                                            <br>
-                                            <span class="legendary-user-first-letter rated-user" style="display: inline;">{{rating_change.oldRank.0}}</span><span class="{{rating_change.oldcolor}} rated-user" style="display: inline;">{{rating_change.oldRank|slice:"1:"}}</span>
-
-                                            {% elif rating_change.oldrating == 0 %}
-                                            <span class="user-black">{{rating_change.oldRating}} <br>Unrated</span>
-                                            {% else %}
-                                            <span class="{{rating_change.oldcolor}} rated-user">{{rating_change.oldRating}} <br> {{rating_change.oldRank}}</span>
-
-                                            {% endif %}
-                                        </span>
-                                        <span id = "arrow" style="display: inline-block;width: 80px;height:60px">
-                                            <img width="100%" height="70%" border="0" src="https://lh3.googleusercontent.com/WTiHNG2tfrdXKkpIf_qyjSF7kfzVGKGAUZVBX6S1ZrtQKocKnN6jn66IOwSvAoeehBmpjwVdlz2RdZoAcZqEwCR9cKaoMng3V10DstLbQVZ9Kb4RN6qmHGdx3K516bGnmX5kgz9VVoRFgERk3aEEkyivHz80tilxtEVePWEMkPY5ZhXruwmrZiZ8zDkkcgzuqN7nYpfjZQ4a061YHnW-6RxCOnZD84daoRn90nDowCgSE2hyRB49t1tt3uWRbgQwlCi0iO_lKrdJpRbNfSlrKdKT-_wuwb5d7uv8CAdXCKaK3BC7hQRfq28q7hJOozv3qohM1gb4byTMCtUJN7pMf2Fcts3i9mzzqoCdgpW_tOHm59n5oR60Ckn3gwaOIjCeEqD1Wge0Pkz79CU_j-ey67HbrEUpQCwDiCOLR3gf6Un1dYVMBgB0QjePwdJLa8N5D7WmIj3pOjQcRo2ljhRjNZ8bgMgI1o2osKhyl4r34VzdM6vRYWC1bU16iVDNySG4pLbMTDmbt77BxSKv2BFqwbaO884JMLYVsojSKZfncZk8FzDJRDMxlXJJCMVEJgcZBGwRpeVq0kyJ2UTZ3Uslqlaxp8cZk0tH-REeUwqzoke3nap4tAA8p3hZfDkWH33giqVTxYJPD0t0lmH5_Wt8BMOBjvetxfnkXKwYYDdmzTrO77_fDAw0rYuR_sysWA=w378-h170" alt="To" />
-                                        </span>
-                                        <span id = "new-rating" style="display: inline-block;width: 90px;height: 60px;">
-                                            {% if rating_change.isnewlegendary %} 
-                                            <span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRating}}</span>
-                                            <br>
-                                            <span class="legendary-user-first-letter rated-user"style="display: inline;">{{rating_change.newRank.0}}</span><span class="{{rating_change.newcolor}} rated-user"style="display: inline;">{{rating_change.newRank|slice:"1:"}}</span>
-                                            
-                                            {% else %}
-                                            <span class="{{rating_change.newcolor}} rated-user">{{rating_change.newRating}} <br>{{rating_change.newRank}}</span>
-                                            {% endif %}
-
-                                        </span>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="15" style="font-size: 15px; line-height: 15px;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <table border="0" width="400" align="center" cellpadding="0" cellspacing="0" class="container590">
-                                <tr>
-                                    <td align="center" style="color: #888888; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                                        <div id="rank-card" style="line-height: 24px">
-
-                                            {% if cdata %}
-                                            <h4>Rank -</h4>
-                                                World Rank - {{cdata.worldRank}} / {{cdata.contest.participants}}
-                                            <br>
-                                                Country Rank  - {{cdata.countryRank}} / {{cdata.totalCountryParticipants}}
-                                            <br>
-                                                Organization Rank - {{cdata.organizationRank}} / {{cdata.totalOrganizationParticipants}}
-                                            <br>
-                                            {% endif %}
-                                            <!--Sharable Link
-
-                                            Created by Codedigger 
-
-                                            // Information about codedigger -->
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <!-- end section -->
-    <!-- contact section -->
-    <table border="0" width="100%" cellpadding="0" cellspacing="0" bgcolor="ffffff" class="bg_color">
-        <tr class="hide">
-            <td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
-        </tr>
-        <tr>
-            <td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
-        </tr>
-        <tr>
-            <td height="20" style="border-top: 2px solid #e0e0e0;font-size: 20px; line-height: 20px;">&nbsp;</td>
-        </tr>
-        <tr>
-            <td align="center">
-                <table border="0" align="center" width="590" cellpadding="0" cellspacing="0" class="container590 bg_color">
-                    <tr>
-                        <td>
-                            <table border="0" width="300" align="left" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;" class="container590">
-                                <tr>
-                                    <!-- logo -->
-                                    <!--<td align="left">
-                                        <a href="" style="display: block; border-style: none !important; border: 0 !important;"><img width="50%" border="0" src="https://lh3.googleusercontent.com/cz1cLquiLjSoxORU1jZHNWyIB2_GrsMFkLFSHd0oTj71fTg4MRazGTyAgAPz7R9qtZdXMxmzPPi8cIrHkC_9p6wDh8ACMPgddpmWNKmBroxOVLg6BxpV1utyu5QGLsb1khwgIqADmdw8vFVFLYv2GBJbxrH0c1HQCY_6ekCavDpnUULtUUW936CJ_-b1OtKri0Z51pC-VU1ns8FD9YXM2bsxZfipy3txFWacOAkLKYr9yMb2jiGoxDonpXVLsvsDxnr5VcIpL72SFR3ZgeB1LfjWp50eloo7CFXFiCvDMIPS0QnrTByN1r0JFBAM68SNeOAHrJRH_kLWvVqSZWyTvrXEn8pTo2nZUWM9SYPPG8r13HmdzJBwELcOfTSo5ytdm_f9JUbT0M-JDGhCfLZbXACa7kpGeENVzTIGop8KrtUAbuQS0K7sGwHb0phAIL_Z72YmTByGUwf_8OC01D8FYKnXNzwS5ub3tFOrLt0MHcALTaytC_Hm0ZC_TmVyJFUH08alJPRgAuosCWm0lr0bwAfy8klIGxl_P4kbLF1HH0uaftf45vDHFz8puujiXDP_2gAlh_Vi24v8hBmG5dYPYTHUNQPrcz1o-fwGmq9PwjkTb6iarfLokOr2buYrZVYuwG0jQVV_8S-GqNXsjS-gqxA23KnQLenpCxdk6LygOkbtHC1YZeT_gg97bqUZ_g=w1031-h284-no?authuser=0" alt="" /></a>
-                                    </td>-->
-                                </tr>
-                                <tr>
-                                    <td align="left" style="color: #888888; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 23px;" class="text_color">
-                                        <div style="color: #333333; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; font-weight: 600; mso-line-height-rule: exactly; line-height: 23px;">
-                                            Email us: <br/> <a href="mailto:contact.codedigger@gmail.com" style="color: #888888; font-size: 14px; font-family: 'Hind Siliguri', Calibri, Sans-serif; font-weight: 400;"> contact.codedigger@gmail.com </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table border="0" width="200" align="right" cellpadding="0" cellspacing="0" style="border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;" class="container590">
-                                <tr>
-                                    <td>
-                                        <table border="0" align="right" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/Qc3zTxn.png" alt=""></a>
-                                                </td>
-                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/RBRORq1.png" alt=""></a>
-                                                </td>
-                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                <td>
-                                                    <a href="#" style="display: block; border-style: none !important; border: 0 !important;"><img width="24" border="0" style="display: block;" src="http://i.imgur.com/Wji3af6.png" alt=""></a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td height="20" style="font-size: 20px; line-height: 20px;">&nbsp;</td>
-        </tr>
-    </table>
-    <!-- end section -->
-</body>
+  </body>
 </html>
