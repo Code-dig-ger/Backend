@@ -1,3 +1,4 @@
+from django.test import client
 from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
@@ -80,3 +81,18 @@ class TestViews(TestSetUp):
         res2 = client2.post(test_url, data2, format="json")
         self.assertEqual(res.status_code, 200) and self.assertEqual(
             res2.status_code, 400)
+
+
+    def test_get_user_list(self):
+        username = "testing"
+        test_url = reverse('user-list') + username
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url, format="json")
+        self.assertEqual(res.status_code, 200)
+

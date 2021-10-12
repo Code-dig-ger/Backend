@@ -4,7 +4,8 @@ from problem.models import Problem
 from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
-                          UserlistAddSerializer, AddProblemsAdminSerializer)
+                          UserlistAddSerializer, AddProblemsAdminSerializer,
+                          GetListSerializer)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -384,6 +385,23 @@ class UserlistGetView(generics.ListAPIView):
             return qs
         else:
             qs = List.objects.filter(owner=self.request.user)
+            return qs
+
+
+class ListGetView(generics.ListAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = GetListSerializer
+
+    def get_queryset(self,username):
+        if username==self.request.user.username and self.request.user.is_authenticated:
+            qs = super(ListGetView, self).get_queryset()
+            qs = List.objects.filter(owner=self.request.user)
+            return qs
+        else:
+            qs = super(ListGetView, self).get_queryset()
+            qs = List.objects.filter(
+                Q(owner=username) & Q(public=True)
+            )
             return qs
 
 

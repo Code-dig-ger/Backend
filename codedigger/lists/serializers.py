@@ -4,7 +4,7 @@ from problem.models import Problem
 from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, fields
 from rest_framework.response import Response
 from .solved_update import *
 from user.exception import ValidationException
@@ -207,6 +207,12 @@ class UpdateListSerializer(serializers.Serializer):
             'slug',
             'page',
         )
+
+
+class GetListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = List
+        fields = ('id','name','description','slug','public')
 
 
 class AddProblemsAdminSerializer(serializers.Serializer):
