@@ -54,9 +54,55 @@ class MentorAPIView(
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
 
-from .cron import codeforces_update_problems
 
 
 def testing(request):
-    codeforces_update_problems()
     return JsonResponse({'status': 'OK'})
+
+
+class SearchUser(
+        mixins.CreateModelMixin,
+        generics.ListAPIView,
+):
+
+    def get(self, request):
+        user_name = request.GET.get('search').lower()
+        all_users = user.objects.all()
+        relevant_users = []
+        for current_user in all_users:
+            handle = current_user.handle.lower()
+            name = ""
+            if current_user.name != None:
+                name = current_user.name.lower()
+            i = 0
+            score1,score2 = 0,0
+            while i<min(len(handle),len(user_name)):
+                if handle[i] == user_name[i]:
+                    score1 += 1
+                else:
+                    break
+                i+=1
+            i = 0
+            while i<min(len(name),len(user_name)):
+                if name[i] == user_name[i]:
+                    score2 += 1
+                else:
+                    break
+                i+=1
+            relevant_users.append([max(score1,score2),current_user])
+        
+        relevant_users.sort(key = lambda x: x[0],reverse = True)
+        final_users = []
+        for i in range(5):
+            dict1 = {}
+            dict1["name"] = relevant_users[i][1].name
+            dict1["handle"] = relevant_users[i][1].handle
+            dict1["profile"] = relevant_users[i][1].photoUrl
+            final_users.append(dict1)
+
+        return JsonResponse({
+            'status':
+            'OK',
+            'result':
+                final_users
+        })
