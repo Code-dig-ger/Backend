@@ -392,16 +392,14 @@ class ListGetView(generics.ListAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = GetListSerializer
 
-    def get_queryset(self,username):
-        if username==self.request.user.username and self.request.user.is_authenticated:
+    def get_queryset(self, username):
+        if username == self.request.user.username and self.request.user.is_authenticated:
             qs = super(ListGetView, self).get_queryset()
             qs = List.objects.filter(owner=self.request.user)
             return qs
         else:
             qs = super(ListGetView, self).get_queryset()
-            qs = List.objects.filter(
-                Q(owner=username) & Q(public=True)
-            )
+            qs = List.objects.filter(Q(owner=username) & Q(public=True))
             return qs
 
 

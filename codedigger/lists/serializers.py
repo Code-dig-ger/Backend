@@ -212,7 +212,7 @@ class UpdateListSerializer(serializers.Serializer):
 class GetListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
-        fields = ('id','name','description','slug','public')
+        fields = ('id', 'name', 'description', 'slug', 'public')
 
 
 class AddProblemsAdminSerializer(serializers.Serializer):

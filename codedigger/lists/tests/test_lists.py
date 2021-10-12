@@ -82,7 +82,6 @@ class TestViews(TestSetUp):
         self.assertEqual(res.status_code, 200) and self.assertEqual(
             res2.status_code, 400)
 
-
     def test_get_user_list(self):
         username = "testing"
         test_url = reverse('user-list') + username
@@ -95,4 +94,3 @@ class TestViews(TestSetUp):
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res = client.get(test_url, format="json")
         self.assertEqual(res.status_code, 200)
-
