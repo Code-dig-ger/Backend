@@ -2,6 +2,12 @@ import re
 import json
 import requests
 from bs4 import BeautifulSoup as bs4
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
+from lists.utils import get_next_url, get_prev_url, get_total_page
+from user.exception import ValidationException
+from codeforces.api import user_status
 
 
 def codeforces_status(handle):
@@ -11,21 +17,11 @@ def codeforces_status(handle):
     SolvedInContest = set()
     Upsolved = set()
     Wrong = set()
-
-    url = "https://codeforces.com/api/user.status?handle=" + handle
-    res = requests.get(url)
-
-    if res.status_code != 200:
+    try:
+        submissions = user_status(handle=handle)
+    except ValidationError:
         return (RContest, VContest, SolvedInContest, Upsolved, Wrong)
-
-    data = res.json()
-
-    if data['status'] != 'OK':
-        return (RContest, VContest, SolvedInContest, Upsolved, Wrong)
-
-    del res
-
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             # to be sure this is a contest problem
             contestId = submission['contestId']
@@ -46,8 +42,7 @@ def codeforces_status(handle):
                         Upsolved.add(
                             str(submission['problem']['contestId']) +
                             submission['problem']['index'])
-
-    for submission in data['result']:
+    for submission in submissions:
         if 'contestId' in submission:
             if 'verdict' in submission:
                 # to be sure verdict is present
@@ -157,3 +152,40 @@ def atcoder_status(handle):
             wrong.add(sub["problem_id"])
 
     return (contests_details, all_contest, solved, wrong)
+
+
+def get_page_number(page):
+    if page == None:
+        return 1
+    elif page.isdigit():
+        return int(page)
+    else:
+        raise ValidationException('Page must be an integer.')
+
+
+def get_upsolve_response_dict(user_contest_details, path, page, total_contest,
+                              per_page):
+
+    total_page = get_total_page(total_contest, per_page)
+    Prev = get_prev_url(page, path)
+    Next = get_next_url(page, path, total_page)
+
+    return {
+        'status': 'OK',
+        'result': user_contest_details,
+        'links': {
+            'first': path + 'page=1',
+            'last': path + 'page=' + str(total_page),
+            'prev': Prev,
+            'next': Next
+        },
+        'meta': {
+            'current_page': page,
+            'from': (page - 1) * per_page + 1,
+            'last_page': total_page,
+            'path': path,
+            'per_page': per_page,
+            'to': total_contest if page == total_page else page * per_page,
+            'total': total_contest
+        }
+    }

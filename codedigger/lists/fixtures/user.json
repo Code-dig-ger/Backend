@@ -1,0 +1,32 @@
+[
+	{
+		"model": "user.user",
+		"pk": 1,
+		"fields": {
+			"username": "testing",
+			"email": "testing@gmail.com",
+			"password": "QWERTY@123",
+			"is_verified": true,
+			"is_active": true,
+			"is_staff": true,
+			"auth_provider": "email",
+			"created_at": "2021-10-1T10:00:00.511Z",
+			"updated_at": "2021-10-1T10:00:00.511Z"
+		}
+	},
+	{
+		"model": "user.user",
+		"pk": 2,
+		"fields": {
+			"username": "testinguser",
+			"email": "testinguser@gmail.com",
+			"password": "QWERTY@123",
+			"is_verified": true,
+			"is_active": true,
+			"is_staff": false,
+			"auth_provider": "email",
+			"created_at": "2021-10-1T10:00:00.511Z",
+			"updated_at": "2021-10-1T10:00:00.511Z"
+		}
+	}
+]

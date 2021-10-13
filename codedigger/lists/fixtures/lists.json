@@ -1,0 +1,41 @@
+[
+	{
+		"model": "lists.list",
+		"pk": 1,
+		"fields": {
+			"name": "testinglist_topicwise",
+			"owner": 1,
+			"isAdmin": true,
+			"isTopicWise": true,
+			"type_list": "3",
+			"public": true,
+			"slug": "testinglist_topicwise"
+		}
+	},
+	{
+		"model": "lists.list",
+		"pk": 2,
+		"fields": {
+			"name": "testinglist_levelwise",
+			"owner": 1,
+			"isAdmin": true,
+			"isTopicWise": false,
+			"type_list": "3",
+			"public": true,
+			"slug": "testinglist_levelwise"
+		}
+	},
+	{
+		"model": "lists.list",
+		"pk": 3,
+		"fields": {
+			"name": "testinglist_userlist",
+			"owner": 1,
+			"isAdmin": false,
+			"isTopicWise": true,
+			"type_list": "3",
+			"public": false,
+			"slug": "testinglist_userlist"
+		}
+	}
+]

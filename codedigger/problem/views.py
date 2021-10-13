@@ -13,11 +13,14 @@ from django.db.models import Q
 from .serializers import ProbSerializer, UpsolveContestSerializer, CCUpsolveContestSerializer, AtcoderUpsolveContestSerializer, SolveProblemsSerializer
 from user.serializers import GuruSerializer, FriendsShowSerializer
 from lists.models import Solved
-from .utils import codeforces_status, codechef_status, atcoder_status
+from .utils import codeforces_status, codechef_status, atcoder_status, get_page_number, get_upsolve_response_dict
 import json, requests
 from django.http import JsonResponse
 import random
 from user.permissions import *
+from codeforces.api import user_status
+from user.exception import ValidationException
+from lists.utils import get_total_page, getqs
 
 
 class MentorProblemAPIView(
@@ -35,31 +38,9 @@ class MentorProblemAPIView(
         student = Profile.objects.get(owner=self.request.user).codeforces
 
         #fetch student  submissions from api
-        res = requests.get("https://codeforces.com/api/user.status?handle=" +
-                           student)
-        if res.status_code != 200:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Codeforces API not working'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
-
-        res = res.json()
-
-        if res['status'] != "OK":
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Codeforces API not working'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
-
-        submissions_student = res["result"]
-
+        submissions_student = user_status(handle=student)
         student_solved_set = set()
         for submission in submissions_student:
-
             if 'contestId' in submission['problem']:
                 if submission['verdict'] == 'OK':
                     student_solved_set.add(
@@ -76,28 +57,7 @@ class MentorProblemAPIView(
 
         #print(gurus)
         for guru in gurus:
-            res = requests.get(
-                "https://codeforces.com/api/user.status?handle=" + guru)
-
-            if res.status_code != 200:
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-
-            res = res.json()
-
-            if res['status'] != "OK":
-                return Response(
-                    {
-                        'status': 'FAILED',
-                        'error': 'Codeforces API not working'
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
-
-            submissions_guru = res["result"]
+            submissions_guru = user_status(handle=guru)
             for submission in submissions_guru:
 
                 if 'contestId' in submission['problem']:
@@ -112,7 +72,6 @@ class MentorProblemAPIView(
                             str(submission["problem"]['contestId']) +
                             submission["problem"]['index'])
                         guru_solved_list.append(submission["problem"])
-
         #print(guru_solved_list)
         problems_data = []
         for problem in guru_solved_list:
@@ -250,47 +209,27 @@ class UpsolveContestAPIView(
         generics.ListAPIView,
 ):
     permission_classes = [AuthenticatedActivated]
-    #authentication_classes =  [SessionAuthentication]
     serializer_class = UpsolveContestSerializer
 
-    # passed_id = None
-
-    #running queries  and stuff
     def get(self, request):
         handle = Profile.objects.get(owner=self.request.user).codeforces
         if handle == "" or handle == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'Please activate your account once by putting your name and codeforces handle..'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException(
+                'Please activate your account once by putting your name and codeforces handle..'
+            )
 
         virtual = request.GET.get('virtual')
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/codeforces')
+        page = request.GET.get('page', None)
+        per_page = request.GET.get('per_page', 10)
+        path = request.build_absolute_uri('/problems/upsolve/codeforces?')
 
         if virtual != None:
-            path = path + '?virtual=' + virtual + ';'
-        else:
-            path = path + '?'
+            path = '{}virtual={};'.format(path, virtual)
 
-        if page == None:
-            page = 1
-        elif page.isdigit():
-            page = int(page)
-        else:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Page must be an integer.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+        page = get_page_number(page)
 
-        RContest, VContest, SolvedInContest, Upsolved, Wrong = codeforces_status(
-            handle)
+        RContest, VContest, SolvedInContest, Upsolved, Wrong = \
+                                        codeforces_status(handle)
         data = {
             'wrong': Wrong,
             'solved': SolvedInContest,
@@ -300,54 +239,24 @@ class UpsolveContestAPIView(
         if virtual == 'true':
             RContest = RContest.union(VContest)
 
-        c = contest.objects.filter(
-            contestId__in=RContest).order_by('-startTime')
+        c = contest.objects.filter(contestId__in=RContest)\
+                            .order_by('-startTime')
 
-        total = c.count()
-        NumPage = (total - 1) // 10 + 1  # Number of page
-
-        if total == 0:
+        total_contest = c.count()
+        if total_contest == 0:
             return Response({'status': 'OK', 'result': []})
-        if page > NumPage:
-            return Response({
-                'status': 'FAILED',
-                'error': 'Page Out of Bound'
-            },
-                            status=status.HTTP_400_BAD_REQUEST)
-        if page == NumPage:
-            Next = None
-        else:
-            Next = path + 'page=' + str(page + 1)
 
-        if page == 1:
-            Prev = None
-        else:
-            Prev = path + 'page=' + str(page - 1)
+        total_page = get_total_page(total_contest, per_page)
+        if page > total_page:
+            raise ValidationException('Page Out of Bound')
 
-        c = c[10 * (page - 1):10 * page]
-
-        return Response({
-            'status':
-            'OK',
-            'result':
-            UpsolveContestSerializer(c, many=True, context=data).data,
-            'links': {
-                'first': path + 'page=1',
-                'last': path + 'page=' + str(NumPage),
-                'prev': Prev,
-                'next': Next
-            },
-            'meta': {
-                'current_page': page,
-                'from': (page - 1) * 10 + 1,
-                'last_page': NumPage,
-                'path':
-                request.build_absolute_uri('/problems/upsolve/codeforces'),
-                'per_page': 10,
-                'to': page * 10,
-                'total': total
-            }
-        })
+        user_contest_details = UpsolveContestSerializer(getqs(
+            c, per_page, page),
+                                                        many=True,
+                                                        context=data).data
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
+        return Response(res)
 
 
 class CCUpsolveContestAPIView(
@@ -355,39 +264,22 @@ class CCUpsolveContestAPIView(
         generics.ListAPIView,
 ):
     permission_classes = [AuthenticatedActivated]
-    #authentication_classes = [SessionAuthentication]
     serializer_class = CCUpsolveContestSerializer
-
-    #passed_id = None
 
     def get(self, request):
 
         handle = Profile.objects.get(owner=self.request.user).codechef
 
         if handle == "" or handle == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You haven\'t Entered your Codechef Username in your Profile.. Update Now!'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException(
+                'You haven\'t Entered your Codechef Username in your Profile.. Update Now!'
+            )
 
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/codechef') + '?'
+        page = request.GET.get('page', None)
+        per_page = request.GET.get('per_page', 10)
+        path = request.build_absolute_uri('/problems/upsolve/codechef?')
 
-        if page == None:
-            page = 1
-        elif page.isdigit():
-            page = int(page)
-        else:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Page must be an integer.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+        page = get_page_number(page)
 
         Upsolved, SolvedInContest, Contest, ContestName = codechef_status(
             handle)
@@ -411,49 +303,17 @@ class CCUpsolveContestAPIView(
                                                context=data).data
                 })
 
-        total = len(user_contest_details)
-        NumPage = (total - 1) // 10 + 1  # Number of page
-
-        if total == 0:
+        total_contest = len(user_contest_details)
+        if total_contest == 0:
             return Response({'status': 'OK', 'result': []})
-        if page > NumPage:
-            return Response({
-                'status': 'FAILED',
-                'error': 'Page Out of Bound'
-            },
-                            status=status.HTTP_400_BAD_REQUEST)
-        if page == NumPage:
-            Next = None
-        else:
-            Next = path + 'page=' + str(page + 1)
+        total_page = get_total_page(total_contest, per_page)
+        if page > total_page:
+            raise ValidationException('Page Out of Bound')
 
-        if page == 1:
-            Prev = None
-        else:
-            Prev = path + 'page=' + str(page - 1)
-
-        user_contest_details = user_contest_details[10 * (page - 1):10 * page]
-
-        return Response({
-            'status': 'OK',
-            'result': user_contest_details,
-            'links': {
-                'first': path + 'page=1',
-                'last': path + 'page=' + str(NumPage),
-                'prev': Prev,
-                'next': Next
-            },
-            'meta': {
-                'current_page': page,
-                'from': (page - 1) * 10 + 1,
-                'last_page': NumPage,
-                'path':
-                request.build_absolute_uri('/problems/upsolve/codechef'),
-                'per_page': 10,
-                'to': page * 10,
-                'total': total
-            }
-        })
+        user_contest_details = getqs(user_contest_details, per_page, page)
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
+        return Response(res)
 
 
 class ATUpsolveContestAPIView(
@@ -461,45 +321,26 @@ class ATUpsolveContestAPIView(
         generics.ListAPIView,
 ):
     permission_classes = [AuthenticatedActivated]
-    #authentication_classes  = [SessionAuthentication]
     serializer_class = AtcoderUpsolveContestSerializer
-
-    #passed_id  = None
 
     def get(self, request):
 
         handle = Profile.objects.get(owner=self.request.user).atcoder
 
         if handle == "" or handle == None:
-            return Response(
-                {
-                    'status':
-                    'FAILED',
-                    'error':
-                    'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationException(
+                'You haven\'t Entered your Atcoder Handle in your Profile.. Update Now!'
+            )
 
         practice = request.GET.get('practice')
-        page = request.GET.get('page')
-        path = request.build_absolute_uri('/problems/upsolve/atcoder')
+        page = request.GET.get('page', None)
+        per_page = request.GET.get('per_page', 10)
+        path = request.build_absolute_uri('/problems/upsolve/atcoder?')
 
         if practice != None:
-            path = path + '?practice=' + practice + ';'
-        else:
-            path = path + '?'
+            path = '{}practice={};'.format(path, practice)
 
-        if page == None:
-            page = 1
-        elif page.isdigit():
-            page = int(page)
-        else:
-            return Response(
-                {
-                    'status': 'FAILED',
-                    'error': 'Page must be an integer.'
-                },
-                status=status.HTTP_400_BAD_REQUEST)
+        page = get_page_number(page)
 
         contests_details, all_contest, solved, wrong = atcoder_status(handle)
 
@@ -509,48 +350,16 @@ class ATUpsolveContestAPIView(
         qs = atcoder_contest.objects.filter(
             contestId__in=contests_details).order_by('-startTime')
 
-        total = qs.count()
-        NumPage = (total - 1) // 10 + 1  # Number of page
-
-        if total == 0:
+        total_contest = qs.count()
+        if total_contest == 0:
             return Response({'status': 'OK', 'result': []})
-        if page > NumPage:
-            return Response({
-                'status': 'FAILED',
-                'error': 'Page Out of Bound'
-            },
-                            status=status.HTTP_400_BAD_REQUEST)
-        if page == NumPage:
-            Next = None
-        else:
-            Next = path + 'page=' + str(page + 1)
+        total_page = get_total_page(total_contest, per_page)
+        if page > total_page:
+            raise ValidationException('Page Out of Bound')
 
-        if page == 1:
-            Prev = None
-        else:
-            Prev = path + 'page=' + str(page - 1)
-
-        qs = qs[10 * (page - 1):10 * page]
-
-        return Response({
-            'status':
-            'OK',
-            'result':
-            AtcoderUpsolveContestSerializer(qs, many=True, context=data).data,
-            'links': {
-                'first': path + 'page=1',
-                'last': path + 'page=' + str(NumPage),
-                'prev': Prev,
-                'next': Next
-            },
-            'meta': {
-                'current_page': page,
-                'from': (page - 1) * 10 + 1,
-                'last_page': NumPage,
-                'path':
-                request.build_absolute_uri('/problems/upsolve/atcoder'),
-                'per_page': 10,
-                'to': page * 10,
-                'total': total
-            }
-        })
+        qs = getqs(qs, per_page, page)
+        user_contest_details = AtcoderUpsolveContestSerializer(
+            qs, many=True, context=data).data
+        res = get_upsolve_response_dict(user_contest_details, path, page,
+                                        total_contest, per_page)
+        return Response(res)

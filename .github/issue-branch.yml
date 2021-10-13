@@ -1,0 +1,18 @@
+mode: chatops
+gitSafeReplacementChar: '-'
+defaultBranch: 'master'
+autoCloseIssue: true
+branchName: 'issue-${issue.number}/${issue.title,}'
+branches:
+  - label: enhancement
+    prefix: feature/${sender.login}/
+  - label: bug
+    prefix: bugfix/${sender.login}/
+  - label: refactor
+    prefix: refactor/${sender.login}/
+  - label: documentation
+    prefix: docs/${sender.login}/
+  - label: '*' 
+    prefix: issues/${sender.login}/
+experimental:
+  branchNameArgument: true
