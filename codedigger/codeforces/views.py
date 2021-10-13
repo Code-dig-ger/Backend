@@ -60,6 +60,7 @@ from django.http import HttpResponse
 from .test_fixtures.rating_change_fixture import contest_rank, rating_change
 from .utils import *
 
+
 def testing(request):
     codeforces_update_problems()
     return JsonResponse({'status': 'OK'})
@@ -82,10 +83,8 @@ def rating_change_email(request):
         islegendary(rating_change['newRating'])
     })
 
-    context = {
-        'rating_change': rating_change, 
-        'cdata': contest_rank
-    }
+    context = {'rating_change': rating_change, 'cdata': contest_rank}
 
-    print (context)
-    return HttpResponse(render_to_string('codeforces/rating_reminder.html', context))
+    print(context)
+    return HttpResponse(
+        render_to_string('codeforces/rating_reminder.html', context))

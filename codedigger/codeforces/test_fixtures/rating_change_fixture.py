@@ -1,10 +1,10 @@
 cfcontest = {
-    'name': "Codeforces Round #728 (Div. 1)", 
-    'contestId': 1540, 
+    'name': "Codeforces Round #728 (Div. 1)",
+    'contestId': 1540,
     'duration': 8100,
     'startTime': 1624635300,
     'Type': 'R',
-    'participants': 1500 
+    'participants': 1500
 }
 
 contest_rank = {
