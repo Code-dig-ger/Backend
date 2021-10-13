@@ -1,11 +1,9 @@
 from .test_setup import TestSetUp
 from codechef.scraper import ContestProblemScraper
 
-class TestScraper(TestSetUp): 
 
+class TestScraper(TestSetUp):
     def test_contestProblemScraper(self):
         code = "APRIL19B"
-        result = {
-
-        }
+        result = {}
         res = ContestProblemScraper(code)
