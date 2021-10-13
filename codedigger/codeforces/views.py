@@ -66,7 +66,7 @@ class SearchUser(
 ):
 
     def get(self, request):
-        user_name = request.GET.get('search').lower()
+        user_name = request.GET.get('q').lower()
         all_users = user.objects.all()
         relevant_users = []
         for current_user in all_users:
