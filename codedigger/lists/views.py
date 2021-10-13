@@ -395,15 +395,15 @@ class ListGetView(generics.ListAPIView):
     def get_queryset(self):
         username = self.kwargs['username']
         try:
-            user = User.objects.get(username = username)
-        except: 
+            user = User.objects.get(username=username)
+        except:
             raise ValidationException('User with given Username not exists.')
 
-        if self.request.user.is_authenticated and username == self.request.user.username :
+        if self.request.user.is_authenticated and username == self.request.user.username:
             qs = List.objects.filter(owner=self.request.user)
         else:
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
-        
+
         return qs
 
 
