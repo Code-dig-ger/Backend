@@ -5,6 +5,7 @@ class CodechefContest(models.Model):
     name = models.CharField(max_length=200)
     contestId = models.CharField(max_length=10, db_index=True)
     duration = models.IntegerField(blank=True, null=True)
+    # startTime = models.DateTimeField(blank=True, null=True)
     startTime = models.CharField(blank=True, null=True, max_length=100)
     division = models.CharField(blank=True, null=True, max_length = 5)
     url = models.CharField(max_length=200,blank=True, null=True)

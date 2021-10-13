@@ -11,9 +11,13 @@ def ContestProblemScraper(code):
     query_problem_url = f"https://www.codechef.com/api/contests/"+code
     problem_req = requests.get(query_problem_url)
     if problem_req.status_code!=200:
+        # raise Validation 
         return 
     problem_req = problem_req.json()
     plat = 'C'
+
+    # return problem_req["problems"]
+
     for prob_code in problem_req["problems"]:
         prob_info = Problem(
             name = problem_req["problems"][prob_code]["name"],
@@ -27,6 +31,9 @@ def ContestProblemScraper(code):
         contest_info = CodechefContest.objects.get(contestId = code)
         complete_prob_info = CodechefContestProblems(contest = contest_info,problem=prob_info)
         complete_prob_info.save()
+
+# def contestData():
+
 
 def ContestScraper(num=0):
 
