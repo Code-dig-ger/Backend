@@ -208,6 +208,7 @@ class UpdateListSerializer(serializers.Serializer):
             'page',
         )
 
+
 class AddProblemsAdminSerializer(serializers.Serializer):
     slug = serializers.SlugField(required=True)
 

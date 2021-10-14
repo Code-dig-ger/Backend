@@ -1,10 +1,16 @@
 from rest_framework import generics, status, views, response
 from .models import List, ListExtraInfo, LadderStarted
 from problem.models import Problem
-from .serializers import (GetLadderSerializer, GetSerializer,
-                          GetUserlistSerializer, EditUserlistSerializer,
-                          CreateUserlistSerializer, ProblemSerializer,
-                          UserlistAddSerializer, AddProblemsAdminSerializer,)
+from .serializers import (
+    GetLadderSerializer,
+    GetSerializer,
+    GetUserlistSerializer,
+    EditUserlistSerializer,
+    CreateUserlistSerializer,
+    ProblemSerializer,
+    UserlistAddSerializer,
+    AddProblemsAdminSerializer,
+)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -403,11 +409,11 @@ class ListGetView(generics.ListAPIView):
         else:
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
         return qs
-    
-    def get(self,request,username):
+
+    def get(self, request, username):
         qs = self.get_queryset()
         send_data = GetUserlistSerializer(qs, many=True).data
-        return response.Response({'status':'OK','result':send_data})
+        return response.Response({'status': 'OK', 'result': send_data})
 
 
 class UserlistCreateView(generics.CreateAPIView):
