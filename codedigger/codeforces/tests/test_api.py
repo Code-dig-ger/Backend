@@ -54,3 +54,4 @@ class TestAPI(TestSetUp):
         url += '?q=tou'
         response = self.client.get(url, format = 'json')
         self.assertEqual(response.status_code, 200)
+        print(response.data)

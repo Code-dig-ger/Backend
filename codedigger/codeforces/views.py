@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import generics, mixins, permissions
 from django.core import serializers
 from .models import user, country, organization, contest
-from .serializers import UserSerializer, CountrySerializer, OrganizationSerializer, ContestSerializer
+from .serializers import MiniUserSerializer, UserSerializer, CountrySerializer, OrganizationSerializer, ContestSerializer
 from user.serializers import GuruSerializer
 from problem.serializers import ProbSerializer
 import json, requests
@@ -64,6 +64,8 @@ class SearchUser(
         mixins.CreateModelMixin,
         generics.ListAPIView,
 ):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = MiniUserSerializer
 
     def get(self, request):
         user_name = request.GET.get('q').lower()
@@ -77,7 +79,7 @@ class SearchUser(
             dict1["profile"] = relevant_users[i].photoUrl
             final_users.append(dict1)
             
-        return JsonResponse({
+        return Response({
             'status':
             'OK',
             'result':
