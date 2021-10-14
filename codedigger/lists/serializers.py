@@ -208,13 +208,6 @@ class UpdateListSerializer(serializers.Serializer):
             'page',
         )
 
-
-class GetListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = List
-        fields = ('id', 'name', 'description', 'slug', 'public')
-
-
 class AddProblemsAdminSerializer(serializers.Serializer):
     slug = serializers.SlugField(required=True)
 

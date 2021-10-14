@@ -1,4 +1,6 @@
 from django.test import client
+
+from user.exception import ValidationException
 from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
@@ -84,7 +86,7 @@ class TestViews(TestSetUp):
 
     def test_get_user_list(self):
         username = "testing"
-        test_url = reverse('user-list') + username
+        test_url = reverse('user-list',kwargs={'username': username})
         here = User.objects.get(username="testing")
         here.set_password(self.user_data['password'])
         here.save()
@@ -93,4 +95,13 @@ class TestViews(TestSetUp):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res = client.get(test_url, format="json")
-        self.assertEqual(res.status_code, 200)
+        
+        username2 = "testing1"
+        test_url = reverse('user-list',kwargs={'username': username2})
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res2 = client.get(test_url, format="json")
+
+        self.assertEqual(res.status_code, 200) and self.assertRaises(ValidationException, res2)
+        if(len(res.data['result'])>0):
+            self.assertEqual(res.data['result'][0]['public'],True)

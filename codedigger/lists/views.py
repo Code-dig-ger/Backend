@@ -4,8 +4,7 @@ from problem.models import Problem
 from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
-                          UserlistAddSerializer, AddProblemsAdminSerializer,
-                          GetListSerializer)
+                          UserlistAddSerializer, AddProblemsAdminSerializer,)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -403,8 +402,21 @@ class ListGetView(generics.ListAPIView):
             qs = List.objects.filter(owner=self.request.user)
         else:
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
-
         return qs
+    
+    def get(self,request,username):
+        qs = self.get_queryset()
+        send_data = []
+        for q in qs:
+            dt = {
+                "id":q.id,
+                "name": q.name,
+                "description": q.description,
+                "slug": q.slug,
+                "public": q.public
+            }
+            send_data.append(dt)
+        return response.Response({'status':'OK','result':send_data})
 
 
 class UserlistCreateView(generics.CreateAPIView):
