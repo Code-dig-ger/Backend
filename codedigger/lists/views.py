@@ -406,16 +406,7 @@ class ListGetView(generics.ListAPIView):
     
     def get(self,request,username):
         qs = self.get_queryset()
-        send_data = []
-        for q in qs:
-            dt = {
-                "id":q.id,
-                "name": q.name,
-                "description": q.description,
-                "slug": q.slug,
-                "public": q.public
-            }
-            send_data.append(dt)
+        send_data = GetUserlistSerializer(qs, many=True).data
         return response.Response({'status':'OK','result':send_data})
 
 
