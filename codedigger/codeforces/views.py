@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, mixins, permissions
-
+from django.core import serializers
 from .models import user, country, organization, contest
 from .serializers import UserSerializer, CountrySerializer, OrganizationSerializer, ContestSerializer
 from user.serializers import GuruSerializer
@@ -54,9 +54,32 @@ class MentorAPIView(
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
 
-from .cron import codeforces_update_problems
 
 
 def testing(request):
-    codeforces_update_problems()
     return JsonResponse({'status': 'OK'})
+
+
+class SearchUser(
+        mixins.CreateModelMixin,
+        generics.ListAPIView,
+):
+
+    def get(self, request):
+        user_name = request.GET.get('q').lower()
+        relevant_users = user.objects.filter(handle__istartswith=user_name)
+        final_users = []
+
+        for i in range(min(5,len(relevant_users))):
+            dict1 = {}
+            dict1["name"] = relevant_users[i].name
+            dict1["handle"] = relevant_users[i].handle
+            dict1["profile"] = relevant_users[i].photoUrl
+            final_users.append(dict1)
+            
+        return JsonResponse({
+            'status':
+            'OK',
+            'result':
+                final_users
+        })

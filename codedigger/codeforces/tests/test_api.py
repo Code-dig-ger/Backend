@@ -4,7 +4,7 @@ from user.exception import ValidationException
 from codeforces.api import (user_info, user_rating, contest_list,
                             contest_standings, contest_ratingChanges,
                             user_status)
-
+from django.urls import reverse
 
 class TestAPI(TestSetUp):
     def test_user_info_api(self):
@@ -48,3 +48,9 @@ class TestAPI(TestSetUp):
         self.assertEqual(len(response[0]), 12)
         self.assertEqual(len(response), 10)
         self.assertRaises(ValidationException, user_status, wrong_handle)
+
+    def test_search_user(self):
+        url = reverse('search-user')
+        url += '?q=tou'
+        response = self.client.get(url, format = 'json')
+        self.assertEqual(response.status_code, 200)
