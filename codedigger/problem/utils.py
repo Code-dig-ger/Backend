@@ -1,9 +1,13 @@
-from codeforces.api import user_status
 import re
 import json
 import requests
 from bs4 import BeautifulSoup as bs4
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
+from lists.utils import get_next_url, get_prev_url, get_total_page
+from user.exception import ValidationException
+from codeforces.api import user_status
 
 
 def codeforces_status(handle):
@@ -148,3 +152,40 @@ def atcoder_status(handle):
             wrong.add(sub["problem_id"])
 
     return (contests_details, all_contest, solved, wrong)
+
+
+def get_page_number(page):
+    if page == None:
+        return 1
+    elif page.isdigit():
+        return int(page)
+    else:
+        raise ValidationException('Page must be an integer.')
+
+
+def get_upsolve_response_dict(user_contest_details, path, page, total_contest,
+                              per_page):
+
+    total_page = get_total_page(total_contest, per_page)
+    Prev = get_prev_url(page, path)
+    Next = get_next_url(page, path, total_page)
+
+    return {
+        'status': 'OK',
+        'result': user_contest_details,
+        'links': {
+            'first': path + 'page=1',
+            'last': path + 'page=' + str(total_page),
+            'prev': Prev,
+            'next': Next
+        },
+        'meta': {
+            'current_page': page,
+            'from': (page - 1) * per_page + 1,
+            'last_page': total_page,
+            'path': path,
+            'per_page': per_page,
+            'to': total_contest if page == total_page else page * per_page,
+            'total': total_contest
+        }
+    }

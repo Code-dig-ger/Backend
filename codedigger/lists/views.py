@@ -1,10 +1,16 @@
 from rest_framework import generics, status, views, response
 from .models import List, ListExtraInfo, LadderStarted
 from problem.models import Problem
-from .serializers import (GetLadderSerializer, GetSerializer,
-                          GetUserlistSerializer, EditUserlistSerializer,
-                          CreateUserlistSerializer, ProblemSerializer,
-                          UserlistAddSerializer, AddProblemsAdminSerializer)
+from .serializers import (
+    GetLadderSerializer,
+    GetSerializer,
+    GetUserlistSerializer,
+    EditUserlistSerializer,
+    CreateUserlistSerializer,
+    ProblemSerializer,
+    UserlistAddSerializer,
+    AddProblemsAdminSerializer,
+)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -385,6 +391,29 @@ class UserlistGetView(generics.ListAPIView):
         else:
             qs = List.objects.filter(owner=self.request.user)
             return qs
+
+
+class ListGetView(generics.ListAPIView):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = GetUserlistSerializer
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        try:
+            user = User.objects.get(username=username)
+        except:
+            raise ValidationException('User with given Username not exists.')
+
+        if self.request.user.is_authenticated and username == self.request.user.username:
+            qs = List.objects.filter(owner=self.request.user)
+        else:
+            qs = List.objects.filter(Q(owner=user) & Q(public=True))
+        return qs
+
+    def get(self, request, username):
+        qs = self.get_queryset()
+        send_data = GetUserlistSerializer(qs, many=True).data
+        return response.Response({'status': 'OK', 'result': send_data})
 
 
 class UserlistCreateView(generics.CreateAPIView):

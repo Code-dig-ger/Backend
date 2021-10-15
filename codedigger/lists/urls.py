@@ -16,6 +16,7 @@ from .views import (
     EditUserlistView,
     AddProblemsAdminView,
     ProblemsPublicListView,
+    ListGetView,
     testing)
 
 urlpatterns = [
@@ -56,5 +57,6 @@ urlpatterns = [
     path('userlist/edit/<str:slug>',
          EditUserlistView.as_view(),
          name='userlist-edit'),
+    path('user/<str:username>', ListGetView.as_view(), name='user-list'),
     path('testing', testing),
 ]
