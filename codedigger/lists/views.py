@@ -664,6 +664,58 @@ class AddProblemsAdminView(generics.GenericAPIView):
             status=status.HTTP_200_OK)
 
 
+class ProblemsPublicListView(views.APIView):
+    def get_object(self, slug):
+        if not List.objects.filter(slug=slug).exists():
+            raise NotFoundException(
+                "The list with the given slug does not exist")
+        list = List.objects.get(slug=slug)
+        if list.owner == self.request.user:
+            return list
+        else:
+            if list.public:
+                return list
+            raise ValidationException('You cannot view this list')
+
+    def get(self, request, slug):
+        curr_list = self.get_object(slug)
+        page_number = self.request.GET.get('page', None)
+        page_size = self.request.GET.get('pageSize', '6')
+
+        if page_size.isdigit():
+            page_size = int(page_size)
+        else:
+            raise ValidationException('Page Size must be an integer')
+
+        problem_qs = curr_list.problem.all().order_by('rating', 'id')
+        total_problems = problem_qs.count()
+        if total_problems == 0:
+            return response.Response({'status': 'OK', 'result': []})
+
+        url = request.build_absolute_uri(f'/lists/{slug}/problems')
+        user = self.request.user
+        if user.is_anonymous:
+            user = None
+
+        if not page_number:
+            page_number, unsolved_prob, isCompleted = \
+                            get_unsolved_page_number(problem_qs, user, page_size)
+        else:
+            isCompleted = False
+            if page_number.isdigit():
+                page_number = int(page_number)
+            else:
+                raise ValidationException('Page must be an integer')
+            total_page = get_total_page(total_problems, page_size)
+            if page_number > total_page:
+                raise ValidationException('Page Out of Bound')
+            update_page_submission(problem_qs, user, page_size, page_number)
+
+        res = get_response_dict(curr_list, user, page_number, page_size, url,
+                                problem_qs, isCompleted)
+        return response.Response(res)
+
+
 from .cron import updater
 from django.http import JsonResponse
 
