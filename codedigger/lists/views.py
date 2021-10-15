@@ -663,19 +663,19 @@ class AddProblemsAdminView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK)
 
-class ProblemsPublicListView(views.APIView):
 
+class ProblemsPublicListView(views.APIView):
     def get_object(self, slug):
-        if not List.objects.filter(slug = slug).exists():
-            raise NotFoundException("The list with the given slug does not exist" )
-        list = List.objects.get(slug = slug)
+        if not List.objects.filter(slug=slug).exists():
+            raise NotFoundException(
+                "The list with the given slug does not exist")
+        list = List.objects.get(slug=slug)
         if list.owner == self.request.user:
             return list
         else:
             if list.public:
                 return list
             raise ValidationException('You cannot view this list')
-
 
     def get(self, request, slug):
         curr_list = self.get_object(slug)
