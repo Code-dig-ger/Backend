@@ -51,6 +51,7 @@ class UpsolveProblemsSerializer(serializers.ModelSerializer):
 
 
 class UpsolveContestSerializer(serializers.ModelSerializer):
+    # Deprecated
 
     Type = serializers.CharField(source='get_Type_display')
     problems = serializers.SerializerMethodField()

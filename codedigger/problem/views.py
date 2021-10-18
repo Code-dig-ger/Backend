@@ -208,6 +208,7 @@ class UpsolveContestAPIView(
         mixins.CreateModelMixin,
         generics.ListAPIView,
 ):
+    # Deprecated
     permission_classes = [AuthenticatedActivated]
     serializer_class = UpsolveContestSerializer
 

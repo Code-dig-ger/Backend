@@ -298,7 +298,7 @@ table td:first-child {
 /* layout */
 .wrapper {
   margin: 0 auto;
-  width: 70%;
+  width: 90%;
 }
 
 .footer {
@@ -319,5 +319,8 @@ table td:first-child {
 }
 
 .hljs {
-  border-radius: 5em;
+  max-width: 100%;
+  max-height:400px;
+  overflow:auto;
+  border-radius: 1em;
 }
