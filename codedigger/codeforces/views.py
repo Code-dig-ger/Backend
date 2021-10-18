@@ -70,15 +70,7 @@ class SearchUser(
     def get(self, request):
         user_name = request.GET.get('q').lower()
         relevant_users = user.objects.filter(handle__istartswith=user_name)
-        final_users = []
-
-        for i in range(min(5,len(relevant_users))):
-            dict1 = {}
-            dict1["name"] = relevant_users[i].name
-            dict1["handle"] = relevant_users[i].handle
-            dict1["profile"] = relevant_users[i].photoUrl
-            final_users.append(dict1)
-            
+        final_users = MiniUserSerializer(relevant_users[:5], many = True).data
         return Response({
             'status':
             'OK',

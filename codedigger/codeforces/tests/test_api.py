@@ -49,9 +49,3 @@ class TestAPI(TestSetUp):
         self.assertEqual(len(response), 10)
         self.assertRaises(ValidationException, user_status, wrong_handle)
 
-    def test_search_user(self):
-        url = reverse('search-user')
-        url += '?q=tou'
-        response = self.client.get(url, format = 'json')
-        self.assertEqual(response.status_code, 200)
-        print(response.data)

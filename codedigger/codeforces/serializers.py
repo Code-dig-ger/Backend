@@ -159,4 +159,4 @@ class UserSerializer(serializers.ModelSerializer):
 class MiniUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = user
-        fields = ['name', 'handle', 'rating', 'rank']
+        fields = ['name', 'handle', 'rating', 'rank', 'photoUrl']
