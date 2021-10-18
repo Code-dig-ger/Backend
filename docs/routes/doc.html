@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Codedigger REST API Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/doc.css">
+  </head>
+  <body>
+    <div class="doc__bg"></div>
+    <nav class="header">
+      <h1 class="logo">Codedigger {API} <span class="logo__thin">Doc</span></h1>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link link--dark"><i class="fa fa-github"></i> Github</a></li>
+        <li class="menu__item"><a href="../index.html" class="link link--dark"><i class="fa fa-home"></i> Home</a></li>
+      </ul>
+    </nav>
+    <div class="wrapper">
+      <aside class="doc__nav">
+        <ul>
+          <li class="js-btn selected">Get Started</li>
+          <li class="js-btn">Success Code</li>
+          <li class="js-btn">Error Code</li>
+        </ul>
+      </aside>
+      <article class="doc__content">
+        <section class="js-section">
+          <h3 class="section__title">Get Started</h3>
+          <p></p>
+          <!-- <h3 class="section__title">Installation</h3>
+          <div class="code__block code__block--notabs">
+            <pre class="code code--block">
+              <code>
+                $ code example
+              </code>
+            </pre>
+          </div> -->
+        </section>
+        <section id="success-code" class="js-section">
+          <h3 class="section__title">Success Code</h3>
+          <p>List all the Success Code e.g. 200 STATUS OK etc.</p>
+          <table>
+            <tr>
+              <th>HTTP Status Codes</th>
+              <th>Purpose</th>
+              <th>Definition</th>
+            </tr>
+            <tr>
+              <td>200</td>
+              <td>STATUS OK</td>
+              <td>Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request the response will contain an entity describing or containing the result of the action.</td>
+            </tr>
+          </table>
+          <hr />
+        </section>
+        <section id="error-code" class="js-section">
+          <h3 class="section__title">Error Code</h3>
+          <p>List all the error Code e.g. 404 NOT FOUND, 400 BAD REQUEST etc.</p>
+          <table>
+            <tr>
+              <th>HTTP Status Codes</th>
+              <th>Purpose</th>
+              <th>Definition</th>
+            </tr>
+            <tr>
+              <td>400</td>
+              <td>BAD REQUEST</td>
+              <td>The request cannot be fulfilled due to bad syntax.
+                General error when fulfilling the request would cause an invalid state. Domain validation errors, missing data, etc. are some examples.
+              </td>
+            </tr>
+          </table>
+        </section>
+      </article>
+    </div>
+
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="scribbler.js"></script>
+  </body>
+</html>
