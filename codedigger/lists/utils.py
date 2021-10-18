@@ -157,8 +157,8 @@ def get_response_dict(curr_list,
         contest_link = qs.contest_link
         editorial = qs.editorial
 
-    Prev = get_prev_url(page_number, url+'?')
-    Next = get_next_url(page_number, url+'?', total_page)
+    Prev = get_prev_url(page_number, url + '?')
+    Next = get_next_url(page_number, url + '?', total_page)
 
     res = {
         'status':
