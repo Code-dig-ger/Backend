@@ -4,6 +4,7 @@ from .models import user, country, organization, contest, user_contest_rank
 from problem.models import Problem
 from problem.serializers import UpsolveProblemsSerializer
 
+
 class CountrySerializer(serializers.ModelSerializer):
 
     total = serializers.SerializerMethodField()
@@ -160,6 +161,7 @@ class MiniUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = user
         fields = ['name', 'handle', 'rating', 'rank']
+
 
 class UpsolveContestSerializer(serializers.ModelSerializer):
 
