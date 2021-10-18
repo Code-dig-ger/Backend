@@ -5,8 +5,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
-    <!-- UPDATE route title -->
-    <title>Codedigger REST API DOC - {route-title}</title>
+    <title>Codedigger REST API DOC - Codeforces Upsolve</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
@@ -49,11 +48,9 @@
       </aside>
       <article class="doc__content">
         <section id="title" class="js-section">
-          <h2 class="section__title">Title</h2>
-          <p> Introduction
-            Additional information about your API call. 
-            Try to use verbs that match both request type (fetching vs modifying) 
-            and plurality (one vs multiple).
+          <h2 class="section__title">Codeforces Upsolve</h2>
+          <p> 
+            To get Codeforces Upsolve Contests List with Problems of a user.  
           </p>
         </section>
         <section id = "url" class="js-section">
@@ -63,15 +60,15 @@
               GET
             </div>
             <span class="summary get-summary">
-              The URL Structure (path only, no root url)
+              /codeforces/upsolve
             </span>
           </div>
         </section>
         <section id = "headers" class="js-section">
           <h3 class="section__title">Headers</h3>
-          <p> 
+          <!-- <p> 
             If any Headers is required e.g. Authorisation etc. 
-          </p>
+          </p> -->
           <table>
             <tr>
               <th>Header Name</th>
@@ -81,7 +78,7 @@
             </tr>
             <tr>
               <td>Authorization</td>
-              <td>true</td>
+              <td>false</td>
               <td>string</td>
               <td>
                 Bearer {Token}
@@ -91,11 +88,11 @@
         </section>
         <section id = "url-param" class="js-section">
           <h3 class="section__title">URL Parameters</h3>
-          <p> 
+          <!-- <p> 
             For GET Request. 
             If URL params exist, specify them in accordance with name mentioned in URL section. 
             Mention if is required or optional. Document data constraints.
-          </p>
+          </p> -->
           <table>
             <tr>
               <th>Param Name</th>
@@ -104,16 +101,16 @@
               <th>Description</th>
             </tr>
             <tr>
-              <td>id</td>
-              <td>true</td>
-              <td>integer</td>
+              <td>handle</td>
+              <td>false</td>
+              <td>string</td>
               <td>
-                user_id for user
+                Codeforces handle of user (required if not authenticated).
               </td>
             </tr>
           </table>
         </section>
-        <section id = "data-param" class="js-section">
+        <!-- <section id = "data-param" class="js-section">
           <h3 class="section__title">Data Params</h3>
           <p> 
             For POST Request. 
@@ -136,13 +133,13 @@
               </td>
             </tr>
           </table>
-        </section>
+        </section> -->
         <section id = "success-response" class="js-section">
           <h3 class="section__title">Success Response</h3>
-          <p> 
+          <!-- <p> 
             What should the status code be on success and is there any returned data? 
             This is useful when people need to to know what their callbacks should expect!
-          </p>
+          </p> -->
           <p> 
             Status Code: 200 
           </p>
@@ -151,24 +148,114 @@
           </p>        
           <pre >
             <code class="language-json">
-              {
-                "status": "OK",
-                "result": "Sample Result"
-              }
+  {
+    "status":"OK",
+    "result":[
+        {
+            "name":"Codeforces Round #736 (Div. 2)",
+            "contestId":"1549",
+            "duration":8700,
+            "startTime":1627828500,
+            "Type":"Regular",
+            "problems":[
+                {
+                    "name":"Gregor and Cryptography",
+                    "url":"https://codeforces.com/contest/1549/problem/A",
+                    "prob_id":"1549A",
+                    "tags":"['math', 'number theory']",
+                    "contest_id":"1549",
+                    "rating":800,
+                    "index":"A",
+                    "platform":"Codeforces",
+                    "difficulty":"Beginner",
+                    "editorial":null,
+                    "status":"solved"
+                },
+                {
+                    "name":"Gregor and the Pawn Game",
+                    "url":"https://codeforces.com/contest/1549/problem/B",
+                    "prob_id":"1549B",
+                    "tags":"['dfs and similar', 'dp', 'flows', 'graph matchings', 'graphs', 'greedy', 'implementation']",
+                    "contest_id":"1549",
+                    "rating":800,
+                    "index":"B",
+                    "platform":"Codeforces",
+                    "difficulty":"Beginner",
+                    "editorial":null,
+                    "status":"upsolved"
+                }
+            ]
+        },
+        {
+            "name":"Educational Codeforces Round 112 (Rated for Div. 2)",
+            "contestId":"1555",
+            "duration":7200,
+            "startTime":1627655700,
+            "Type":"Regular",
+            "problems":[
+                {
+                    "name":"PizzaForces",
+                    "url":"https://codeforces.com/contest/1555/problem/A",
+                    "prob_id":"1555A",
+                    "tags":"['brute force', 'math']",
+                    "contest_id":"1555",
+                    "rating":900,
+                    "index":"A",
+                    "platform":"Codeforces",
+                    "difficulty":"Beginner",
+                    "editorial":null,
+                    "status":"solved"
+                },
+                {
+                    "name":"Two Tables",
+                    "url":"https://codeforces.com/contest/1555/problem/B",
+                    "prob_id":"1555B",
+                    "tags":"['brute force']",
+                    "contest_id":"1555",
+                    "rating":1300,
+                    "index":"B",
+                    "platform":"Codeforces",
+                    "difficulty":"Easy",
+                    "editorial":null,
+                    "status":"not_attempt"
+                }
+            ]
+        }
+    ],
+    "links":{
+        "first":"https://api.codedigger.tech/codeforces/upsolve?handle=handle;page=1",
+        "last":"https://api.codedigger.tech/codeforces/upsolve?handle=handle;page=1",
+        "prev":null,
+        "next":null
+    },
+    "meta":{
+        "current_page":1,
+        "from":1,
+        "last_page":1,
+        "path":"https://api.codedigger.tech/codeforces/upsolve?handle=handle;",
+        "per_page":10,
+        "to":2,
+        "total":2
+    }
+}
             </code>
           </pre>
         </section>
         <section id = "error-response" class="js-section">
           <h3 class="section__title">Error Response</h3>
-          <p> 
+          <!-- <p> 
             Most endpoints will have many ways they can fail. 
             From unauthorized access, to wrongful parameters etc. 
             All of those should be liste d here. It might seem repetitive, 
             but it helps prevent assumptions from being made where they should be.
+          </p> -->
+          <p> 
+            Reason of Error: If handle and Bearer Token is not provided. Any one is required. 
           </p>
           <p> 
             Status Code: 400 BAD REQUEST 
           </p>
+          
           <p> 
             Error Response:  
           </p>        
@@ -176,29 +263,43 @@
             <code class="language-json">
               {
                 "status": "FAILED",
-                "error": "Oops! An error occurred"
+                "error": "Any of handle or Bearer Token is required."
               }
             </code>
           </pre>
         </section>
         <section id = "sample-call" class="js-section">
           <h3 class="section__title">Sample Call</h3>
-          <p> 
+          <!-- <p> 
             Just a sample call to your endpoint in a runnable format 
             ($.ajax call or a curl request) - this makes life easier and more predictable.
-          </p>
+          </p> -->
           <pre>
+            <p>With Bearer Token : </p>
             <code class="language-bash">
-              curl -X GET "https://api.codedigger.tech/sample-call"
+  curl -X GET "https://api.codedigger.tech/codeforces/upsolve" \ 
+    -H  "accept: application/json" \
+    -H  "Authorization: Bearer {Access Token}"
+            </code>
+          </pre> 
+          <pre>
+            <p>Without Bearer Token : </p>
+            <code class="language-bash">
+  curl -X GET "https://api.codedigger.tech/codeforces/upsolve?handle={codeforces_handle}" \ 
+    -H  "accept: application/json" 
             </code>
           </pre> 
         </section>
         <section id = "notes" class="js-section">
           <h3 class="section__title">Notes</h3>
-          <p> 
+          <p>
+          User can get his upsolve contests list even if he is not logged in to our site.
+          He has to provide his Codeforces handle.
+          </p>
+          <!-- <p> 
             This is where all uncertainties, commentary, discussion etc. can go.
             Mention timestamp and identify yourself when leaving comments here.
-          </p>
+          </p> -->
         </section>
       </article>
     </div>
