@@ -16,7 +16,7 @@ from problem.utils import (get_page_number, get_total_page, get_upsolve_response
 from .api import user_info
 from .api_utils import upsolve_status
 from .models import contest
-from .serializers import UpsolveContestSerializer
+from .serializers import CodeforcesUpsolveSerializer
 
 
 
@@ -58,12 +58,11 @@ class MentorAPIView(
 
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
-class UpsolveContestAPIView(
-        mixins.CreateModelMixin,
-        generics.ListAPIView,
+class CodeforcesUpsolveAPIView(
+    generics.GenericAPIView
 ):
     permission_classes = [AuthenticatedOrReadOnly]
-    serializer_class = UpsolveContestSerializer
+    serializer_class = CodeforcesUpsolveSerializer
 
     def get_handle(self):
         handle = Profile.objects.get(owner=self.request.user).codeforces
@@ -88,7 +87,7 @@ class UpsolveContestAPIView(
         virtual = request.GET.get('virtual')
         page = request.GET.get('page', None)
         per_page = request.GET.get('per_page', 10)
-        path = request.build_absolute_uri('/problems/upsolve/codeforces?')
+        path = request.build_absolute_uri('/codeforces/upsolve?')
 
         if not is_auth :
             path = '{}handle={};'.format(path, handle)
@@ -121,7 +120,7 @@ class UpsolveContestAPIView(
         if page > total_page:
             raise ValidationException('Page Out of Bound')
 
-        user_contest_details = UpsolveContestSerializer(
+        user_contest_details = CodeforcesUpsolveSerializer(
                                     getqs(c, per_page, page),
                                     many=True,
                                     context=data

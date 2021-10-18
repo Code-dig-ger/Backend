@@ -161,7 +161,7 @@ class MiniUserSerializer(serializers.ModelSerializer):
         model = user
         fields = ['name', 'handle', 'rating', 'rank']
 
-class UpsolveContestSerializer(serializers.ModelSerializer):
+class CodeforcesUpsolveSerializer(serializers.ModelSerializer):
 
     Type = serializers.CharField(source='get_Type_display')
     problems = serializers.SerializerMethodField()
