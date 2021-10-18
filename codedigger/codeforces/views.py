@@ -77,6 +77,7 @@ class SearchUser(
             dict1["handle"] = relevant_users[i].handle
             dict1["profile"] = relevant_users[i].photoUrl
             final_users.append(dict1)
+
         return Response({
             'status':
             'OK',
