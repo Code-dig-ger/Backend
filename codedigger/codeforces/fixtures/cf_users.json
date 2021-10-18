@@ -1,57 +1,56 @@
 [
 	{
-		"model": "codeforces.user",
-		"pk": 1,
-		"fields": {
-			"name": "Gennady Korotkevich",
-            "handle": "tourist",
-            "photoUrl": "https://userpic.codeforces.org/422/title/50a270ed4a722867.jpg"
-		}
+	   "model":"codeforces.user",
+	   "pk":1,
+	   "fields":{
+		  "name":"Gennady Korotkevich",
+		  "handle":"tourist",
+		  "photoUrl":"https://userpic.codeforces.org/422/title/50a270ed4a722867.jpg"
+	   }
 	},
 	{
-        "model": "codeforces.user",
-		"pk": 2,
-		"fields": {
-			"name": "Gennady",
-			"handle": "kourist",
-            "photoUrl": "http://test.com/"
-		}
+	   "model":"codeforces.user",
+	   "pk":2,
+	   "fields":{
+		  "name":"Gennady",
+		  "handle":"kourist",
+		  "photoUrl":"http://test.com/"
+	   }
 	},
-    {
-        "model": "codeforces.user",
-		"pk": 3,
-		"fields": {
-			"name": "",
-            "handle": "toureiffel-2018",
-            "photoUrl": "https://userpic.codeforces.org/1366144/title/17765f50a680f35e.jpg"
-		}
-    },
-    {
-        "model": "codeforces.user",
-		"pk": 4,
-		"fields": {
-			"name": "Lite leta hun",
-            "handle": "toourist_ki_ammi_meri",
-            "photoUrl": "tps://userpic.codeforces.org/no-title.jpg"
-		}
-    },
-    {
-        "model": "codeforces.user",
-		"pk": 5,
-		"fields": {
-			"name": "Tourist ",
-            "handle": "Tourist_01",
-            "photoUrl": "https://userpic.codeforces.org/2010226/title/c0bd07cd7ea2f1b9.jpg"
-		}
-    },
-    {
-        "model": "codeforces.user",
-		"pk": 6,
-		"fields": {
-            "name": "",
-            "handle": "touristyyds",
-            "photoUrl": "https://userpic.codeforces.org/1739944/title/c3a83e1b81677e01.jpg"
-		}
-    }
-
-]
+	{
+	   "model":"codeforces.user",
+	   "pk":3,
+	   "fields":{
+		  "name":"",
+		  "handle":"toureiffel-2018",
+		  "photoUrl":"https://userpic.codeforces.org/1366144/title/17765f50a680f35e.jpg"
+	   }
+	},
+	{
+	   "model":"codeforces.user",
+	   "pk":4,
+	   "fields":{
+		  "name":"Lite leta hun",
+		  "handle":"toourist_ki_ammi_meri",
+		  "photoUrl":"tps://userpic.codeforces.org/no-title.jpg"
+	   }
+	},
+	{
+	   "model":"codeforces.user",
+	   "pk":5,
+	   "fields":{
+		  "name":"Tourist ",
+		  "handle":"Tourist_01",
+		  "photoUrl":"https://userpic.codeforces.org/2010226/title/c0bd07cd7ea2f1b9.jpg"
+	   }
+	},
+	{
+	   "model":"codeforces.user",
+	   "pk":6,
+	   "fields":{
+		  "name":"",
+		  "handle":"touristyyds",
+		  "photoUrl":"https://userpic.codeforces.org/1739944/title/c3a83e1b81677e01.jpg"
+	   }
+	}
+ ]
