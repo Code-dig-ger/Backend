@@ -55,9 +55,17 @@ class MentorAPIView(
 
 
 
+from .cron import codeforces_update_problems
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from .test_fixtures.rating_change_fixture import contest_rank, rating_change
+from .utils import *
+
+
 
 def testing(request):
     return JsonResponse({'status': 'OK'})
+
 
 
 class SearchUser(
@@ -77,3 +85,27 @@ class SearchUser(
             'result':
                 final_users
         })
+
+def rating_change_email(request):
+
+    rating_change.update({
+        'oldRank':
+        rating_to_rank(rating_change['oldRating']),
+        'newRank':
+        rating_to_rank(rating_change['newRating']),
+        'oldcolor':
+        rating_to_color(rating_change['oldRating']),
+        'newcolor':
+        rating_to_color(rating_change['newRating']),
+        'isoldlegendary':
+        islegendary(rating_change['oldRating']),
+        'isnewlegendary':
+        islegendary(rating_change['newRating'])
+    })
+
+    context = {'rating_change': rating_change, 'cdata': contest_rank}
+
+    print(context)
+    return HttpResponse(
+        render_to_string('codeforces/rating_reminder.html', context))
+

@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="description" content="">
+      <link rel="icon" href="routes/static/images/codedigger-logo-48px.png" type="image/icon type">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Codedigger REST API Documentation</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/railscasts.min.css">
+      <link rel="stylesheet" href="routes/static/css/global.css">
+      <link rel="stylesheet" href="routes/static/css/landing.css">
+  </head>
+  <body>
+    <nav>
+      <div class="logo"></div>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="routes/doc.html" class="link link--dark"><i class="fa fa-book"></i> Documentation</a></li>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link link--dark"><i class="fa fa-github"></i> Github</a></li>
+      </ul>
+    </nav>
+    <div class="hero">
+      <h1 class="hero__title">Codedigger REST API</h1>
+      <p class="hero__description p-dark">Dig deeper into the world of Coding.</p>
+    </div>
+    <div class="hero__terminal">
+      <pre>
+        <code class="shell-session demo">thor ~ $ </code>
+      </pre>
+    </div>
+    <div class="wrapper">
+      <!-- <div class="installation">
+        <h3 class="section__title">Installation</h3>
+        <div class="tab__container">
+          <ul class="tab__menu">
+            <li class="tab active" data-tab="mac">mac</li>
+            <li class="tab" data-tab="linux">linux</li>
+            <li class="tab" data-tab="win">win</li>
+          </ul>
+          <pre class="nohighlight code">
+            <code class="tab__pane active mac">$  </code>
+            <code class="tab__pane linux">$  </code>
+            <code class="tab__pane win">$  </code>
+          </pre>
+        </div>
+      </div> -->
+      <div class="feature">
+        <div class="feature__item">
+          <h3 class="section__title">Upsolve</h3>
+          <p>Upsolving means to solve those problems, you're not able to solve during the contest. You can upsolve problems from codeforces, codechef, and atcoder #contests in an easy and better way.</p>
+        </div>
+        <div class="feature__item">
+          <h3 class="section__title">Personalised List</h3>
+          <p>Do you want to maintain your doubts list? You can create your own problems list where you can store all your doubts or problems you want to keep for future revisions.</p>
+        </div>
+        <div class="feature__item">
+          <h3 class="section__title">Profile</h3>
+          <p>A Profile section consisting of the Organization Rank, Country Rank, and the top 3 performances from contests to provide you a better idea of where you stand.</p>
+        </div>
+        <div class="feature__item">
+          <h3 class="section__title">Ladders</h3>
+          <p>Topicwise/Levelwise lists and ladders on more than 25 topics ranging from beginner to advanced difficulty.</p>
+        </div>
+        <div class="feature__item">
+          <h3 class="section__title">Problem Filter</h3>
+          <p>A Problem section where you can filter problems from our database of more than 50000 problems from 5 sites.</p>
+        </div>
+        <div class="feature__item">
+          <h3 class="section__title">Rating Change Reminder</h3>
+          <p>Regular rating change updates on Codeforces via email.</p>
+        </div>
+      </div>
+      <!-- <div class="keybinding">
+        <ul class="keybinding__detail">
+          <h3 class="keybinding__title">Default Keybindings</h3>
+          <li>Quit without saving <span class="keybinding__label">Ctrl+C</span></li>
+          <li>Save <span class="keybinding__label">Cmd+S</span></li>
+          <li>Save and Quit <span class="keybinding__label">Ctrl+D</span></li>
+          <li>Undo <span class="keybinding__label">Cmd+Z</span></li>
+        </ul>
+        <ul class="keybinding__detail">
+          <h3 class="keybinding__title">Markdown Keybindings</h3>
+          <li><span class="keybinding__label">Ctrl+A</span> Insert Link Markdown</li>
+          <li><span class="keybinding__label">Ctrl+I</span> Insert Image Markdown</li>
+          <li><span class="keybinding__label">Ctrl+V</span> Insert YouTube Video</li>
+          <li><span class="keybinding__label">Ctrl+T</span> Insert Table</li>
+        </ul>
+      </div> -->
+      <div class="callout">
+        <p>Read our documentation</p>
+        <a href="routes/doc.html" class="button--primary">Documentation</a>
+      </div>
+    </div>
+    <!-- <div class="changelog">
+      <div class="wrapper">
+        <h3 class="section__title">Changelog</h3>
+        <div class="changelog__item">
+          <div class="changelog__meta">
+            <h4 class="changelog__title">v0.7</h4>
+            <small class="changelog__date">10/12/2017</small>
+          </div>
+          <div class="changelog__detail">
+            <ul>
+              <li>Improving the writing workflow with better key bindings</li>
+              <li>Design updates</li>
+              <li>SSL Verification for web hooks</li>
+              <li>Render Emoji</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog__item">
+          <div class="changelog__meta">
+            <h4 class="changelog__title">v0.6</h4>
+            <small class="changelog__date">7/30/2017</small>
+          </div>
+          <div class="changelog__detail">
+            <ul>
+              <li>Adding Unicode support</li>
+              <li>Basic text highlighting</li>
+              <li>Fresh Design</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog__item">
+          <div class="changelog__meta">
+            <h4 class="changelog__title">v0.5</h4>
+            <small class="changelog__date">5/10/2017</small>
+          </div>
+          <div class="changelog__detail">
+            <ul>
+              <li>Save default md file in new folders</li>
+              <li>Ability to quick search on existing notes</li>
+            </ul>
+          </div>
+        </div>
+        <div class="changelog__callout">
+          <a href="#" class="button--secondary">Checkout Full Log</a>
+        </div>
+      </div>
+    </div> -->
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="routes/static/js/docs.js"></script>
+  </body>
+</html>
