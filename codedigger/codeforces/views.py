@@ -11,13 +11,13 @@ from user.serializers import GuruSerializer
 from user.models import Profile
 
 from lists.utils import getqs
-from problem.utils import (get_page_number, get_total_page, get_upsolve_response_dict)
+from problem.utils import (get_page_number, get_total_page,
+                           get_upsolve_response_dict)
 
 from .api import user_info
 from .api_utils import upsolve_status
 from .models import contest
 from .serializers import CodeforcesUpsolveSerializer
-
 
 
 def data(URL):
@@ -58,8 +58,15 @@ class MentorAPIView(
 
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
+<<<<<<< HEAD
 class CodeforcesUpsolveAPIView(
     generics.GenericAPIView
+=======
+
+class UpsolveContestAPIView(
+        mixins.CreateModelMixin,
+        generics.ListAPIView,
+>>>>>>> b0273405a3620b333ef277d78de9b9eb2874c226
 ):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = CodeforcesUpsolveSerializer
@@ -74,22 +81,21 @@ class CodeforcesUpsolveAPIView(
 
     def get(self, request):
         is_auth = self.request.user.is_authenticated
-        if not is_auth :
+        if not is_auth:
             handle = request.GET.get('handle', None)
             if handle == None:
                 raise ValidationException(
-                    'Any of handle or Bearer Token is required.'
-                )
+                    'Any of handle or Bearer Token is required.')
             user_info([handle])
-        else :
+        else:
             handle = self.get_handle()
-        
+
         virtual = request.GET.get('virtual')
         page = request.GET.get('page', None)
         per_page = request.GET.get('per_page', 10)
         path = request.build_absolute_uri('/codeforces/upsolve?')
 
-        if not is_auth :
+        if not is_auth:
             path = '{}handle={};'.format(path, handle)
 
         if virtual != None:
@@ -120,14 +126,22 @@ class CodeforcesUpsolveAPIView(
         if page > total_page:
             raise ValidationException('Page Out of Bound')
 
+<<<<<<< HEAD
         user_contest_details = CodeforcesUpsolveSerializer(
                                     getqs(c, per_page, page),
                                     many=True,
                                     context=data
                                 ).data
+=======
+        user_contest_details = UpsolveContestSerializer(getqs(
+            c, per_page, page),
+                                                        many=True,
+                                                        context=data).data
+>>>>>>> b0273405a3620b333ef277d78de9b9eb2874c226
         res = get_upsolve_response_dict(user_contest_details, path, page,
                                         total_contest, per_page)
         return Response(res)
+
 
 from .cron import codeforces_update_problems
 from django.template.loader import render_to_string

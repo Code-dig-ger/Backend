@@ -2,25 +2,29 @@ from user.exception import ValidationException
 
 from .api import user_status
 
+
 def is_contestant(submission):
     return True if submission['author']['participantType'] == 'CONTESTANT' \
         else False
+
 
 def is_practice(submission):
     return True if submission['author']['participantType'] == 'PRACTICE' \
         else False
 
+
 def is_verdict_ok(submission):
     return True if submission['verdict'] == 'OK' else False
 
-def get_prob_id(submission):
-    return str(submission['problem']['contestId'])+submission['problem']['index']
 
-def get_wrong_submission(
-        submissions, 
-        SolvedProblems = set(), 
-        UpsolvedProblems = set()
-    ):
+def get_prob_id(submission):
+    return str(
+        submission['problem']['contestId']) + submission['problem']['index']
+
+
+def get_wrong_submission(submissions,
+                         SolvedProblems=set(),
+                         UpsolvedProblems=set()):
     Wrong = set()
     for submission in submissions:
         if 'contestId' in submission:
@@ -33,13 +37,14 @@ def get_wrong_submission(
                     Wrong.add(prob_id)
     return Wrong
 
-def upsolve_status(handle):
-    RContest = set() # Rated Contest 
-    VContest = set() # Virtual Contest
-    PContest = set() # Practice Contest
 
-    SolvedInContest = set() # Problems Solved in Contest
-    Upsolved = set() # Problems Solved after Contest/ Practice
+def upsolve_status(handle):
+    RContest = set()  # Rated Contest
+    VContest = set()  # Virtual Contest
+    PContest = set()  # Practice Contest
+
+    SolvedInContest = set()  # Problems Solved in Contest
+    Upsolved = set()  # Problems Solved after Contest/ Practice
     submissions = user_status(handle=handle)
 
     for submission in submissions:
@@ -51,7 +56,7 @@ def upsolve_status(handle):
                 RContest.add(contestId)
             elif is_practice(submission):
                 PContest.add(contestId)
-            else :
+            else:
                 VContest.add(contestId)
 
             if 'verdict' in submission:

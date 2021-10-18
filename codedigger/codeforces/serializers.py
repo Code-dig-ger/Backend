@@ -4,6 +4,7 @@ from .models import user, country, organization, contest, user_contest_rank
 from problem.models import Problem
 from problem.serializers import UpsolveProblemsSerializer
 
+
 class CountrySerializer(serializers.ModelSerializer):
 
     total = serializers.SerializerMethodField()
@@ -161,7 +162,12 @@ class MiniUserSerializer(serializers.ModelSerializer):
         model = user
         fields = ['name', 'handle', 'rating', 'rank']
 
+<<<<<<< HEAD
 class CodeforcesUpsolveSerializer(serializers.ModelSerializer):
+=======
+
+class UpsolveContestSerializer(serializers.ModelSerializer):
+>>>>>>> b0273405a3620b333ef277d78de9b9eb2874c226
 
     Type = serializers.CharField(source='get_Type_display')
     problems = serializers.SerializerMethodField()
