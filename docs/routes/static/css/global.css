@@ -2,7 +2,7 @@
 :root {
   --primary-color: #432E30;
   --primary-color-light: #8E7474;
-  --accent-color: #FE6A6B;
+  --accent-color: #6EADF5;
   --accent-color-light: #FFE4E4;
   --accent-color-dark: #B94B4C;
   --white-color: #FAFBFC;
@@ -18,17 +18,31 @@ html, body {
   padding: 0;
   margin: 0;
   font-family: 'Nunito Sans', sans-serif;
-  background-color: white;
+  background-color: #404040;
 }
+
+.p-dark {
+  color: #4A4A4A;
+} 
 
 p {
   font-weight: 300;
-  color: #4A4A4A;
+  color: #E0E0E0;
 }
 
-a, a:hover {
+a {
   text-decoration: none;
-  color: var(--primary-color);
+  color: #D1E8E2;
+  transition: color .3s ease-in-out;
+}
+
+li {
+  color: #E0E0E0;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #6EADF5;
 }
 
 hr {
@@ -45,7 +59,7 @@ hr {
 
 /* typography */
 .section__title {
-  color: var(--primary-color);
+  color: #CD52FF;
 }
 
 /* tabs */
@@ -86,25 +100,6 @@ hr {
 
 .tab__pane.active {
   display: block;
-}
-
-/* code */
-.code {
-  border-radius: 3px;
-  font-family: Space Mono, SFMono-Regular, Menlo,Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  background: var(--bg-color);
-  border: 1px solid var(--code-bg-color);
-  color: var(--primary-color-light);
-}
-
-.code--block {
-  white-space: pre-line;
-  padding: 0 1.5rem;
-}
-
-.code--inline {
-  padding: 3px 6px;
-  font-size: 80%;
 }
 
 /* buttons */
@@ -244,20 +239,31 @@ table {
 }
 
 table td, table th {
-  border: 1px solid var(--code-bg-color);
+  border: 1px solid #0A0A0A;
   padding: 0.8rem;
   font-weight: 300;
 }
 
 table th {
   text-align: left;
-  background-color: white;
-  border-color: white;
-  border-bottom-color: var(--code-bg-color);
+  color: white;
+  background-color:#1B1B1B;
+  border-color: #1B1B1B;
+  font-weight: 700;
+  border-bottom-color: #0A0A0A;
+}
+
+table tr:nth-child(odd)  {
+  color: #F0F0F0;
+  background-color: #2B2B2B;
+}
+
+table tr:nth-child(even) {
+  color: #F0F0F0;
+  background-color: #3A3A3A;
 }
 
 table td:first-child {
-  background-color: var(--bg-color);
   font-weight: 600;
 }
 
@@ -297,7 +303,7 @@ table td:first-child {
 
 .footer {
   text-align: center;
-  background-color: var(--primary-color);
+  background-color: #1A1A1A;
   padding: 2rem;
   color: white;
 }
@@ -310,4 +316,8 @@ table td:first-child {
   100% {
     transform: translate3d(0,0,0);
   }
+}
+
+.hljs {
+  border-radius: 5em;
 }

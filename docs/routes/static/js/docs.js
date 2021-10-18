@@ -70,6 +70,7 @@ function setActiveLink(event) {
   // remove all active tab classes
   for (var i = 0; i < btns.length; i++) {
     btns[i].classList.remove('selected');
+    btns[i].firstElementChild.classList.remove('selected');
   }
 
   event.target.classList.add('selected');
@@ -91,19 +92,6 @@ if (btns.length && sections.length > 0) {
     btns[i].addEventListener('click', smoothScrollTo.bind(this,i));
   }
 }
-
-// fix menu to page-top once user starts scrolling
-window.addEventListener('scroll', function () {
-  var docNav = get('.doc__nav > ul');
-
-  if( docNav) {
-    if (window.pageYOffset > 63) {
-      docNav.classList.add('fixed');
-    } else {
-      docNav.classList.remove('fixed');
-    }
-  }
-});
 
 // responsive navigation
 var topNav = get('.menu');

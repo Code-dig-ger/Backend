@@ -1,6 +1,6 @@
 /* nav specialized to landing page */
 .logo {
-  background: url('logo.svg') no-repeat;
+  background: url('../images/codedigger-logo-48px.png') no-repeat;
   background-size: contain;
   margin: 1rem 0 0 1rem;
 }
