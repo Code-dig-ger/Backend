@@ -58,15 +58,8 @@ class MentorAPIView(
 
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
-<<<<<<< HEAD
 class CodeforcesUpsolveAPIView(
     generics.GenericAPIView
-=======
-
-class UpsolveContestAPIView(
-        mixins.CreateModelMixin,
-        generics.ListAPIView,
->>>>>>> b0273405a3620b333ef277d78de9b9eb2874c226
 ):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = CodeforcesUpsolveSerializer
@@ -126,18 +119,11 @@ class UpsolveContestAPIView(
         if page > total_page:
             raise ValidationException('Page Out of Bound')
 
-<<<<<<< HEAD
         user_contest_details = CodeforcesUpsolveSerializer(
                                     getqs(c, per_page, page),
                                     many=True,
                                     context=data
                                 ).data
-=======
-        user_contest_details = UpsolveContestSerializer(getqs(
-            c, per_page, page),
-                                                        many=True,
-                                                        context=data).data
->>>>>>> b0273405a3620b333ef277d78de9b9eb2874c226
         res = get_upsolve_response_dict(user_contest_details, path, page,
                                         total_contest, per_page)
         return Response(res)
