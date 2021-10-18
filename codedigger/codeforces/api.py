@@ -21,7 +21,7 @@ def validated_response(response):
     return response_dict['result']
 
 
-def user_info(handles):
+def user_info(handles: list):
     # param :
     # handles : a list of handles to get information
     # return :
