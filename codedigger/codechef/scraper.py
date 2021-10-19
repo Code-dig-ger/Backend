@@ -4,15 +4,18 @@ from time import sleep
 import os, json, django
 from user.exception import ValidationException
 
+
 def divisionScraper(contest_id):
 
     contest_url = "https://www.codechef.com/api/contests/" + contest_id
     contest_req = requests.get(contest_url)
     if contest_req.status_code != 200:
-        raise ValidationException('Failed Scrapping Codechef Contest Divisions')
+        raise ValidationException(
+            'Failed Scrapping Codechef Contest Divisions')
 
     contest_req = contest_req.json()
     return contest_req
+
 
 def contestScraper(offset, contest_type):
 
@@ -27,6 +30,7 @@ def contestScraper(offset, contest_type):
 
     return contest_data
 
+
 def problemScraper(contest_code):
 
     query_problem_url = f"https://www.codechef.com/api/contests/" + contest_code
@@ -38,7 +42,3 @@ def problemScraper(contest_code):
     problem_data = problem_data.json()
 
     return problem_data
-
-
-    
-
