@@ -3,11 +3,9 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-
 # def testing(request):
 #     go_scraper()
 #     return HttpResponse("Successfully Scrapped!")
-
 
 # def ContestList():
 
