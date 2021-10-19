@@ -2,97 +2,43 @@ import requests
 from bs4 import BeautifulSoup
 from time import sleep
 import os, json, django
+from user.exception import ValidationException
 
-from .models import CodechefContest, CodechefContestProblems
-from problem.models import Problem
+def divisionScraper(contest_id):
 
+    contest_url = "https://www.codechef.com/api/contests/" + contest_id
+    contest_req = requests.get(contest_url)
+    if contest_req.status_code != 200:
+        raise ValidationException('Failed Scrapping Codechef Contest Divisions')
 
-def ContestProblemScraper(code):
-    link = f"https://www.codechef.com/{code}/problems/"
-    query_problem_url = f"https://www.codechef.com/api/contests/" + code
-    problem_req = requests.get(query_problem_url)
-    if problem_req.status_code != 200:
-        # raise Validation
-        return
-    problem_req = problem_req.json()
-    plat = 'C'
+    contest_req = contest_req.json()
+    return contest_req
 
-    # return problem_req["problems"]
+def contestScraper(offset, contest_type):
 
-    for prob_code in problem_req["problems"]:
-        prob_info = Problem(name=problem_req["problems"][prob_code]["name"],
-                            prob_id=prob_code,
-                            url=link + prob_code,
-                            contest_id=code,
-                            platform=plat)
-        # print(problem_req["problems"][prob_code]["name"]+ " " + prob_code + " " + link+prob_code + " " + code)
-        prob_info.save()
-        contest_info = CodechefContest.objects.get(contestId=code)
-        complete_prob_info = CodechefContestProblems(contest=contest_info,
-                                                     problem=prob_info)
-        complete_prob_info.save()
-
-
-# def contestData():
-
-
-def ContestScraper(num=0):
-
-    query_url = f"https://www.codechef.com/api/list/contests/past?sort_by=START&sorting_order=desc&offset={num}&mode=premium"
+    query_contest_url = f"https://www.codechef.com/api/list/contests/{contest_type}?sort_by=START&sorting_order=desc&offset={offset}&mode=premium"
     # Query URL might change in future.
-    req = requests.get(query_url)
+    contest_data = requests.get(query_contest_url)
 
-    if req.status_code != 200:
-        return
-    contests_code = []
-    req = req.json()
-    for cont in reversed(req['contests']):
-        contest_name = cont['contest_name']
-        code = cont['contest_code']
-        timeDuration = cont['contest_duration']
-        startDateTime = cont['contest_start_date']
-        contest_access_url = "https://www.codechef.com/"
-        cont_url = "https://www.codechef.com/api/contests/" + code
-        cont_req = requests.get(cont_url)
-        if cont_req.status_code != 200:
-            break
-        cont_req = cont_req.json()
+    if contest_data.status_code != 200:
+        raise ValidationException('Failed Scrapping Codechef Contests')
 
-        if cont_req['is_a_parent_contest'] != True:
-            contest = CodechefContest(name=contest_name,
-                                      contestId=code,
-                                      duration=timeDuration,
-                                      startTime=startDateTime,
-                                      division='',
-                                      url=contest_access_url + code)
+    contest_data = contest_data.json()
 
-            if CodechefContest.objects.filter(contestId=code).exists():
-                continue
+    return contest_data
 
-            contest.save()
-            ContestProblemScraper(code)
+def problemScraper(contest_code):
 
-        else:
-            for div in cont_req['child_contests']:
-                contest_code = cont_req['child_contests'][div]['contest_code']
-                if div == "all":
-                    continue
-                contest = CodechefContest(name=contest_name,
-                                          contestId=contest_code,
-                                          duration=timeDuration,
-                                          startTime=startDateTime,
-                                          division=div,
-                                          url=contest_access_url +
-                                          contest_code)
+    query_problem_url = f"https://www.codechef.com/api/contests/" + contest_code
+    # Query URL might change in future.
+    problem_data = requests.get(query_problem_url)
+    if problem_data.status_code != 200:
+        raise ValidationException('Failed Scrapping Codechef Problems')
 
-                if CodechefContest.objects.filter(
-                        contestId=contest_code).exists():
-                    continue
+    problem_data = problem_data.json()
 
-                contest.save()
-                ContestProblemScraper(contest_code)
+    return problem_data
 
 
-def go_scraper():
-    for i in range(40, -1, -20):
-        ContestScraper(i)
+    
+
