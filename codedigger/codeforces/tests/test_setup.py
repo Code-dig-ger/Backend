@@ -7,7 +7,10 @@ from lists.test_fixtures.profile_fixtures import profile1, profile2
 
 
 class TestSetUp(APITestCase):
-    fixtures = ["user.json", "cf_contest.json", "cf_problems.json"]
+
+    fixtures = [
+        "user.json", "cf_contest.json", "cf_problems.json", "cf_users.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):

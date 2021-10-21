@@ -3,10 +3,12 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 
 from rest_framework.response import Response
+
 from rest_framework import generics, mixins
 
 from user.permissions import AuthenticatedActivated, AuthenticatedOrReadOnly
 from user.exception import ValidationException
+
 from user.serializers import GuruSerializer
 from user.models import Profile
 
@@ -16,8 +18,8 @@ from problem.utils import (get_page_number, get_total_page,
 
 from .api import user_info
 from .api_utils import upsolve_status
-from .models import contest
-from .serializers import CodeforcesUpsolveSerializer
+from .models import contest, user
+from .serializers import CodeforcesUpsolveSerializer, MiniUserSerializer
 
 
 def data(URL):
@@ -135,8 +137,21 @@ from .utils import *
 
 
 def testing(request):
-    codeforces_update_problems()
     return JsonResponse({'status': 'OK'})
+
+
+class SearchUser(
+        mixins.CreateModelMixin,
+        generics.ListAPIView,
+):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = MiniUserSerializer
+
+    def get(self, request):
+        user_name = request.GET.get('q').lower()
+        relevant_users = user.objects.filter(handle__istartswith=user_name)
+        final_users = MiniUserSerializer(relevant_users[:5], many=True).data
+        return Response({'status': 'OK', 'result': final_users})
 
 
 def rating_change_email(request):

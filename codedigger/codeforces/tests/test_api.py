@@ -4,6 +4,7 @@ from user.exception import ValidationException
 from codeforces.api import (user_info, user_rating, contest_list,
                             contest_standings, contest_ratingChanges,
                             user_status)
+from django.urls import reverse
 
 
 class TestAPI(TestSetUp):
