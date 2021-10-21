@@ -164,7 +164,6 @@ class MiniUserSerializer(serializers.ModelSerializer):
         fields = ['name', 'handle', 'rating', 'rank', 'photoUrl']
 
 
-
 class CodeforcesUpsolveSerializer(serializers.ModelSerializer):
 
     Type = serializers.CharField(source='get_Type_display')

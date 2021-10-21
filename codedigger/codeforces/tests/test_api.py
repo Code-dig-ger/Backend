@@ -6,6 +6,7 @@ from codeforces.api import (user_info, user_rating, contest_list,
                             user_status)
 from django.urls import reverse
 
+
 class TestAPI(TestSetUp):
     def test_user_info_api(self):
         handles = ['shivamsinghal1012', 'shivam011']
@@ -48,4 +49,3 @@ class TestAPI(TestSetUp):
         self.assertEqual(len(response[0]), 12)
         self.assertEqual(len(response), 10)
         self.assertRaises(ValidationException, user_status, wrong_handle)
-

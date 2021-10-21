@@ -61,7 +61,6 @@ class MentorAPIView(
         return Response({'status': 'OK', 'result': 'Deleted Successfully'})
 
 
-
 class CodeforcesUpsolveAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = CodeforcesUpsolveSerializer
@@ -137,10 +136,8 @@ from .test_fixtures.rating_change_fixture import contest_rank, rating_change
 from .utils import *
 
 
-
 def testing(request):
     return JsonResponse({'status': 'OK'})
-
 
 
 class SearchUser(
@@ -153,13 +150,9 @@ class SearchUser(
     def get(self, request):
         user_name = request.GET.get('q').lower()
         relevant_users = user.objects.filter(handle__istartswith=user_name)
-        final_users = MiniUserSerializer(relevant_users[:5], many = True).data
-        return Response({
-            'status':
-            'OK',
-            'result':
-                final_users
-        })
+        final_users = MiniUserSerializer(relevant_users[:5], many=True).data
+        return Response({'status': 'OK', 'result': final_users})
+
 
 def rating_change_email(request):
 
@@ -183,4 +176,3 @@ def rating_change_email(request):
     print(context)
     return HttpResponse(
         render_to_string('codeforces/rating_reminder.html', context))
-
