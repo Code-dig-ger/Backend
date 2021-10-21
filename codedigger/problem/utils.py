@@ -11,6 +11,7 @@ from codeforces.api import user_status
 
 
 def codeforces_status(handle):
+    # Deprecated
 
     RContest = set()
     VContest = set()

@@ -65,7 +65,7 @@ def get_prev_url(page, url):
     # page: current page number
     # path: base url
     return None if page == 1 \
-                else '{}?page={}'.format(url, str(page-1))
+                else '{}page={}'.format(url, str(page-1))
 
 
 def get_next_url(page, url, total_page):
@@ -74,7 +74,7 @@ def get_next_url(page, url, total_page):
     # path: base url
     # total_page: total page in list
     return None if page == total_page \
-                else '{}?page={}'.format(url, str(page+1))
+                else '{}page={}'.format(url, str(page+1))
 
 
 def get_unsolved_page_number(problem_qs, user, page_size):
@@ -157,8 +157,8 @@ def get_response_dict(curr_list,
         contest_link = qs.contest_link
         editorial = qs.editorial
 
-    Prev = get_prev_url(page_number, url)
-    Next = get_next_url(page_number, url, total_page)
+    Prev = get_prev_url(page_number, url + '?')
+    Next = get_next_url(page_number, url + '?', total_page)
 
     res = {
         'status':
