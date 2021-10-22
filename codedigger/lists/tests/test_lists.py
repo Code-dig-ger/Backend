@@ -105,3 +105,42 @@ class TestViews(TestSetUp):
         self.assertEqual(res.status_code, 200) and self.assertRaises(ValidationException, res2)
         if(len(res.data['result'])>0):
             self.assertEqual(res.data['result'][0]['public'],True)
+
+    def test_get_stats(self):
+        slug = "testinglist_levelwise"
+        test_url = reverse('user-standing', kwargs={'slug': slug})
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url, format="json")
+
+        slug = "testinglist_userlist"
+        test_url = reverse('user-standing', kwargs={'slug': slug})
+        here = User.objects.get(username="testinguser")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res2 = self.client.post(self.login_url, self.user_data, format="json")
+        token = res2.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res2 = client.get(test_url, format="json")
+
+        self.assertEqual(res.status_code, 200) and self.assertRaises(ValidationException, res2)
+
+    def test_get_friends_stats(self):
+        slug = "testinglist_levelwise"
+        test_url = reverse('friends-standing', kwargs={'slug': slug})
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url, format="json")
+
+        self.assertEqual(res.status_code, 200)

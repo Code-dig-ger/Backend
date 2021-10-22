@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    ListStats,
     TopicwiseGetListView,
     TopicWiseRetrieveView,
     TopicwiseGetLadderView,
@@ -16,6 +17,7 @@ from .views import (
     EditUserlistView,
     AddProblemsAdminView,
     ListGetView,
+    UserStandingStats,
     testing)
 
 urlpatterns = [
@@ -56,5 +58,7 @@ urlpatterns = [
          EditUserlistView.as_view(),
          name='userlist-edit'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
+    path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),
+    path('<str:slug>/stats/standing', UserStandingStats.as_view(), name='user-standing'),
     path('testing', testing),
 ]

@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import serializers, status
 from .models import ListInfo, Solved, List, ListInfo, LadderStarted
 from problem.models import Problem
