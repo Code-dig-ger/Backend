@@ -21,7 +21,7 @@ def OffsetLoader(contest_type):
 
 def getContestDivision(contest_id):
 
-    contest_req = divisionData(contest_id)
+    contest_req = problemScraper(contest_id)
     subcontests = []
     if contest_req['is_a_parent_contest'] != True:
         subcontests.append(contest_id)
@@ -37,18 +37,21 @@ def getContestDivision(contest_id):
 
 def ContestData():
 
-    contests_data = OffsetLoader()
+    contests_data = OffsetLoader('past')
     all_contests = []
-
+    dateDict = {"Jan":"January", "Feb":"February", "Mar":"March", "Apr":"April", "May":"May", "Jun":"June",
+                    "Jul":"July", "Aug":"August", "Sep":"September", "Oct":"October", "Nov":"November", "Dec":"December"}
     for contest in contests_data:
         childContests = getContestDivision(contest['contest_code'])
 
         for contest_id in childContests:
+            contest_temp_date = contest['contest_start_date']
+            contest_updated_date = contest_temp_date[:3]+dateDict[contest_temp_date[3:6]]+contest_temp_date[6:]
             finalContestData = {
                 "Name": contest['contest_name'],
                 "ContestCode": contest_id,
                 "Duration": contest['contest_duration'],
-                "StartTime": contest['contest_start_date'],
+                "StartTime": contest_updated_date,
                 'ContestURL': "https://www.codechef.com/" + contest_id
             }
 
@@ -75,3 +78,4 @@ def ProblemData(contest_code):
         all_problems.append(finalProblemData)
 
     return (all_problems)
+
