@@ -2,6 +2,7 @@ from django.db import models
 from problem.models import Problem
 import datetime
 
+
 # Create your models here.
 class CodechefContest(models.Model):
 
