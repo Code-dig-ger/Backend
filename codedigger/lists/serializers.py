@@ -185,12 +185,7 @@ class UserlistAddSerializer(serializers.Serializer):
     description = serializers.CharField(required=True)
 
     class Meta:
-        fields = (
-            'prob_id',
-            'slug',
-            'platform',
-            'description'
-        )
+        fields = ('prob_id', 'slug', 'platform', 'description')
 
 
 class UpdateLadderSerializer(serializers.Serializer):

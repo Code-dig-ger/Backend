@@ -453,8 +453,7 @@ class UserlistAddProblemView(generics.CreateAPIView):
             raise ValidationException(
                 "Problem with the given prob_id and platform does not exist")
         curr_list = List.objects.get(slug=slug)
-        curr_prob = Problem.objects.get(
-            prob_id=prob_id, platform=platform)
+        curr_prob = Problem.objects.get(prob_id=prob_id, platform=platform)
         if curr_list.problem.filter(prob_id=prob_id,
                                     platform=platform).exists():
             raise ValidationException(
@@ -486,7 +485,7 @@ class EditUserlistView(generics.GenericAPIView):
                                     | Q(owner=self.request.user))
                                    & Q(slug=slug)).exists():
                 return List.objects.get((Q(isAdmin=True)
-                                        | Q(owner=self.request.user))
+                                         | Q(owner=self.request.user))
                                         & Q(slug=slug))
             else:
                 raise NotFoundException(

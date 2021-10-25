@@ -29,6 +29,7 @@ class TestViews(TestSetUp):
         res = self.client.get(test_url)
         self.assertEqual(res.status_code, 200)
 
+
 # checking lists with an authenticated user
 
     def test_auth_check_topicwise_list_view(self):
@@ -147,9 +148,9 @@ class TestViews(TestSetUp):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         data1 = {
-            "prob_id": "4A", 
-            "slug": "testinglist_userlist", 
-            "platform": "F", 
+            "prob_id": "4A",
+            "slug": "testinglist_userlist",
+            "platform": "F",
             "description": "The problem added first time"
         }
         res = client.post(test_url, data1, format="json")
