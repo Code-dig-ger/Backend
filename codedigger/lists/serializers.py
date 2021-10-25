@@ -182,12 +182,14 @@ class UserlistAddSerializer(serializers.Serializer):
     prob_id = serializers.CharField(required=True)
     slug = serializers.CharField(required=True)
     platform = serializers.CharField(required=True)
+    description = serializers.CharField(required=True)
 
     class Meta:
         fields = (
             'prob_id',
             'slug',
             'platform',
+            'description'
         )
 
 
