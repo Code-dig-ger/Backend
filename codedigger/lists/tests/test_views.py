@@ -2,7 +2,7 @@ from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
 from rest_framework.test import APIClient
-from lists.models import Solved
+from lists.models import Solved, ListInfo
 from problem.models import Problem
 
 
@@ -154,4 +154,8 @@ class TestViews(TestSetUp):
             "description": "The problem added first time"
         }
         res = client.post(test_url, data1, format="json")
-        self.assertEqual(res.status_code, 200)
+        ok = True
+        des = ListInfo.objects.get(description="The problem added first time")
+        if des is None or des.problem != "4A" or des.p_list != "testinglist_userlist":
+            ok = False
+        self.assertEqual(res.status_code, 200) and self.assertEqual(ok, True)
