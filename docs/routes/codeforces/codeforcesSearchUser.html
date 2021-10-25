@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
+    <!-- UPDATE route title -->
+    <title>Codedigger REST API DOC - Codeforces Seach User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/doc.css">
+  </head>
+  <body>
+    <div class="doc__bg"></div>
+    <nav class="header">
+      <h1 class="logo"> <a href="https://api.codedigger.tech/"> Codedigger {API} </a><span class="logo__thin">Doc</span></h1>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link"><i class="fa fa-github"></i> Github</a></li>
+        <li class="menu__item"><a href="../doc.html" class="link"><i class="fa fa-home"></i> Home</a></li>
+      </ul>
+    </nav>
+    <div class="wrapper">
+      <aside class="doc__nav">
+        <ul>
+          <li class="js-btn selected"> <a href="#title"> Title </a></li>
+          <li class="js-btn"> <a href="#url"> URL </a></li>
+          <li class="js-btn"> <a href="#headers"> Headers </a></li>
+          <li class="js-btn"> <a href="#url-param"> URL Parameters </a></li>
+          <li class="js-btn"> <a href="#data-param"> Data Params </a></li>
+          <li class="js-btn"> <a href="#success-response"> Success Response </a></li>
+          <li class="js-btn"> <a href="#error-response"> Error Response </a></li>
+          <li class="js-btn"> <a href="#sample-call"> Sample Call </a></li>
+          <li class="js-btn"> <a href="#notes"> Notes </a></li>  
+        </ul>
+
+        <p> <b>Author:</b> @AmanJolly16 </p>  
+        <p> <b>Created at:</b> Oct 25, 2021 </p>   
+        <p> <b>Updated by:</b>
+            <ul>
+              <li> @AmanJolly16 </li>
+            </ul> 
+        </p>
+        <p> <b>Last Updated:</b> Oct 25, 2021 </p>
+        
+      </aside>
+      <article class="doc__content">
+        <section id="title" class="js-section">
+          <h2 class="section__title">Codeforces Search User</h2>
+          <p> 
+              To get the Users from the Database. Users whose Codeforces handle is similiar are returned. At max 5 users would be returned.
+          </p>
+        </section>
+        <section id = "url" class="js-section">
+          <h3 class="section__title">URL</h3>
+          <div class="block get-block">
+            <div class="method get-method">
+              GET
+            </div>
+            <span class="summary get-summary">
+              /codeforces/search
+            </span>
+          </div>
+        </section>
+        <section id = "headers" class="js-section">
+          <h3 class="section__title">Headers</h3>
+          <!-- <p> 
+            If any Headers is required e.g. Authorisation etc. 
+          </p> -->
+          <table>
+            <tr>
+              <th>Header Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>Authorization</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                Bearer {Token}
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section id = "url-param" class="js-section">
+          <h3 class="section__title">URL Parameters</h3>
+          <!-- <p> 
+            For GET Request. 
+            If URL params exist, specify them in accordance with name mentioned in URL section. 
+            Mention if is required or optional. Document data constraints.
+          </p> -->
+          <table>
+            <tr>
+              <th>Param Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>q</td>
+              <td>true</td>
+              <td>string</td>
+              <td>
+                Codeforces handle on which searching to be done.
+              </td>
+            </tr>
+          </table>
+        </section>
+        <!-- <section id = "data-param" class="js-section">
+          <h3 class="section__title">Data Params</h3>
+          <p> 
+            For POST Request. 
+            If making a post request, what should the body payload look like? 
+            URL Params rules apply here too.
+          </p>
+          <table>
+            <tr>
+              <th>Param Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>username</td>
+              <td>true</td>
+              <td>string</td>
+              <td>
+                username of user
+              </td>
+            </tr>
+          </table>
+        </section> -->
+        <section id = "success-response" class="js-section">
+          <h3 class="section__title">Success Response</h3>
+          <!-- <p> 
+            What should the status code be on success and is there any returned data? 
+            This is useful when people need to to know what their callbacks should expect!
+          </p> -->
+          <p> 
+            Status Code: 200 
+          </p>
+          <p> 
+            Sample Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+                {
+                    "status":"OK",
+                    "result":[
+                       {
+                          "name":"Gennady Korotkevich",
+                          "handle":"tourist",
+                          "rating":9999,
+                          "rank":"LGM",
+                          "photoUrl":"https://userpic.codeforces.org/422/title/50a270ed4a722867.jpg"
+                       }
+                    ]
+                 }
+            </code>
+          </pre>
+        </section>
+        <!-- <section id = "error-response" class="js-section">
+          <h3 class="section__title">Error Response</h3>
+          <p> 
+            Most endpoints will have many ways they can fail. 
+            From unauthorized access, to wrongful parameters etc. 
+            All of those should be liste d here. It might seem repetitive, 
+            but it helps prevent assumptions from being made where they should be.
+          </p>
+          <p> 
+            Status Code: 400 BAD REQUEST 
+          </p>
+          <p> 
+            Error Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+              {
+                "status": "FAILED",
+                "error": "Oops! An error occurred"
+              }
+            </code>
+          </pre>
+        </section> -->
+        <section id = "sample-call" class="js-section">
+          <h3 class="section__title">Sample Call</h3>
+          <!-- <p> 
+            Just a sample call to your endpoint in a runnable format 
+            ($.ajax call or a curl request) - this makes life easier and more predictable.
+          </p> -->
+          <pre>
+            <code class="language-bash">
+              curl -X GET "https://api.codedigger.tech/codeforces/search?q={codeforces_handle}"
+            </code>
+          </pre> 
+        </section>
+        <section id = "notes" class="js-section">
+          <h3 class="section__title">Notes</h3>
+          <p> 
+            User can get the users registered with some given handle even if he is not logged in to our site.
+            He has to provide the Codeforces handle on which searching has to be done.
+          </p>
+        </section>
+      </article>
+    </div>
+
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
+    </script>
+    <script src="../static/js/docs.js"></script>
+  </body>
+</html>
