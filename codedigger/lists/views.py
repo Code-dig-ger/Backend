@@ -1,5 +1,7 @@
+from django.http import JsonResponse
+from .cron import updater
 from rest_framework import generics, status, views, response
-from .models import List, ListExtraInfo, LadderStarted
+from .models import List, ListExtraInfo, LadderStarted, ListInfo
 from problem.models import Problem
 from .serializers import (
     GetLadderSerializer,
@@ -63,7 +65,7 @@ class TopicWiseRetrieveView(views.APIView):
 
         if not page_number:
             page_number, unsolved_prob, isCompleted = \
-                            get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
         else:
             isCompleted = False
             if page_number.isdigit():
@@ -142,7 +144,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if user:
             unsolved_page, unsolved_prob, isCompleted = \
-                    get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
 
         if page_number:
             isCompleted = False
@@ -207,7 +209,7 @@ class LevelwiseRetrieveView(views.APIView):
 
         if not page_number:
             page_number, unsolved_prob, isCompleted = \
-                            get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
         else:
             isCompleted = False
             if page_number.isdigit():
@@ -286,7 +288,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if user:
             unsolved_page, unsolved_prob, isCompleted = \
-                    get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
 
         if page_number:
             isCompleted = False
@@ -439,6 +441,7 @@ class UserlistAddProblemView(generics.CreateAPIView):
         prob_id = data.get('prob_id', None)
         slug = data.get('slug', None)
         platform = data.get('platform', None)
+        description = data.get('description', "")
         if prob_id is None or slug is None or platform is None:
             raise ValidationException(
                 "prob_id or slug or platform not provided")
@@ -459,7 +462,11 @@ class UserlistAddProblemView(generics.CreateAPIView):
         if curr_list.owner != here:
             raise ValidationException(
                 "Only the owner of the list can add problems to this list")
-        curr_list.problem.add(curr_prob)
+        listinfo = ListInfo()
+        listinfo.p_list = curr_list
+        listinfo.problem = curr_prob
+        listinfo.description = description
+        listinfo.save()
         return response.Response(
             {
                 "status": 'OK',
@@ -699,7 +706,7 @@ class ProblemsPublicListView(views.APIView):
 
         if not page_number:
             page_number, unsolved_prob, isCompleted = \
-                            get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
         else:
             isCompleted = False
             if page_number.isdigit():
@@ -714,10 +721,6 @@ class ProblemsPublicListView(views.APIView):
         res = get_response_dict(curr_list, user, page_number, page_size, url,
                                 problem_qs, isCompleted)
         return response.Response(res)
-
-
-from .cron import updater
-from django.http import JsonResponse
 
 
 def testing(request):
