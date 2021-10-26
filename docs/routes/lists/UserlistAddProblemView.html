@@ -42,25 +42,26 @@
         <p> <b>Updated by:</b>
             <ul>
               <li> @sreelayavuyyuru </li>
+              <li> @shivamsinghal1 </li> 
             </ul> 
         </p>
-        <p> <b>Last Updated:</b> Oct 25, 2021 </p>
+        <p> <b>Last Updated:</b> Oct 26, 2021 </p>
         
       </aside>
       <article class="doc__content">
         <section id="title" class="js-section">
-          <h2 class="section__title">Title</h2>
+          <h2 class="section__title">Add Problem to List</h2>
           <p>
             Adding a problem to a list is handled by this API call.
           </p>
         </section>
         <section id = "url" class="js-section">
           <h3 class="section__title">URL</h3>
-          <div class="block get-block">
-            <div class="method get-method">
-              GET
+          <div class="block post-block">
+            <div class="method post-method">
+              POST
             </div>
-            <span class="summary get-summary">
+            <span class="summary post-summary">
                 /lists/userlist/add
             </span>
           </div>
@@ -235,11 +236,10 @@
           <h3 class="section__title">Sample Call</h3>
           <pre>
             <code class="language-bash">
-    curl -X POST "http://api.codedigger.tech/lists/userlist/add" 
-    -H  "accept: application/json" 
-    -H  "Authorization: Bearer {Access Token}" 
-    -H  "Content-Type: application/json" 
-    -H  "X-CSRFToken: {X-CSRFToken}" 
+    curl -X POST "http://api.codedigger.tech/lists/userlist/add" \
+    -H "accept: application/json" \
+    -H "Authorization: Bearer {Access Token}" \
+    -H "Content-Type: application/json" \
     -d "{  \"prob_id\": \"{prob_id}\",  \"slug\": \"{slug}\",  \"platform\": \"{platform}\",  \"description\": \"{description}\"}"
             </code>
           </pre> 
