@@ -6,19 +6,6 @@ from user.exception import ValidationException
 from codechef.scraper import contestScraper, problemScraper, divisionScraper
 
 
-def OffsetLoader(contest_type):
-
-    requested_contests = []
-    for i in range(0, 60,
-                   20):  #offset {0, 20, 40} for multiple pages of contests.
-        contests_data = contestData(i, contest_type)
-
-        for contests in contests_data['contests']:
-            requested_contests.append(contests)
-
-    return requested_contests
-
-
 def getContestDivision(contest_id):
 
     contest_req = problemScraper(contest_id)
