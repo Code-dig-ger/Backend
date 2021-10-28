@@ -7,7 +7,8 @@ from codechef.scraper import contestScraper, problemScraper, divisionScraper
 from codechef.scraper_utils import OffsetLoader, getContestDivision, ContestData, ProblemData
 
 
-def create_or_update_codechefProblem(problemdata):
+def create_or_update_codechefProblem(contestId):
+    problemdata = ProblemData(contestId)
     for problem in problemdata:
         Prob = Problem.get_or_create(name=problem['Name'],
                                      prob_id=problem['ProblemCode'],

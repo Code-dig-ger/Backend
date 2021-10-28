@@ -16,9 +16,6 @@ def OffsetLoader(contest_type):
 
     return requested_contests
 
-def update_ContestProblems(contestcode):
-    contest_problems_info = ProblemData(contestId)
-    create_or_update_codechefProblem(contest_problems_info)
 
 def update_AllContests():
     # Creates new contests and problems in Database
@@ -26,6 +23,6 @@ def update_AllContests():
     for contest in all_contests:
         create_or_update_codechefContest(contest)
         contestId = contest['ContestCode']
-        update_ContestProblems(contestId)
+        create_or_update_codechefProblem(contestId)
         
         
