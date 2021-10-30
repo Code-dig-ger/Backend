@@ -13,13 +13,12 @@ class TestScraper(TestSetUp):
         code = "APRIL19B"
 
         output_result = problemScraper(code)
-        self.assertEqual(output_result.has_key("status"), true,
-                         "Couldn't fetch status result in problemScraper")
+        self.assertEqual("status" in output_result, True, "Couldn't fetch status result in problemScraper")
         self.assertEqual(output_result["status"], "success",
                          "Failed status in problemScraper")
-        self.assertEqual(output_result.has_key("code"), True,
+        self.assertEqual("code" in output_result, True,
                          "problemScraper doesn't contain the contest code")
-        self.assertEqual(output_result.has_key("problems"), True,
+        self.assertEqual("problems" in output_result, True,
                          "problemScraper doesn't have the problem info")
 
     def test_ProblemData(self):
