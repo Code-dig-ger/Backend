@@ -4,7 +4,7 @@ from time import sleep
 import os, json, django
 from user.exception import ValidationException
 from codechef.scraper import contestScraper, problemScraper, divisionScraper
-
+from codechef.cron import OffsetLoader
 
 def getContestDivision(contest_id):
 
@@ -78,3 +78,6 @@ def ProblemData(contest_code):
         all_problems.append(finalProblemData)
 
     return (all_problems)
+
+xd = ProblemData("COOK117B")
+print(xd)
