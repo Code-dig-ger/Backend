@@ -1,4 +1,4 @@
-contestResult = {{
+contestResult = {
             "status": "success",
             "user": {
                 "username": ""
@@ -11,143 +11,143 @@ contestResult = {{
                     "name": "Mininum XOR over Tree",
                     "type": "3",
                     "successful_submissions": "43",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 1.4099999999999999,
                     "problem_url": "\/problems\/XORMIN",
                     "submit_url": "\/submit\/XORMIN",
                     "status_url": "\/status\/XORMIN",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "KLPM": {
                     "code": "KLPM",
                     "name": "Kira Loves Palindromes",
                     "type": "3",
                     "successful_submissions": "156",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 3.6000000000000001,
                     "problem_url": "\/problems\/KLPM",
                     "submit_url": "\/submit\/KLPM",
                     "status_url": "\/status\/KLPM",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "CHEFOFR": {
                     "code": "CHEFOFR",
                     "name": "Offer for Chef",
                     "type": "3",
                     "successful_submissions": "11",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 20.27,
                     "problem_url": "\/problems\/CHEFOFR",
                     "submit_url": "\/submit\/CHEFOFR",
                     "status_url": "\/status\/CHEFOFR",
                     "category_name": "unscored",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "SUBREM": {
                     "code": "SUBREM",
                     "name": "Subtree Removal",
                     "type": "3",
                     "successful_submissions": "1063",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 8.5399999999999991,
                     "problem_url": "\/problems\/SUBREM",
                     "submit_url": "\/submit\/SUBREM",
                     "status_url": "\/status\/SUBREM",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "SJ1": {
                     "code": "SJ1",
                     "name": "Playing with Numbers",
                     "type": "3",
                     "successful_submissions": "699",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 9.7599999999999998,
                     "problem_url": "\/problems\/SJ1",
                     "submit_url": "\/submit\/SJ1",
                     "status_url": "\/status\/SJ1",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "STRCH": {
                     "code": "STRCH",
                     "name": "Friend or Girlfriend",
                     "type": "3",
                     "successful_submissions": "6690",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 22.969999999999999,
                     "problem_url": "\/problems\/STRCH",
                     "submit_url": "\/submit\/STRCH",
                     "status_url": "\/status\/STRCH",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "FENCE": {
                     "code": "FENCE",
                     "name": "Fencing",
                     "type": "3",
                     "successful_submissions": "3951",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 18.210000000000001,
                     "problem_url": "\/problems\/FENCE",
                     "submit_url": "\/submit\/FENCE",
                     "status_url": "\/status\/FENCE",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "MAXREM": {
                     "code": "MAXREM",
                     "name": "Maximum Remaining",
                     "type": "3",
                     "successful_submissions": "10068",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 26.25,
                     "problem_url": "\/problems\/MAXREM",
                     "submit_url": "\/submit\/MAXREM",
                     "status_url": "\/status\/MAXREM",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "EDGY": {
                     "code": "EDGY",
                     "name": "Edgy",
                     "type": "3",
                     "successful_submissions": "2",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 4.3499999999999996,
                     "problem_url": "\/problems\/EDGY",
                     "submit_url": "\/submit\/EDGY",
                     "status_url": "\/status\/EDGY",
                     "category_name": "unscored",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "RECTARAN": {
                     "code": "RECTARAN",
                     "name": "Moving Rectangles (Challenge)",
                     "type": "2",
                     "successful_submissions": "44",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 36.539999999999999,
                     "problem_url": "\/problems\/RECTARAN",
                     "submit_url": "\/submit\/RECTARAN",
                     "status_url": "\/status\/RECTARAN",
                     "category_name": "main",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 },
                 "SONIQUE": {
                     "code": "SONIQUE",
                     "name": "Sonya and Queries",
                     "type": "3",
                     "successful_submissions": "0",
-                    "allow_submission": false,
+                    "allow_submission": False,
                     "accuracy": 0,
                     "problem_url": "\/problems\/SONIQUE",
                     "submit_url": "\/submit\/SONIQUE",
                     "status_url": "\/status\/SONIQUE",
                     "category_name": "unscored",
-                    "is_direct_submittable": false
+                    "is_direct_submittable": False
                 }
             },
             "banner":
@@ -170,7 +170,7 @@ contestResult = {{
                 "locked": []
             },
             "todos": [],
-            "stats": null,
+            "stats": 0,
             "partial_scores": {
                 "CHEFOFR": [{
                     "score": "100",
@@ -246,27 +246,27 @@ contestResult = {{
                     "count": "1"
                 }]
             },
-            "isRanklistFrozen": false,
-            "rank_and_score": null,
-            "is_a_parent_contest": false,
-            "is_contest_elements_visible": true,
-            "is_OTP_required": false,
-            "isUserRegisteredForTeam": false,
+            "isRanklistFrozen": False,
+            "rank_and_score": 0,
+            "is_a_parent_contest": False,
+            "is_contest_elements_visible": True,
+            "is_OTP_required": False,
+            "isUserRegisteredForTeam": False,
             "is_linked_problems_contest": "0",
-            "custom_contest_page_title": null,
-            "custom_contest_page_meta_desc": null,
+            "custom_contest_page_title": 0,
+            "custom_contest_page_meta_desc": 0,
             "ttl": 60,
             "scorable_heading": "Scorable Problems for Division 2",
             "scorable_message": "",
             "non_scorable_heading": "Non Scorable Problems for Practice",
             "non_scorable_message":
             "<p>The following problems are <b>NOT part of the contest<\/b>, and will not be counted towards your rankings and ratings. These are problems from the other Division(s), made available for you to practice. Click <a href='\/ratings\/divisions'>here<\/a> to know more. They will be considered for plagiarism though.<\/p>",
-            "is_registration_enabled_contest": false,
-            "is_flexi_time_contest": false,
+            "is_registration_enabled_contest": False,
+            "is_flexi_time_contest": False,
             "duration": "14400",
-            "is_proctored": false,
-            "autoRefresh": true
-}}
+            "is_proctored": False,
+            "autoRefresh": True
+}
 
 problemResult = [{
             'Name': 'The Wave',
