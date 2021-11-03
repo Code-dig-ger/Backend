@@ -441,8 +441,8 @@ class UserlistAddProblemView(generics.CreateAPIView):
         prob_id = data.get('prob_id', None)
         slug = data.get('slug', None)
         platform = data.get('platform', None)
-        description = data.get('description', None)
-        if prob_id is None or slug is None or platform is None or description is None:
+        description = data.get('description', "")
+        if prob_id is None or slug is None or platform is None:
             raise ValidationException(
                 "prob_id or slug or platform or description not provided")
         if not List.objects.filter(slug=slug).exists():
