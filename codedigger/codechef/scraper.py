@@ -7,7 +7,7 @@ from user.exception import ValidationException
 
 def divisionScraper(contest_id):
 
-    contest_url = "https://www.codechef.com/api/contests/" + contest_id
+    contest_url = f"https://www.codechef.com/api/contests/{contest_id}"
     contest_req = requests.get(contest_url)
     if contest_req.status_code != 200:
         raise ValidationException(
@@ -33,7 +33,7 @@ def contestScraper(offset, contest_type):
 
 def problemScraper(contest_code):
 
-    query_problem_url = f"https://www.codechef.com/api/contests/" + contest_code
+    query_problem_url = f"https://www.codechef.com/api/contests/{contest_code}"
     # Query URL might change in future.
     problem_data = requests.get(query_problem_url)
     if problem_data.status_code != 200:

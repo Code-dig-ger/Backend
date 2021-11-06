@@ -1,21 +1,23 @@
 from .test_setup import TestSetUp
-from .models import CodechefContest, CodechefContestProblems
+from codechef.models import CodechefContest, CodechefContestProblems
 from problem.models import Problem
 from codechef.model_utils import create_or_update_codechefContest,create_or_update_codechefProblem
 from codechef.test_fixtures.model_utils_fixture import (codechef_contest,codechef_problem)
+from datetime import datetime
 
-class TestModelUtils(self):
+class TestModelUtils(TestSetUp):
     def test_CreateContest(self):
         newContest = create_or_update_codechefContest(codechef_contest)
-        contest = CodechefContest.objects.filter(contestId = codechef_contest['ContestCode'])
-        self.assertEqual(contest.exists(), True)
-        self.assertEqual(contest.url, codechef_contest['ContestURL'])
-        self.assertEqual(contest.startTime, codechef_contest['StartTime'])
+        contestDate = datetime.strptime(codechef_contest["StartTime"],"%d %B %Y  %H:%M:%S")
+        contest = CodechefContest.objects.get(contestId = codechef_contest["ContestCode"])
+        self.assertEqual(contest.url, codechef_contest["ContestURL"])
+        self.assertEqual(contest.contestId, 'COOK131B')
 
 
     def test_CreateProblem(self):
-        newProblem = create_or_update_codechefProblem(codechef_problem)
-        firstProb = codechef_problem[0]
-        problem = CodechefContest.objects.filter(contestId = firstProb['ContestId'])
-        self.assertEqual(problem.exists(), True)
-        self.assertEqual(len(problem),len(codechef_problem))
+        create_or_update_codechefContest(codechef_contest)
+        create_or_update_codechefProblem('COOK131B')
+        problemModel = Problem.objects.get(prob_id = codechef_problem[0]['ProblemCode'])
+        firstProbCode = codechef_problem[0]['ProblemCode']
+        codechefProblem = CodechefContestProblems.objects.get(problem = problemModel)
+        self.assertEqual(codechefProblem.problem.prob_id, 'LIFTME')

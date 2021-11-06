@@ -1,9 +1,9 @@
 codechef_contest = {
-    "Name": contest['contest_name'],
-    "ContestCode": contest_id,
-    "Duration": contest['contest_duration'],
-    "StartTime": contest_updated_date,
-    'ContestURL': "https://www.codechef.com/" + contest_id
+    "Name": "July Cook-Off 2021",
+    "ContestCode": "COOK131B",
+    "Duration": 165,
+    "StartTime": "28 July 2021  20:00:00",
+    "ContestURL": "https://www.codechef.com/COOK131B"
 }
 
 codechef_problem = [

@@ -10,17 +10,14 @@ from codechef.test_fixtures.scraper_utils_fixture import (problemResult,
 class TestScraper(TestSetUp):
     def test_problemScraper(self):
 
-        code = "APRIL19B"
+        code = "COOK117B"
 
         output_result = problemScraper(code)
-        self.assertEqual(output_result.has_key("status"), true,
-                         "Couldn't fetch status result in problemScraper")
-        self.assertEqual(output_result["status"], "success",
-                         "Failed status in problemScraper")
-        self.assertEqual(output_result.has_key("code"), True,
-                         "problemScraper doesn't contain the contest code")
-        self.assertEqual(output_result.has_key("problems"), True,
-                         "problemScraper doesn't have the problem info")
+
+        self.assertEqual("status" in output_result,True,"Status code not found in problemScraper")
+        self.assertEqual(output_result["status"],"success","Failed status in problemScraper")
+        self.assertEqual("code" in output_result,True,"problemScraper doesn't contain the contest code")
+        self.assertEqual("problems" in output_result,True,"problemScraper doesn't have the problem info")
 
     def test_ProblemData(self):
         code = "COOK130B"

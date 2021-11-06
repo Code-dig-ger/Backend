@@ -1,10 +1,22 @@
+
+import os, json, django
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
-import os, json, django
 from user.exception import ValidationException
-from codechef.scraper import contestScraper, problemScraper, divisionScraper
-from codechef.cron import OffsetLoader
+from codechef.scraper import problemScraper
+
+
+def OffsetLoader(contest_type):
+
+    requested_contests = []
+    for i in range(0, 60, 20):  #offset {0, 20, 40} for multiple pages of contests.
+        contests_data = contestScraper(i, contest_type)
+
+        for contests in contests_data['contests']:
+            requested_contests.append(contests)
+
+    return requested_contests
 
 def getContestDivision(contest_id):
 
@@ -78,6 +90,3 @@ def ProblemData(contest_code):
         all_problems.append(finalProblemData)
 
     return (all_problems)
-
-xd = ProblemData("COOK117B")
-print(xd)
