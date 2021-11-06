@@ -728,7 +728,7 @@ class SearchUserlistView(generics.ListAPIView):
     serializer_class = [GetUserlistSerializer]
 
     def get(self, request):
-        param = request.GET.get('q').lower()
+        param = request.GET.get('q', '').lower()
         lists = List.objects.filter(Q(name__icontains=param) & Q(public=True))
         res_lists = GetUserlistSerializer(lists, many=True).data
         return response.Response({'status': 'OK', 'result': res_lists})
