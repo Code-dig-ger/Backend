@@ -164,10 +164,10 @@ class TestViews(TestSetUp):
         test_url = reverse('userlist-search')
         test_url += '?q=to'
         response = self.client.get(test_url, format='json')
-        lists = response.data['lists']
+        lists = response.data['result']
         flag = 0
         for i in lists:
             if ('to' in i['name']):
                 flag = 1
             self.assertEqual(response.status_code, 200) and self.assertEqual(
-                flag, 1)
+                 flag, 1)
