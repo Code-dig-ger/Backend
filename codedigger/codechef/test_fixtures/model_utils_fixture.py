@@ -1,6 +1,6 @@
 codechef_contest = {
     "Name": "July Cook-Off 2021",
-    "ContestCode": "COOK131B",
+    "ContestCode": "COOK117B",
     "Duration": 165,
     "StartTime": "28 July 2021  20:00:00",
     "ContestURL": "https://www.codechef.com/COOK131B"

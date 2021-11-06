@@ -11,13 +11,13 @@ class TestModelUtils(TestSetUp):
         contestDate = datetime.strptime(codechef_contest["StartTime"],"%d %B %Y  %H:%M:%S")
         contest = CodechefContest.objects.get(contestId = codechef_contest["ContestCode"])
         self.assertEqual(contest.url, codechef_contest["ContestURL"])
-        self.assertEqual(contest.contestId, 'COOK131B')
+        self.assertEqual(contest.contestId, 'COOK117B')
 
 
     def test_CreateProblem(self):
         create_or_update_codechefContest(codechef_contest)
-        create_or_update_codechefProblem('COOK131B')
+        create_or_update_codechefProblem('COOK117B')
         problemModel = Problem.objects.get(prob_id = codechef_problem[0]['ProblemCode'])
         firstProbCode = codechef_problem[0]['ProblemCode']
-        codechefProblem = CodechefContestProblems.objects.get(problem = problemModel)
-        self.assertEqual(codechefProblem.problem.prob_id, 'LIFTME')
+        codechefProblem = CodechefContestProblems.objects.filter(problem = problemModel)
+        self.assertEqual(codechefProblem[0].problem.prob_id, 'LIFTME')

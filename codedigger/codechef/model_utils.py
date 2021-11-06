@@ -6,27 +6,27 @@ from codechef.scraper_utils import ContestData, ProblemData
 
 def create_or_update_codechefProblem(contestId):
     problemdata = ProblemData(contestId)
+    cont = CodechefContest.objects.get(contestId=contestId)
+
     for problem in problemdata:
-        Prob, created = Problem.objects.get_or_create(name=problem['Name'],
-                                     prob_id=problem['ProblemCode'],
-                                     url=problem['ProblemURL'],
-                                     contest_id=contestId,
-                                     platform=problem['Platform'])
-        # Prob.name = problem['Name']
-        # Prob.url = problem['ProblemURL']
-        # Prob.contest_id = contestId
-        cont = CodechefContest.objects.get(contestId=problem['ContestId'])
-        codechefProb = CodechefContestProblems.objects.get_or_create(contest = cont, problem = Prob)
+        Prob, created = Problem.objects.get_or_create(prob_id=problem['ProblemCode'])
+        Prob.name=problem['Name']
+        Prob.url=problem['ProblemURL']
+        Prob.contest_id=contestId
+        Prob.platform=problem['Platform']
+        CodechefContestProblems.objects.get_or_create(contest = cont, problem = Prob)
 
 
 def create_or_update_codechefContest(contest):
         contestDate = datetime.strptime(contest['StartTime'],
                                         "%d %B %Y  %H:%M:%S")
-        cont = CodechefContest.objects.get_or_create(
-            name=contest['Name'],
+        CodechefContest.objects.get_or_create(
             contestId=contest['ContestCode'],
-            duration=contest['Duration'],
-            startTime=contestDate,
-            url=contest['ContestURL'])
+            defaults={
+                'name': contest['Name'],
+                'duration': contest['Duration'],
+                'startTime': contestDate,
+                'url': contest['ContestURL']
+            })
 
         
