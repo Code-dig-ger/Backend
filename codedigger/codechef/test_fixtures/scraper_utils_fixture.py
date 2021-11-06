@@ -275,62 +275,148 @@ problemResult = [{
             'ContestId': 'COOK130B',
             'Platform': 'C'
         }, {
-            'Name': 'Too Much Xor',
-            'ProblemCode': 'TOOXOR',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/TOOXOR',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "25",
+            "count": "58"
         }, {
-            'Name': 'Binary String on Steroids',
-            'ProblemCode': 'BNSONSTR',
-            'ProblemURL':
-            'https://www.codechef.com/COOK130B/problems/BNSONSTR',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "100",
+            "count": "43"
+        }],
+        "SJ1": [{
+            "score": "100",
+            "count": "699"
+        }],
+        "STRCH": [{
+            "score": "30",
+            "count": "1575"
         }, {
-            'Name': 'Battle Royale',
-            'ProblemCode': 'BTTLRYL',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/BTTLRYL',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "70",
+            "count": "1"
         }, {
-            'Name': 'Polynomial Root',
-            'ProblemCode': 'POLYRT',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/POLYRT',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "100",
+            "count": "6690"
+        }],
+        "MAXREM": [{
+            "score": "30",
+            "count": "1314"
         }, {
-            'Name': 'Clamp Paths on Tree',
-            'ProblemCode': 'CLAMPWAY',
-            'ProblemURL':
-            'https://www.codechef.com/COOK130B/problems/CLAMPWAY',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "70",
+            "count": "21"
         }, {
-            'Name': 'XOR Folding',
-            'ProblemCode': 'XORFOLD',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/XORFOLD',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "100",
+            "count": "10068"
+        }],
+        "SUBREM": [{
+            "score": "30",
+            "count": "6"
         }, {
-            'Name': 'ICPC Balloons',
-            'ProblemCode': 'BALLOON',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/BALLOON',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "70",
+            "count": "3"
         }, {
-            'Name': 'Chefland Visa',
-            'ProblemCode': 'VISA',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/VISA',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "100",
+            "count": "1063"
+        }],
+        "FENCE": [{
+            "score": "30",
+            "count": "1193"
         }, {
-            'Name': 'Random Permutation',
-            'ProblemCode': 'GRAND',
-            'ProblemURL': 'https://www.codechef.com/COOK130B/problems/GRAND',
-            'ContestId': 'COOK130B',
-            'Platform': 'C'
+            "score": "70",
+            "count": "92"
+        }, {
+            "score": "100",
+            "count": "3951"
+        }],
+        "EDGY": [{
+            "score": "100",
+            "count": "2"
+        }],
+        "SONIQUE": [{
+            "score": "10",
+            "count": "1"
         }]
+    },
+    "isRanklistFrozen": false,
+    "rank_and_score": null,
+    "is_a_parent_contest": false,
+    "is_contest_elements_visible": true,
+    "is_OTP_required": false,
+    "isUserRegisteredForTeam": false,
+    "is_linked_problems_contest": "0",
+    "custom_contest_page_title": null,
+    "custom_contest_page_meta_desc": null,
+    "ttl": 60,
+    "scorable_heading": "Scorable Problems for Division 2",
+    "scorable_message": "",
+    "non_scorable_heading": "Non Scorable Problems for Practice",
+    "non_scorable_message":
+    "<p>The following problems are <b>NOT part of the contest<\/b>, and will not be counted towards your rankings and ratings. These are problems from the other Division(s), made available for you to practice. Click <a href='\/ratings\/divisions'>here<\/a> to know more. They will be considered for plagiarism though.<\/p>",
+    "is_registration_enabled_contest": false,
+    "is_flexi_time_contest": false,
+    "duration": "14400",
+    "is_proctored": false,
+    "autoRefresh": true
+}}
+
+problemResult = [{
+    'Name': 'The Wave',
+    'ProblemCode': 'WAV2',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/WAV2',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Too Much Xor',
+    'ProblemCode': 'TOOXOR',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/TOOXOR',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Binary String on Steroids',
+    'ProblemCode': 'BNSONSTR',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/BNSONSTR',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Battle Royale',
+    'ProblemCode': 'BTTLRYL',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/BTTLRYL',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Polynomial Root',
+    'ProblemCode': 'POLYRT',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/POLYRT',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Clamp Paths on Tree',
+    'ProblemCode': 'CLAMPWAY',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/CLAMPWAY',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'XOR Folding',
+    'ProblemCode': 'XORFOLD',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/XORFOLD',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'ICPC Balloons',
+    'ProblemCode': 'BALLOON',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/BALLOON',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Chefland Visa',
+    'ProblemCode': 'VISA',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/VISA',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}, {
+    'Name': 'Random Permutation',
+    'ProblemCode': 'GRAND',
+    'ProblemURL': 'https://www.codechef.com/COOK130B/problems/GRAND',
+    'ContestId': 'COOK130B',
+    'Platform': 'C'
+}]
 
 getDivisionResult1 = ['COOK129A', 'COOK129B', 'COOK129C']
 getDivisionResult2 = ['LTIME15']
