@@ -17,9 +17,8 @@ class CodechefContest(models.Model):
 
 
 class CodechefContestProblems(models.Model):
-
-    contest = models.ForeignKey(CodechefContest, on_delete=models.CASCADE)
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    contest = models.ForeignKey(CodechefContest, blank = True,on_delete=models.CASCADE)
+    problem = models.ForeignKey(Problem, blank = True,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.problem.prob_id
