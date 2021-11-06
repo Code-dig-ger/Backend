@@ -170,4 +170,4 @@ class TestViews(TestSetUp):
             if ('to' in i['name']):
                 flag = 1
             self.assertEqual(response.status_code, 200) and self.assertEqual(
-                 flag, 1)
+                flag, 1)
