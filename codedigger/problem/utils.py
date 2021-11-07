@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup as bs4
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from lists.utils import (sub_page_number, get_next_url, get_prev_url, 
-                        get_total_page, getqs)
+from lists.utils import (sub_page_number, get_next_url, get_prev_url,
+                         get_total_page, getqs)
 from user.exception import ValidationException
 from codeforces.api import user_status
 
@@ -166,18 +166,15 @@ def get_page_number(page, default=1):
     else:
         raise ValidationException('Page must be an integer.')
 
-def get_problem_filter_response(user,
-                                page_number,
-                                per_page,
-                                url,
-                                problem_qs):
+
+def get_problem_filter_response(user, page_number, per_page, url, problem_qs):
     # param:
     # user:			Object of User Model
     # page_number: 	Current Page Number
     # per_page: 	number of problems in a page
     # url:			Base url
     # problem_qs:	List of Problems Total
-    
+
     if not user.is_authenticated:
         user = None
     total_problems = problem_qs.count()
@@ -190,7 +187,9 @@ def get_problem_filter_response(user,
 
     res = {
         "status": "OK",
-        "result": ProbSerializer(qs, many=True, context={"user": user}).data,
+        "result": ProbSerializer(qs, many=True, context={
+            "user": user
+        }).data,
         'link': {
             'first': sub_page_number(url, 1),
             'last': sub_page_number(url, total_page),
@@ -203,7 +202,9 @@ def get_problem_filter_response(user,
             'last_page': total_page,
             'path': url,
             'per_page': per_page,
-            'to': total_problems if page_number == total_page else page_number * per_page,
+            'to':
+            total_problems if page_number == total_page else page_number *
+            per_page,
             'total': total_problems
         }
     }

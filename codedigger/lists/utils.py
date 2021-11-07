@@ -63,9 +63,9 @@ def get_total_page(total_problems, page_size):
 
 
 def sub_page_number(url, page_number):
-    if re.findall(r'\?page=[0-9]*;', url) :
+    if re.findall(r'\?page=[0-9]*;', url):
         return re.sub(r'\?page=[0-9]*;', '?page={};'.format(page_number), url)
-    elif re.findall(r'\;page=[0-9]*;', url) :
+    elif re.findall(r'\;page=[0-9]*;', url):
         return re.sub(r'\;page=[0-9]*;', ';page={};'.format(page_number), url)
 
     return '{}page={};'.format(url, page_number)

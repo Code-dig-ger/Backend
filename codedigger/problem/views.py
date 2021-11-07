@@ -22,7 +22,7 @@ from .serializers import (ProbSerializer, UpsolveContestSerializer,
 from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
 from .utils import (codeforces_status, codechef_status, atcoder_status,
-                    get_page_number, get_upsolve_response_dict, 
+                    get_page_number, get_upsolve_response_dict,
                     get_problem_filter_response)
 
 
@@ -35,9 +35,9 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
     def get(self, request):
 
         page = get_page_number(request.GET.get('page'))
-        per_page = get_page_number(request.GET.get('per_page'),20)
+        per_page = get_page_number(request.GET.get('per_page'), 20)
 
-        if per_page > 50: 
+        if per_page > 50:
             raise ValidationException('max limit of per_page is 50')
 
         tags = request.GET.get('tags')
@@ -51,7 +51,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         only_wrong = request.GET.get('only_wrong', 'false').lower()
         hide_solved = request.GET.get('hide_solved', 'false').lower()
         solved_by = request.GET.get('solved_by')
-        sort_by = request.GET.get('sort_by','-id')
+        sort_by = request.GET.get('sort_by', '-id')
         index = request.GET.get('index')
 
         url = request.build_absolute_uri(request.get_full_path())
@@ -137,16 +137,17 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                 else:
                     q |= Q(tags__icontains=tag)
             problem_qs = problem_qs.filter(q)
-        
+
         if solved_by is not None:
             solved_by = solved_by.split(',')
-            users = User.objects.filter(username__in = solved_by)
-            solved_prob = Solved.objects.filter(user__in = users)
+            users = User.objects.filter(username__in=solved_by)
+            solved_prob = Solved.objects.filter(user__in=users)
             problem_qs = problem_qs.filter(
-                    id__in=[o.problem.id for o in solved_prob])
+                id__in=[o.problem.id for o in solved_prob])
 
         problem_qs = problem_qs.order_by(sort_by)
-        res = get_problem_filter_response(request.user, page, per_page, url, problem_qs)
+        res = get_problem_filter_response(request.user, page, per_page, url,
+                                          problem_qs)
         return Response(res)
 
 
