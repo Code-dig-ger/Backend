@@ -12,18 +12,17 @@ from codeforces.models import contest
 from lists.models import Solved
 from .models import Problem, atcoder_contest
 
-# Serializers 
+# Serializers
 from user.serializers import GuruSerializer, FriendsShowSerializer
-from .serializers import (ProbSerializer, 
-                          UpsolveContestSerializer,  
-                          CCUpsolveContestSerializer, 
+from .serializers import (ProbSerializer, UpsolveContestSerializer,
+                          CCUpsolveContestSerializer,
                           AtcoderUpsolveContestSerializer)
 
 # Utility Functions
 from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
-from .utils import (codeforces_status, codechef_status, 
-                    atcoder_status, get_page_number, get_upsolve_response_dict)
+from .utils import (codeforces_status, codechef_status, atcoder_status,
+                    get_page_number, get_upsolve_response_dict)
 
 
 class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
@@ -48,28 +47,32 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
 
         problem_qs = Problem.objects.all()
 
-        if request.user.is_authenticated :
+        if request.user.is_authenticated:
 
             user_profile = Profile.objects.get(owner=self.request.user)
             if user_profile.codeforces == None or user_profile.codeforces == "":
-                raise ValidationException('Please Activate your account by updating your Profile.')
+                raise ValidationException(
+                    'Please Activate your account by updating your Profile.')
 
             if mentor == 'true':
                 mentors = user_profile.gurus.split(',')[1:-1]
                 if len(mentors) == 0:
-                    raise ValidationException('Please add some mentors in your Profile to use this filter.')
-                
+                    raise ValidationException(
+                        'Please add some mentors in your Profile to use this filter.'
+                    )
+
                 mentors_correct = multiple_correct_submissions(mentors)
                 problem_qs = problem_qs.filter(prob_id__in=mentors_correct)
 
             if only_wrong == 'true':
                 wrong = wrong_submissions(user_profile.codeforces)
                 problem_qs = problem_qs.filter(prob_id__in=wrong)
-            
+
             if hide_solved == 'true':
-                solved_prob = Solved.objects.filter(user = request.user)
-                problem_qs = problem_qs.exclude(id__in=[o.problem.id for o in solved_prob])
-            
+                solved_prob = Solved.objects.filter(user=request.user)
+                problem_qs = problem_qs.exclude(
+                    id__in=[o.problem.id for o in solved_prob])
+
         if platforms is not None:
             platforms = platforms.split(',')
             problem_qs = problem_qs.filter(platform__in=platforms)
@@ -91,7 +94,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         if range_r is not None:
             problem_qs = problem_qs.filter(rating_q)\
                                    .filter(rating__lt=int(range_r))
-        
+
         if index is not None:
             indices = index.split(',')
             q = Q()
@@ -124,8 +127,8 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         return Response({
             'status': 'OK',
             'result': ProbSerializer(
-                    problem_qs, 
-                    many=True, 
+                    problem_qs,
+                    many=True,
                     context={
                         'user': request.user if request.user.is_authenticated \
                                 else None

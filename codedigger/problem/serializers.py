@@ -5,6 +5,7 @@ from lists.models import Solved
 
 from .models import Problem, atcoder_contest, DIFFICULTY
 
+
 class ProbSerializer(serializers.ModelSerializer):
 
     platform = serializers.CharField(source='get_platform_display')
