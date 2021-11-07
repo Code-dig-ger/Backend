@@ -113,7 +113,7 @@
               <td>false</td>
               <td>integer</td>
               <td>
-                number of problems in a page, default 20
+                number of problems in a page, default 20, maximum 50
               </td>
             </tr>
             <tr>
@@ -202,6 +202,22 @@
               <td>boolean</td>
               <td>
                 if only_wrong = true, filter problems that is wrong attempt by user, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>solved_by</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated codedigger usernames, to get solved problems of the provided username
+              </td>
+            </tr>
+            <tr>
+              <td>sort_by</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                to sort result, example : rating = to sort by rating ascending, -rating = to sort by rating descending, default : -id.
               </td>
             </tr>
           </table>

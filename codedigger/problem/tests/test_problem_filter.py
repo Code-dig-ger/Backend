@@ -75,3 +75,13 @@ class TestUpsolve(TestSetUp):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertEqual(len(data['result']), 1)
+    
+    def test_solved_by(self):
+        res = self.client.get(self.test_url,
+                              data={
+                                  'solved_by': 'testing'
+                              },
+                              format="json")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(len(data['result']), 2)
