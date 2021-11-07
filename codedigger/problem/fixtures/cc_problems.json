@@ -7,6 +7,8 @@
             "prob_id":"COVIDLQ",
             "url":"https://www.codechef.com/problems/COVIDLQ",
             "platform":"C",
+            "rating": 825,
+            "difficulty": "B",
             "index":"APRIL20B"
         }
     },
@@ -18,6 +20,8 @@
             "prob_id":"CARSELL",
             "url":"https://www.codechef.com/problems/CARSELL",
             "platform":"C",
+            "rating": 1656,
+            "difficulty": "H",
             "index":"APRIL20B"
         }
     },
@@ -29,6 +33,8 @@
             "prob_id":"STRNO",
             "url":"https://www.codechef.com/problems/STRNO",
             "platform":"C",
+            "rating": 1252,
+            "difficulty": "E",
             "index":"APRIL20B"
         }
     },
@@ -40,6 +46,7 @@
             "prob_id":"UNITGCD",
             "url":"https://www.codechef.com/problems/UNITGCD",
             "platform":"C",
+            "rating": 1656,
             "index":"APRIL20B"
         }
     },
@@ -51,6 +58,7 @@
             "prob_id":"ANSLEAK",
             "url":"https://www.codechef.com/problems/ANSLEAK",
             "platform":"C",
+            "rating": 2528,
             "index":"APRIL20B"
         }
     }

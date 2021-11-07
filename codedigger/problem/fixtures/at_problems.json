@@ -8,6 +8,7 @@
             "url":"https://atcoder.jp/contests/abc172/tasks/abc172_a",
             "contest_id":"abc172",
             "platform":"A",
+            "rating": 825,
             "index":"a"
         }
     },
@@ -20,6 +21,7 @@
             "url":"https://atcoder.jp/contests/abc172/tasks/abc172_b",
             "contest_id":"abc172",
             "platform":"A",
+            "rating": 1252,
             "index":"b"
         }
     },
@@ -32,6 +34,7 @@
             "url":"https://atcoder.jp/contests/abc172/tasks/abc172_c",
             "contest_id":"abc172",
             "platform":"A",
+            "rating": 1645,
             "index":"c"
         }
     },
@@ -44,6 +47,7 @@
             "url":"https://atcoder.jp/contests/abc172/tasks/abc172_d",
             "contest_id":"abc172",
             "platform":"A",
+            "rating": 1899,
             "index":"d"
         }
     },
@@ -56,6 +60,7 @@
             "url":"https://atcoder.jp/contests/abc172/tasks/abc172_e",
             "contest_id":"abc172",
             "platform":"A",
+            "rating": 2525,
             "index":"e"
         }
     }

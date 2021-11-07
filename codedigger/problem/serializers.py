@@ -1,12 +1,29 @@
 from rest_framework import serializers
-from .models import Problem, atcoder_contest
+from .models import Problem, atcoder_contest, DIFFICULTY
 from codeforces.models import contest, user_contest_rank
 
 
 class ProbSerializer(serializers.ModelSerializer):
 
     platform = serializers.CharField(source='get_platform_display')
-    difficulty = serializers.CharField(source='get_difficulty_display')
+    difficulty = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+
+    def get_rating(self, obj):
+        if obj.rating == None or \
+            (obj.rating % 100 != 0 and obj.platform != 'A'):
+            return None
+        return obj.rating
+
+    def get_difficulty(self, obj):
+        if obj.difficulty != None and \
+            (obj.platform == 'C' or \
+              obj.rating == None or \
+               obj.rating % 100 == 0 or \
+                obj.platform == 'A') :
+            return dict(DIFFICULTY)[obj.difficulty]
+        else:
+            return None
 
     class Meta:
         model = Problem

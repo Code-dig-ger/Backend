@@ -8,6 +8,7 @@
             "url":"https://codeforces.com/contest/1549/problem/A",
             "platform":"F",
             "contest_id":"1549",
+            "rating":800,
             "index":"A"
         }
     },
@@ -20,6 +21,7 @@
             "url":"https://codeforces.com/contest/1549/problem/B",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 1200,
             "index":"B"
         }
     },
@@ -32,6 +34,7 @@
             "url":"https://codeforces.com/contest/1549/problem/C",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 1600,
             "index":"C"
         }
     },
@@ -44,6 +47,7 @@
             "url":"https://codeforces.com/contest/1549/problem/D",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 1900,
             "index":"D"
         }
     },
@@ -56,6 +60,7 @@
             "url":"https://codeforces.com/contest/1549/problem/E",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 2601,
             "index":"E"
         }
     },
@@ -68,6 +73,7 @@
             "url":"https://codeforces.com/contest/1345/problem/A",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 825,
             "index":"A"
         }
     },
@@ -80,6 +86,7 @@
             "url":"https://codeforces.com/contest/1345/problem/B",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1252,
             "index":"B"
         }
     },
@@ -92,6 +99,7 @@
             "url":"https://codeforces.com/contest/1345/problem/C",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1600,
             "index":"C"
         }
     },
@@ -104,6 +112,7 @@
             "url":"https://codeforces.com/contest/1345/problem/D",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1656,
             "index":"D"
         }
     },
@@ -116,6 +125,7 @@
             "url":"https://codeforces.com/contest/1345/problem/E",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 2525,
             "index":"E"
         }
     }
