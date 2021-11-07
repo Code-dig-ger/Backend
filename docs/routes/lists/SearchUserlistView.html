@@ -61,7 +61,7 @@
               GET
             </div>
             <span class="summary get-summary">
-                /lists/userlists/q={search_parameter}
+                /lists/userlists
             </span>
           </div>
         </section>
@@ -86,25 +86,27 @@
         </section>
         <section id = "url-param" class="js-section">
           <h3 class="section__title">URL Parameters</h3>
-          <p> 
+          <!-- <p> 
             For GET Request. 
             If URL params exist, specify them in accordance with name mentioned in URL section. 
             Mention if is required or optional. Document data constraints.
-          </p>
+          </p> -->
           <table>
             <tr>
               <th>Param Name</th>
               <th>Required</th>
               <th>Type</th>
               <th>Description</th>
+              <th>Default</th>
             </tr>
             <tr>
-              <td>search_parameter</td>
-              <td>true</td>
+              <td>q</td>
+              <td>false</td>
               <td>string</td>
               <td>
                 Search parameter to find the public list 
               </td>
+              <td>Empty String</td>
             </tr>
           </table>
         </section>
