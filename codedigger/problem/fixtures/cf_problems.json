@@ -9,7 +9,8 @@
             "platform":"F",
             "contest_id":"1549",
             "rating":800,
-            "index":"A"
+            "index":"A",
+            "tags":"['math', 'number theory']"
         }
     },
     {
@@ -22,7 +23,8 @@
             "platform":"F",
             "contest_id":"1549",
             "rating": 1200,
-            "index":"B"
+            "index":"B",
+            "tags":"['dp', 'graphs']"
         }
     },
     {
@@ -35,7 +37,8 @@
             "platform":"F",
             "contest_id":"1549",
             "rating": 1600,
-            "index":"C"
+            "index":"C",
+            "tags":"['graphs', 'greedy']"
         }
     },
     {

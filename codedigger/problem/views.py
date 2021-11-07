@@ -1,87 +1,29 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics, mixins, permissions, status
-
-# Django Models Stuff
-from .models import Problem, atcoder_contest
-from user.models import Profile, UserFriends
-from codeforces.models import contest, user_contest_rank
 from django.db.models import Q
+from rest_framework.response import Response
+from rest_framework import generics, mixins, status
 
-# Serializer and Extra Utils Function
-
-from .serializers import ProbSerializer, UpsolveContestSerializer, CCUpsolveContestSerializer, AtcoderUpsolveContestSerializer, SolveProblemsSerializer
-from user.serializers import GuruSerializer, FriendsShowSerializer
-from lists.models import Solved
-from .utils import codeforces_status, codechef_status, atcoder_status, get_page_number, get_upsolve_response_dict
-import json, requests
-from django.http import JsonResponse
-import random
-from user.permissions import *
-from codeforces.api import user_status
+# Exceptions and Permissions
 from user.exception import ValidationException
+from user.permissions import *
+
+# Models Stuff
+from user.models import Profile, UserFriends
+from codeforces.models import contest
+from lists.models import Solved
+from .models import Problem, atcoder_contest
+
+# Serializers 
+from user.serializers import GuruSerializer, FriendsShowSerializer
+from .serializers import (ProbSerializer, 
+                          UpsolveContestSerializer,  
+                          CCUpsolveContestSerializer, 
+                          AtcoderUpsolveContestSerializer)
+
+# Utility Functions
+from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
-
-
-class MentorProblemAPIView(
-        mixins.CreateModelMixin,
-        generics.ListAPIView,
-):
-    permission_classes = [AuthenticatedActivated]
-    serializer_class = GuruSerializer
-
-    def get(self, request):
-
-        #Mentors from Profile
-        mentor = request.GET.get('mentor')
-        #User handle from Profile
-        student = Profile.objects.get(owner=self.request.user).codeforces
-
-        #fetch student  submissions from api
-        submissions_student = user_status(handle=student)
-        student_solved_set = set()
-        for submission in submissions_student:
-            if 'contestId' in submission['problem']:
-                if submission['verdict'] == 'OK':
-                    student_solved_set.add(
-                        str(submission["problem"]['contestId']) +
-                        submission["problem"]['index'])
-
-        if mentor != 'true':
-            return Response({'status': 'OK', 'result': student_solved_set})
-
-        guru_solved_set = set()
-        guru_solved_list = []
-        gurus = Profile.objects.get(
-            owner=self.request.user).gurus.split(',')[1:-1]
-
-        #print(gurus)
-        for guru in gurus:
-            submissions_guru = user_status(handle=guru)
-            for submission in submissions_guru:
-
-                if 'contestId' in submission['problem']:
-
-                    if str(
-                            submission["problem"]['contestId']
-                    ) + submission["problem"]['index'] in guru_solved_set:
-                        continue
-
-                    elif submission['verdict'] == 'OK':
-                        guru_solved_set.add(
-                            str(submission["problem"]['contestId']) +
-                            submission["problem"]['index'])
-                        guru_solved_list.append(submission["problem"])
-        #print(guru_solved_list)
-        problems_data = []
-        for problem in guru_solved_list:
-
-            if str(problem["contestId"]
-                   ) + problem['index'] not in student_solved_set:
-                problems_data.append(
-                    str(problem['contestId']) + problem['index'])
-
-        return Response({'status': 'OK', 'result': problems_data})
+from .utils import (codeforces_status, codechef_status, 
+                    atcoder_status, get_page_number, get_upsolve_response_dict)
 
 
 class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
@@ -93,34 +35,40 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
     def get(self, request):
 
         tags = request.GET.get('tags')
+        and_in_tags = request.GET.get('and_in_tags', 'false').lower()
         platforms = request.GET.get('platform')
         difficulty = request.GET.get('difficulty')
         range_l = request.GET.get('range_l')
         range_r = request.GET.get('range_r')
         searches = request.GET.get('search')
-        mentors = request.GET.get('mentor')
+        mentor = request.GET.get('mentor', 'false').lower()
+        only_wrong = request.GET.get('only_wrong', 'false').lower()
+        hide_solved = request.GET.get('hide_solved', 'false').lower()
 
-        if request.user.is_authenticated:
+        problem_qs = Problem.objects.all()
 
-            problems_list = MentorProblemAPIView.get(self, request).data
+        if request.user.is_authenticated :
 
-            if (problems_list['status'] != 'OK'):
-                return JsonResponse(problems_list)
-            else:
-                problems_list = problems_list['result']
+            user_profile = Profile.objects.get(owner=self.request.user)
+            if user_profile.codeforces == None or user_profile.codeforces == "":
+                raise ValidationException('Please Activate your account by updating your Profile.')
 
-            if mentors == 'true':
-                problem_qs = Problem.objects.filter(prob_id__in=problems_list)
+            if mentor == 'true':
+                mentors = user_profile.gurus.split(',')[1:-1]
+                if len(mentors) == 0:
+                    raise ValidationException('Please add some mentors in your Profile to use this filter.')
+                
+                mentors_correct = multiple_correct_submissions(mentors)
+                problem_qs = problem_qs.filter(prob_id__in=mentors_correct)
 
-            else:
-                # TODO Change logic
-                q = Q()
-                for prob_id in problems_list:
-                    q |= Q(prob_id=prob_id)
-                problem_qs = Problem.objects.exclude(q)
-        else:
-            problem_qs = Problem.objects.all()
-
+            if only_wrong == 'true':
+                wrong = wrong_submissions(user_profile.codeforces)
+                problem_qs = problem_qs.filter(prob_id__in=wrong)
+            
+            if hide_solved == 'true':
+                solved_prob = Solved.objects.filter(user = request.user)
+                problem_qs = problem_qs.exclude(id__in=[o.problem.id for o in solved_prob])
+            
         if platforms is not None:
             platforms = platforms.split(',')
             problem_qs = problem_qs.filter(platform__in=platforms)
@@ -132,16 +80,16 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
 
         if difficulty is not None:
             difficulty = difficulty.split(',')
-            problem_qs = problem_qs.filter(rating_q).filter(
-                difficulty__in=difficulty)
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(difficulty__in=difficulty)
 
         if range_l is not None:
-            problem_qs = problem_qs.filter(rating_q).filter(
-                rating__gt=int(range_l))
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(rating__gt=int(range_l))
 
         if range_r is not None:
-            problem_qs = problem_qs.filter(rating_q).filter(
-                rating__lt=int(range_r))
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(rating__lt=int(range_r))
 
         if searches is not None:
             searches = searches.split(',')
@@ -152,19 +100,20 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                 q |= Q(url__icontains=search)
                 q |= Q(tags__icontains=search)
                 q |= Q(contest_id__icontains=search)
-
             problem_qs = problem_qs.filter(q)
 
         if tags is not None:
             tags = tags.split(',')
             q = Q()
-
             for tag in tags:
-                q |= Q(tags__icontains=tag)
+                if and_in_tags == 'true':
+                    q &= Q(tags__icontains=tag)
+                else:
+                    q |= Q(tags__icontains=tag)
             problem_qs = problem_qs.filter(q)
 
         problem_qs = problem_qs.order_by('?')[:20]
-        return JsonResponse({
+        return Response({
             'status': 'OK',
             'result': ProbSerializer(
                     problem_qs, 

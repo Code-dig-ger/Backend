@@ -67,7 +67,7 @@
         <section id = "headers" class="js-section">
           <h3 class="section__title">Headers</h3>
           <!-- <p> 
-            If any Headers is required e.g. Authorisation etc. 
+            If any Headers is required e.g. Authorization etc. 
           </p> -->
           <table>
             <tr>
@@ -109,11 +109,19 @@
               </td>
             </tr>
             <tr>
+              <td>and_in_tags</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if true, filter tags by and i.e. all given tags must be present in problem
+              </td>
+            </tr>
+            <tr>
               <td>platform</td>
               <td>false</td>
               <td>string</td>
               <td>
-                comma separated platform, accepted - F,C,A,S,U
+                comma separated platform - F,C,A,S,U
               </td>
             </tr>
             <tr>
@@ -121,7 +129,7 @@
               <td>false</td>
               <td>string</td>
               <td>
-                comma separated difficulty, accepted - B,E,M,H,S,C
+                comma separated difficulty - B,E,M,H,S,C
               </td>
             </tr>
             <tr>
@@ -145,7 +153,7 @@
               <td>false</td>
               <td>string</td>
               <td>
-                comma separated different search key
+                comma separated search key, to search in problem id, name, url, tags, contest id
               </td>
             </tr>
             <tr>
@@ -153,7 +161,23 @@
               <td>false</td>
               <td>boolean</td>
               <td>
-                mentor = true, filter problems solved by mentor, applied only in codeforces.
+                mentor = true, filter problems solved by mentor, applied only in codeforces, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>hide_solved</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if hide_solved = true, problems solved by user will be excluded, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>only_wrong</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if only_wrong = true, filter problems that is wrong attempt by user, requires Authorization Token
               </td>
             </tr>
           </table>
