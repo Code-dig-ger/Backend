@@ -22,7 +22,8 @@ from .serializers import (ProbSerializer, UpsolveContestSerializer,
 from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
 from .utils import (codeforces_status, codechef_status, atcoder_status,
-                    get_page_number, get_upsolve_response_dict)
+                    get_page_number, get_upsolve_response_dict, 
+                    get_problem_filter_response)
 
 
 class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
@@ -32,6 +33,9 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
     serializer_class = ProbSerializer
 
     def get(self, request):
+
+        page = get_page_number(request.GET.get('page'))
+        per_page = get_page_number(request.GET.get('per_page'),20)
 
         tags = request.GET.get('tags')
         and_in_tags = request.GET.get('and_in_tags', 'false').lower()
@@ -44,6 +48,12 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         only_wrong = request.GET.get('only_wrong', 'false').lower()
         hide_solved = request.GET.get('hide_solved', 'false').lower()
         index = request.GET.get('index')
+
+        url = request.build_absolute_uri(request.get_full_path())
+        if url[-1] == '/':
+            url += '?'
+        if url[-1] != ';' and url[-1] != '?':
+            url += ';'
 
         problem_qs = Problem.objects.all()
 
@@ -123,18 +133,9 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                     q |= Q(tags__icontains=tag)
             problem_qs = problem_qs.filter(q)
 
-        problem_qs = problem_qs.order_by('?')[:20]
-        return Response({
-            'status': 'OK',
-            'result': ProbSerializer(
-                    problem_qs,
-                    many=True,
-                    context={
-                        'user': request.user if request.user.is_authenticated \
-                                else None
-                    }
-                ).data
-        })
+        problem_qs = problem_qs.order_by('-id')
+        res = get_problem_filter_response(request.user, page, per_page, url, problem_qs)
+        return Response(res)
 
 
 class ProblemSolvedByFriend(generics.GenericAPIView):

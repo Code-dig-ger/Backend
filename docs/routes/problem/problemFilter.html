@@ -101,6 +101,22 @@
               <th>Description</th>
             </tr>
             <tr>
+              <td>page</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                page number to go to, default 1
+              </td>
+            </tr>
+            <tr>
+              <td>per_page</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                number of problems in a page, default 20
+              </td>
+            </tr>
+            <tr>
               <td>tags</td>
               <td>false</td>
               <td>string</td>
@@ -228,36 +244,51 @@
           </p>        
           <pre >
             <code class="language-json">
-  {
-    "status": "OK",
-    "result": [
-      {
-        "name": "3-Coloring",
-        "url": "https://codeforces.com/contest/1503/problem/B",
-        "prob_id": "1503B",
-        "tags": "['constructive algorithms', 'games', 'interactive']",
-        "contest_id": "1503",
-        "rating": 1700,
-        "index": "B",
-        "platform": "Codeforces",
-        "difficulty": "Medium",
-        "editorial": null,
-        "solved": true
+    {
+      "status": "OK",
+      "result": [
+          {
+              "name": "1D Sokoban",
+              "url": "https://codeforces.com/contest/1494/problem/C",
+              "prob_id": "1494C",
+              "tags": "['binary search', 'dp', 'greedy', 'implementation', 'two pointers']",
+              "contest_id": "1494",
+              "rating": 1900,
+              "index": "C",
+              "platform": "Codeforces",
+              "difficulty": "Hard",
+              "editorial": null,
+              "solved": false
+          },
+          {
+              "name": "Berland Crossword",
+              "url": "https://codeforces.com/contest/1494/problem/B",
+              "prob_id": "1494B",
+              "tags": "['bitmasks', 'brute force', 'greedy', 'implementation']",
+              "contest_id": "1494",
+              "rating": 1400,
+              "index": "B",
+              "platform": "Codeforces",
+              "difficulty": "Easy",
+              "editorial": null,
+              "solved": false
+          }
+      ],
+      "link": {
+          "first": "https://api.codedigger.tech/problems/?per_page=2;page=1;range_l=1000;",
+          "last": "https://api.codedigger.tech/problems/?per_page=2;page=224;range_l=1000;",
+          "prev": "https://api.codedigger.tech/problems/?per_page=2;page=4;range_l=1000;",
+          "next": "https://api.codedigger.tech/problems/?per_page=2;page=6;range_l=1000;"
       },
-      {
-        "name": "Ideal Strings",
-        "url": "https://www.codechef.com/problems/CEXP05",
-        "prob_id": "CEXP05",
-        "tags": "[]",
-        "contest_id": "",
-        "rating": null,
-        "index": "",
-        "platform": "Codechef",
-        "difficulty": null,
-        "editorial": null,
-        "solved": false
+      "meta": {
+          "current_page": 5,
+          "from": 9,
+          "last_page": 224,
+          "path": "https://api.codedigger.tech/problems/?per_page=2;page=5;range_l=1000;",
+          "per_page": 2,
+          "to": 10,
+          "total": 448
       }
-    ]
   }
             </code>
           </pre>
@@ -293,8 +324,8 @@
           </p> -->
           <pre>
             <code class="language-bash">
-  curl -X GET "https://api.codedigger.tech/problems/" \ 
-       -H  "accept: application/json"
+  curl -X GET 'https://api.codedigger.tech/problems/?per_page=2;page=5;range_l=1000' \
+  -H  "accept: application/json" 
             </code>
           </pre> 
         </section>
