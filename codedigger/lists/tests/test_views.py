@@ -159,3 +159,15 @@ class TestViews(TestSetUp):
         if des is None or des.problem != "4A" or des.p_list != "testinglist_userlist":
             ok = False
         self.assertEqual(res.status_code, 200) and self.assertEqual(ok, True)
+
+    def test_check_search_public_lists(self):
+        test_url = reverse('userlist-search')
+        test_url += '?q=to'
+        response = self.client.get(test_url, format='json')
+        lists = response.data['result']
+        flag = 0
+        for i in lists:
+            if ('to' in i['name']):
+                flag = 1
+            self.assertEqual(response.status_code, 200) and self.assertEqual(
+                flag, 1)

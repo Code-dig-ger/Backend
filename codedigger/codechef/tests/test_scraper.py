@@ -13,7 +13,8 @@ class TestScraper(TestSetUp):
         code = "APRIL19B"
 
         output_result = problemScraper(code)
-        self.assertEqual("status" in output_result, True, "Couldn't fetch status result in problemScraper")
+        self.assertEqual("status" in output_result, True,
+                         "Couldn't fetch status result in problemScraper")
         self.assertEqual(output_result["status"], "success",
                          "Failed status in problemScraper")
         self.assertEqual("code" in output_result, True,
