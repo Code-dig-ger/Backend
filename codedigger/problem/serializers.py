@@ -11,17 +11,17 @@ class ProbSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         if obj.rating == None or \
-            (obj.rating % 100 != 0 and obj.platform != 'A'): 
+            (obj.rating % 100 != 0 and obj.platform != 'A'):
             return None
         return obj.rating
-    
+
     def get_difficulty(self, obj):
         if obj.platform == 'C' or \
             obj.rating == None or \
              obj.rating % 100 == 0 or \
-              obj.platform == 'A': 
-            return dict(DIFFICULTY)[obj.difficulty]   
-        else :
+              obj.platform == 'A':
+            return dict(DIFFICULTY)[obj.difficulty]
+        else:
             return None
 
     class Meta:

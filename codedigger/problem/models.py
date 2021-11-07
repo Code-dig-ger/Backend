@@ -2,9 +2,10 @@ from django.db import models
 import random
 
 PLATFORM = (('F', 'Codeforces'), ('C', 'Codechef'), ('S', 'Spoj'),
-                ('U', 'Uva'), ('A', 'Atcoder'))
-DIFFICULTY = (('B', 'Beginner'), ('E', 'Easy'), ('M', 'Medium'),
-                  ('H', 'Hard'), ('S', 'Super-Hard'), ('C', 'Challenging'))
+            ('U', 'Uva'), ('A', 'Atcoder'))
+DIFFICULTY = (('B', 'Beginner'), ('E', 'Easy'), ('M', 'Medium'), ('H', 'Hard'),
+              ('S', 'Super-Hard'), ('C', 'Challenging'))
+
 
 class Problem(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True)
