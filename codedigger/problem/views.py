@@ -125,19 +125,22 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
             problem_qs = problem_qs.filter(platform__in=platforms)
 
         rating_q = Q()
-        rating_q |= Q(platform = 'A')
-        rating_q |= Q(rating__endswith = '00')
-        rating_q |= ( Q(platform = 'C') & Q(difficulty__isnull = False) )
+        rating_q |= Q(platform='A')
+        rating_q |= Q(rating__endswith='00')
+        rating_q |= (Q(platform='C') & Q(difficulty__isnull=False))
 
         if difficulty is not None:
             difficulty = difficulty.split(',')
-            problem_qs = problem_qs.filter(rating_q).filter(difficulty__in=difficulty)
+            problem_qs = problem_qs.filter(rating_q).filter(
+                difficulty__in=difficulty)
 
         if range_l is not None:
-            problem_qs = problem_qs.filter(rating_q).filter(rating__gt=int(range_l))
+            problem_qs = problem_qs.filter(rating_q).filter(
+                rating__gt=int(range_l))
 
         if range_r is not None:
-            problem_qs = problem_qs.filter(rating_q).filter(rating__lt=int(range_r))
+            problem_qs = problem_qs.filter(rating_q).filter(
+                rating__lt=int(range_r))
 
         if searches is not None:
             searches = searches.split(',')
