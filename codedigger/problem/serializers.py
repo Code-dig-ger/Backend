@@ -1,13 +1,16 @@
 from rest_framework import serializers
-from .models import Problem, atcoder_contest, DIFFICULTY
-from codeforces.models import contest, user_contest_rank
 
+from codeforces.models import contest
+from lists.models import Solved
+
+from .models import Problem, atcoder_contest, DIFFICULTY
 
 class ProbSerializer(serializers.ModelSerializer):
 
     platform = serializers.CharField(source='get_platform_display')
     difficulty = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+    solved = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
         if obj.rating == None or \
@@ -16,20 +19,23 @@ class ProbSerializer(serializers.ModelSerializer):
         return obj.rating
 
     def get_difficulty(self, obj):
-        if obj.difficulty != None and \
-            (obj.platform == 'C' or \
-              obj.rating == None or \
-               obj.rating % 100 == 0 or \
-                obj.platform == 'A') :
+        if obj.difficulty != None and obj.difficulty != "" and \
+            (obj.platform == 'C' or obj.rating == None or \
+              obj.rating % 100 == 0 or obj.platform == 'A') :
             return dict(DIFFICULTY)[obj.difficulty]
         else:
             return None
+
+    def get_solved(self, obj):
+        user = self.context.get("user", None)
+        solve = Solved.objects.filter(user=user, problem=obj)
+        return solve.exists()
 
     class Meta:
         model = Problem
         fields = [
             'name', 'url', 'prob_id', 'tags', 'contest_id', 'rating', 'index',
-            'platform', 'difficulty', 'editorial'
+            'platform', 'difficulty', 'editorial', 'solved'
         ]
 
 

@@ -88,7 +88,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                            generics.GenericAPIView):
 
     permission_classes = [AuthenticatedOrReadOnly]
-    serializer_class = SolveProblemsSerializer
+    serializer_class = ProbSerializer
 
     def get(self, request):
 
@@ -113,6 +113,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                 problem_qs = Problem.objects.filter(prob_id__in=problems_list)
 
             else:
+                # TODO Change logic
                 q = Q()
                 for prob_id in problems_list:
                     q |= Q(prob_id=prob_id)
@@ -125,7 +126,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
             problem_qs = problem_qs.filter(platform__in=platforms)
 
         rating_q = Q()
-        rating_q |= Q(platform='A')
+        rating_q |= (Q(platform='A') & Q(difficulty__isnull=False))
         rating_q |= Q(rating__endswith='00')
         rating_q |= (Q(platform='C') & Q(difficulty__isnull=False))
 
@@ -164,10 +165,15 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
 
         problem_qs = problem_qs.order_by('?')[:20]
         return JsonResponse({
-            'status':
-            'OK',
-            'result':
-            ProbSerializer(problem_qs, many=True).data
+            'status': 'OK',
+            'result': ProbSerializer(
+                    problem_qs, 
+                    many=True, 
+                    context={
+                        'user': request.user if request.user.is_authenticated \
+                                else None
+                    }
+                ).data
         })
 
 
