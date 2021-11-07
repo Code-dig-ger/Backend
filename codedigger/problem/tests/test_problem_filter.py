@@ -30,7 +30,16 @@ class TestUpsolve(TestSetUp):
             self.assertTrue(
                 prob['platform']=='Atcoder' or prob['platform']=='Codechef'
             )
-
+    
+    def test_index(self):
+        res = self.client.get(self.test_url, data={'index': 'a,b'}, format="json")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        for prob in data['result']:
+            self.assertTrue(
+                prob['index'].lower()=='a' or prob['index'].lower()=='b'
+            )
+            
     def test_tags(self):
         res = self.client.get(
                             self.test_url, 

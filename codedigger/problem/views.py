@@ -44,6 +44,7 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         mentor = request.GET.get('mentor', 'false').lower()
         only_wrong = request.GET.get('only_wrong', 'false').lower()
         hide_solved = request.GET.get('hide_solved', 'false').lower()
+        index = request.GET.get('index')
 
         problem_qs = Problem.objects.all()
 
@@ -90,11 +91,18 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         if range_r is not None:
             problem_qs = problem_qs.filter(rating_q)\
                                    .filter(rating__lt=int(range_r))
+        
+        if index is not None:
+            indices = index.split(',')
+            q = Q()
+            for index in indices:
+                q |= Q(index__iexact=index)
+            problem_qs = problem_qs.filter(q)
 
         if searches is not None:
             searches = searches.split(',')
+            q = Q()
             for search in searches:
-                q = Q()
                 q |= Q(name__icontains=search)
                 q |= Q(prob_id__icontains=search)
                 q |= Q(url__icontains=search)
