@@ -5,9 +5,12 @@ from bs4 import BeautifulSoup as bs4
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from lists.utils import get_next_url, get_prev_url, get_total_page
+from lists.utils import (sub_page_number, get_next_url, get_prev_url,
+                         get_total_page, getqs)
 from user.exception import ValidationException
 from codeforces.api import user_status
+
+from .serializers import ProbSerializer
 
 
 def codeforces_status(handle):
@@ -155,13 +158,57 @@ def atcoder_status(handle):
     return (contests_details, all_contest, solved, wrong)
 
 
-def get_page_number(page):
+def get_page_number(page, default=1):
     if page == None:
-        return 1
+        return default
     elif page.isdigit():
         return int(page)
     else:
         raise ValidationException('Page must be an integer.')
+
+
+def get_problem_filter_response(user, page_number, per_page, url, problem_qs):
+    # param:
+    # user:			Object of User Model
+    # page_number: 	Current Page Number
+    # per_page: 	number of problems in a page
+    # url:			Base url
+    # problem_qs:	List of Problems Total
+
+    if not user.is_authenticated:
+        user = None
+    total_problems = problem_qs.count()
+    total_page = get_total_page(total_problems, per_page)
+
+    if page_number > total_page:
+        raise ValidationException('Page Number Out of Bound')
+
+    qs = getqs(problem_qs, per_page, page_number)
+
+    res = {
+        "status": "OK",
+        "result": ProbSerializer(qs, many=True, context={
+            "user": user
+        }).data,
+        'link': {
+            'first': sub_page_number(url, 1),
+            'last': sub_page_number(url, total_page),
+            'prev': get_prev_url(page_number, url),
+            'next': get_next_url(page_number, url, total_page),
+        },
+        'meta': {
+            'current_page': page_number,
+            'from': (page_number - 1) * per_page + 1,
+            'last_page': total_page,
+            'path': url,
+            'per_page': per_page,
+            'to':
+            total_problems if page_number == total_page else page_number *
+            per_page,
+            'total': total_problems
+        }
+    }
+    return res
 
 
 def get_upsolve_response_dict(user_contest_details, path, page, total_contest,

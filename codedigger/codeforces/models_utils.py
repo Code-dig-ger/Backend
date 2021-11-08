@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 # Local App Import
 from .api import user_info
 from .models import organization, country, user, contest, user_contest_rank
@@ -131,3 +133,17 @@ def update_and_save_contest_data(data, new_contest):
 
         ucr.worldRank = rank
         ucr.save()
+
+
+def get_contests(divs=None):
+
+    contest_qs = contest.objects.all()
+
+    if divs != None:
+        divs = divs.split(',')
+        q = Q()
+        for div in divs:
+            q |= Q(name__icontains=div)
+        contest_qs = contest_qs.filter(q)
+
+    return contest_qs
