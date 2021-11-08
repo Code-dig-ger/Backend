@@ -148,15 +148,15 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
             problem_qs = problem_qs.filter(
                 id__in=[o.problem.id for o in solved_prob])
 
-        if exclude_gym == 'true': 
+        if exclude_gym == 'true':
             contest_qs = CodeforcesContest.objects.filter(Type='G')
             problem_qs = problem_qs.exclude(
-                    contest_id__in=[c.contestId for c in contest_qs])
-        
+                contest_id__in=[c.contestId for c in contest_qs])
+
         if contest != None:
-            contest_qs = get_contests(divs = contest)
+            contest_qs = get_contests(divs=contest)
             problem_qs = problem_qs.filter(
-                    contest_id__in=[c.contestId for c in contest_qs])
+                contest_id__in=[c.contestId for c in contest_qs])
 
         problem_qs = problem_qs.order_by(sort_by)
         res = get_problem_filter_response(request.user, page, per_page, url,

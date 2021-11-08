@@ -135,15 +135,15 @@ def update_and_save_contest_data(data, new_contest):
         ucr.save()
 
 
-def get_contests(divs = None):
+def get_contests(divs=None):
 
     contest_qs = contest.objects.all()
-    
+
     if divs != None:
         divs = divs.split(',')
         q = Q()
         for div in divs:
             q |= Q(name__icontains=div)
         contest_qs = contest_qs.filter(q)
-    
+
     return contest_qs
