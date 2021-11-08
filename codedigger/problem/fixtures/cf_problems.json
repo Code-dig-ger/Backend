@@ -3,11 +3,11 @@
         "model":"problem.problem",
         "pk":1,
         "fields":{
-            "name":"1549A",
-            "prob_id":"1549A",
-            "url":"https://codeforces.com/contest/1549/problem/A",
+            "name":"100001A",
+            "prob_id":"100001A",
+            "url":"https://codeforces.com/gym/100001/problem/A",
             "platform":"F",
-            "contest_id":"1549",
+            "contest_id":"100001",
             "rating":800,
             "index":"A",
             "tags":"['math', 'number theory']"
@@ -17,11 +17,11 @@
         "model":"problem.problem",
         "pk":2,
         "fields":{
-            "name":"1549B",
-            "prob_id":"1549B",
-            "url":"https://codeforces.com/contest/1549/problem/B",
+            "name":"100001B",
+            "prob_id":"100001B",
+            "url":"https://codeforces.com/gym/100001/problem/B",
             "platform":"F",
-            "contest_id":"1549",
+            "contest_id":"100001",
             "rating": 1200,
             "index":"B",
             "tags":"['dp', 'graphs']"

@@ -8,17 +8,18 @@ from user.permissions import *
 
 # Models Stuff
 from user.models import User, Profile, UserFriends
-from codeforces.models import contest
+from codeforces.models import contest as CodeforcesContest
 from lists.models import Solved
 from .models import Problem, atcoder_contest
 
 # Serializers
-from user.serializers import GuruSerializer, FriendsShowSerializer
+from user.serializers import FriendsShowSerializer
 from .serializers import (ProbSerializer, UpsolveContestSerializer,
                           CCUpsolveContestSerializer,
                           AtcoderUpsolveContestSerializer)
 
 # Utility Functions
+from codeforces.models_utils import get_contests
 from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
 from .utils import (codeforces_status, codechef_status, atcoder_status,
@@ -50,6 +51,8 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
         mentor = request.GET.get('mentor', 'false').lower()
         only_wrong = request.GET.get('only_wrong', 'false').lower()
         hide_solved = request.GET.get('hide_solved', 'false').lower()
+        exclude_gym = request.GET.get('exclude_gym', 'false').lower()
+        contest = request.GET.get('contest')
         solved_by = request.GET.get('solved_by')
         sort_by = request.GET.get('sort_by', '-id')
         index = request.GET.get('index')
@@ -145,6 +148,16 @@ class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
             problem_qs = problem_qs.filter(
                 id__in=[o.problem.id for o in solved_prob])
 
+        if exclude_gym == 'true': 
+            contest_qs = CodeforcesContest.objects.filter(Type='G')
+            problem_qs = problem_qs.exclude(
+                    contest_id__in=[c.contestId for c in contest_qs])
+        
+        if contest != None:
+            contest_qs = get_contests(divs = contest)
+            problem_qs = problem_qs.filter(
+                    contest_id__in=[c.contestId for c in contest_qs])
+
         problem_qs = problem_qs.order_by(sort_by)
         res = get_problem_filter_response(request.user, page, per_page, url,
                                           problem_qs)
@@ -228,7 +241,7 @@ class UpsolveContestAPIView(
         if virtual == 'true':
             RContest = RContest.union(VContest)
 
-        c = contest.objects.filter(contestId__in=RContest)\
+        c = CodeforcesContest.objects.filter(contestId__in=RContest)\
                             .order_by('-startTime')
 
         total_contest = c.count()

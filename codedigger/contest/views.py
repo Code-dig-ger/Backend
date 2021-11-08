@@ -87,9 +87,9 @@ class ContestAPIView(
             contest_qs = contest_qs.filter(q)
 
         # TODO Timeline
-        if timeline != None:
-            time = current_time - timeline * month_time
-            contest_qs = contest_qs.filter(startTime__gt > time)
+        # if timeline != None:
+            # time = current_time - timeline * month_time
+            # contest_qs = contest_qs.filter(startTime__gt > time)
 
         contest_qs = contest_qs.order_by('?')[:20]
         context = {

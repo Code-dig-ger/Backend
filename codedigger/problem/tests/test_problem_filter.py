@@ -83,3 +83,19 @@ class TestUpsolve(TestSetUp):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertEqual(len(data['result']), 2)
+    
+    def test_exclude_gym(self):
+        res = self.client.get(self.test_url,
+                              data={'platform': 'F', 'exclude_gym': True},
+                              format="json")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(len(data['result']), 8)
+    
+    def test_contest(self):
+        res = self.client.get(self.test_url,
+                              data={'contest': 'Div.2'},
+                              format="json")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(len(data['result']), 5)
