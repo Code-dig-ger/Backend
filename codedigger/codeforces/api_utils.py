@@ -1,4 +1,3 @@
-from re import sub
 from user.exception import ValidationException
 
 from .api import user_status
