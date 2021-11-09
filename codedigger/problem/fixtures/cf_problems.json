@@ -3,24 +3,28 @@
         "model":"problem.problem",
         "pk":1,
         "fields":{
-            "name":"1549A",
-            "prob_id":"1549A",
-            "url":"https://codeforces.com/contest/1549/problem/A",
+            "name":"100001A",
+            "prob_id":"100001A",
+            "url":"https://codeforces.com/gym/100001/problem/A",
             "platform":"F",
-            "contest_id":"1549",
-            "index":"A"
+            "contest_id":"100001",
+            "rating":800,
+            "index":"A",
+            "tags":"['math', 'number theory']"
         }
     },
     {
         "model":"problem.problem",
         "pk":2,
         "fields":{
-            "name":"1549B",
-            "prob_id":"1549B",
-            "url":"https://codeforces.com/contest/1549/problem/B",
+            "name":"100001B",
+            "prob_id":"100001B",
+            "url":"https://codeforces.com/gym/100001/problem/B",
             "platform":"F",
-            "contest_id":"1549",
-            "index":"B"
+            "contest_id":"100001",
+            "rating": 1200,
+            "index":"B",
+            "tags":"['dp', 'graphs']"
         }
     },
     {
@@ -32,7 +36,9 @@
             "url":"https://codeforces.com/contest/1549/problem/C",
             "platform":"F",
             "contest_id":"1549",
-            "index":"C"
+            "rating": 1600,
+            "index":"C",
+            "tags":"['graphs', 'greedy']"
         }
     },
     {
@@ -44,6 +50,7 @@
             "url":"https://codeforces.com/contest/1549/problem/D",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 1900,
             "index":"D"
         }
     },
@@ -56,6 +63,7 @@
             "url":"https://codeforces.com/contest/1549/problem/E",
             "platform":"F",
             "contest_id":"1549",
+            "rating": 2601,
             "index":"E"
         }
     },
@@ -68,6 +76,7 @@
             "url":"https://codeforces.com/contest/1345/problem/A",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 825,
             "index":"A"
         }
     },
@@ -80,6 +89,7 @@
             "url":"https://codeforces.com/contest/1345/problem/B",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1252,
             "index":"B"
         }
     },
@@ -92,6 +102,7 @@
             "url":"https://codeforces.com/contest/1345/problem/C",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1600,
             "index":"C"
         }
     },
@@ -104,6 +115,7 @@
             "url":"https://codeforces.com/contest/1345/problem/D",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 1656,
             "index":"D"
         }
     },
@@ -116,6 +128,7 @@
             "url":"https://codeforces.com/contest/1345/problem/E",
             "platform":"F",
             "contest_id":"1345",
+            "rating": 2525,
             "index":"E"
         }
     }

@@ -5,7 +5,8 @@ profile1 = {
     "atcoder": "aaradhya0707",
     "uva_handle": "aaradhya0707",
     "spoj": "aaradhya777",
-    "uva_id": "1143870"
+    "uva_id": "1143870",
+    "gurus": ",shivamsinghal1012,"
 }
 
 profile2 = {

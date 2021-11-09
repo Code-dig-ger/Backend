@@ -153,5 +153,6 @@ dmypy.json
 
 # Pycharm Files
 .idea/
+.DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/django
