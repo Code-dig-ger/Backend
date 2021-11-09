@@ -6,11 +6,12 @@ from problem.models import Problem
 from .utils import rating_to_difficulty
 from .api import problem_list
 
+
 def update_uva_problems():
 
-    try : 
+    try:
         data = problem_list()
-    except : 
+    except:
         return
 
     for p in data:

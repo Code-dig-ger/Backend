@@ -4,6 +4,7 @@ from user.exception import ValidationException
 
 BASEURL = "https://uhunt.onlinejudge.org/api/"
 
+
 def validated_response(response):
     # Check for exceptions and raise if any
     # If no exception, send response dict
@@ -16,6 +17,7 @@ def validated_response(response):
     response_dict = response.json()
     return response_dict
 
+
 def username_to_id(username):
     """
         return userId (integer) of username if username is valid 
@@ -24,6 +26,7 @@ def username_to_id(username):
     url = BASEURL + "uname2uid/{}".format(username)
     response = requests.get(url)
     return validated_response(response)
+
 
 def problem_list():
     """
@@ -54,6 +57,7 @@ def problem_list():
     url = BASEURL + "p"
     response = requests.get(url)
     return validated_response(response)
+
 
 def user_submission(user_id):
     """
@@ -94,7 +98,8 @@ def user_submission(user_id):
     response = requests.get(url)
     return validated_response(response)
 
-def cpbook(version = 3):
+
+def cpbook(version=3):
     """
     The exercises is an array of chapter. 
     Each chapter has a title and arr attribute which contains the sub-chapters. 
