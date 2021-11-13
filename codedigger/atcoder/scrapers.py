@@ -1,7 +1,7 @@
 import requests
 from math import log2
 from problem.models import Problem, atcoder_contest
-
+from .api import * 
 
 def rating_to_difficulty(rating):
     if rating <= 1100:
@@ -19,9 +19,7 @@ def rating_to_difficulty(rating):
 
 
 def update_atcoder_problems():
-    url = "https://kenkoooo.com/atcoder/resources/contests.json"
-    res = requests.get(url)
-    data = res.json()
+    data = get_all_contests()
 
     for contest in data:
 
@@ -34,9 +32,7 @@ def update_atcoder_problems():
             new_contest.duration = contest['duration_second']
             new_contest.save()
 
-    url = "https://kenkoooo.com/atcoder/resources/problems.json"
-    res = requests.get(url)
-    data = res.json()
+    data = get_all_problems()
 
     for prob in data:
 
@@ -52,9 +48,7 @@ def update_atcoder_problems():
             new_problem.platform = 'A'
             new_problem.save()
 
-    url = "https://kenkoooo.com/atcoder/resources/problem-models.json"
-    res = requests.get(url)
-    data = res.json()
+    data = get_all_problems_models()
 
     problems = Problem.objects.filter(difficulty=None, platform='A')
 

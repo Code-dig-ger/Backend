@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup as bs4
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-
+from .api import *
 from lists.utils import get_next_url, get_prev_url, get_total_page
 from user.exception import ValidationException
 from codeforces.api import user_status
@@ -12,8 +12,7 @@ from codeforces.api import user_status
 
 def atcoder_status(handle):
 
-    url = "https://atcoder.jp/users/" + handle + "/history"
-    res = requests.get(url)
+    res = get_user_history(handle)
 
     contests_details = set()
     all_contest = set()
@@ -34,8 +33,8 @@ def atcoder_status(handle):
                 contest.findAll('td')[1].find('a')['href'].split('/')[-1])
         del contests
 
-    url = "https://kenkoooo.com/atcoder/atcoder-api/results?user=" + handle
-    res = requests.get(url)
+    res = get_user_results(handle)
+    
     if res.status_code != 200:
         return (contests_details, all_contest, solved, wrong)
 
