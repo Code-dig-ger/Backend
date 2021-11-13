@@ -1,7 +1,8 @@
 import requests
 from math import log2
 from problem.models import Problem, atcoder_contest
-from .api import * 
+from .api import *
+
 
 def rating_to_difficulty(rating):
     if rating <= 1100:

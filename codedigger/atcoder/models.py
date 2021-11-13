@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class atcoder_contest(models.Model):
     contestId = models.CharField(max_length=50, db_index=True)

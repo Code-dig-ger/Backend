@@ -4,7 +4,6 @@ from django.urls import reverse
 
 
 class TestUpsolve(TestSetUp):
-
     def test_atcoder_upsolve(self):
         print("OPJMK")
         test_url = reverse('at-upsolve') + '?practice=true'

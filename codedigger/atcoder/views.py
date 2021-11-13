@@ -25,6 +25,7 @@ from lists.utils import get_total_page, getqs
 
 # Create your views here.
 
+
 class ATUpsolveContestAPIView(
         mixins.CreateModelMixin,
         generics.ListAPIView,

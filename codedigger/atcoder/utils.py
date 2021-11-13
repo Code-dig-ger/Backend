@@ -34,7 +34,7 @@ def atcoder_status(handle):
         del contests
 
     res = get_user_results(handle)
-    
+
     if res.status_code != 200:
         return (contests_details, all_contest, solved, wrong)
 
