@@ -1,6 +1,7 @@
 from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
 
+
 def send_testing_mail(sub):
     subject = sub
     message = 'This is a testing mail send to our testing account.'

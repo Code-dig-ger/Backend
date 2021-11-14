@@ -10,20 +10,22 @@ from .api import (get_all_contests, get_all_problems, get_all_problems_models)
 
 def update_atcoder():
     send_testing_mail('Atcoder Problem Update Process Started')
-    
+
     try:
         data = get_all_contests()
     except Exception as e:
-        send_error_mail('Atcoder Problem Update Kenkoo API All Contests Error',e)
+        send_error_mail('Atcoder Problem Update Kenkoo API All Contests Error',
+                        e)
         return
-    
+
     for contest in data:
         create_or_update_contest(contest)
 
     try:
         data = get_all_problems()
     except Exception as e:
-        send_error_mail('Atcoder Problem Update Kenkoo API All Problems Error',e)
+        send_error_mail('Atcoder Problem Update Kenkoo API All Problems Error',
+                        e)
         return
 
     for prob in data:
