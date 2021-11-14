@@ -54,6 +54,16 @@ def create_or_update_user(codeforces_user):
     return newUser
 
 
+def validate_handle(handle):
+    if handle is None:
+        raise ValidationException('handle is required')
+    try : 
+        return user.objects.get(handle = handle)
+    except :
+        codeforces_user = user_info([handle])[0]
+        return create_or_update_user(codeforces_user)
+
+
 def create_or_update_contest(codeforces_contest, contest_type='R'):
     # param :
     # codeforces_contest : response of codeforces contest

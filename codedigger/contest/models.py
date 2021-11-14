@@ -3,6 +3,30 @@ from user.models import User
 from problem.models import Problem
 from codeforces.models import user as CodeforcesUser
 
+class CodeforcesContest(models.Model):
+    owner = models.ForeignKey(to= CodeforcesUser,
+                                related_name= 'codeforces_contest_user',
+                                on_delete= models.CASCADE)
+    problem = models.ManyToManyField(Problem,
+                                      through= 'CodeforcesContestProblem',
+                                      through_fields= ('codeforcesContest', 'problem'),
+                                      related_name= 'codeforces_contest_problem')
+    name = models.CharField(max_length= 63, blank= True, default= "")
+    duration = models.IntegerField(default= 7200)
+    startTime = models.DateTimeField(auto_now_add= True)
+
+    def __str__(self) -> str:
+        return self.name
+
+class CodeforcesContestProblem(models.Model):
+    codeforcesContest = models.ForeignKey(CodeforcesContest, on_delete= models.CASCADE)
+    problem = models.ForeignKey(Problem, on_delete= models.CASCADE)
+    index = models.IntegerField()
+    
+    def __str__(self) -> str:
+        return self.problem.prob_id + ' is there in ' + self.codeforcesContest.name
+
+
 # Create your models here.
 # class Contest(models.Model):
 #     owner = models.ForeignKey(to=User,
