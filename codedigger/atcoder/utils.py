@@ -4,7 +4,10 @@ import requests
 from bs4 import BeautifulSoup as bs4
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from .api import *
+
+from .scrapers import get_user_history
+from .api import get_user_results
+
 from lists.utils import get_next_url, get_prev_url, get_total_page
 from user.exception import ValidationException
 from codeforces.api import user_status

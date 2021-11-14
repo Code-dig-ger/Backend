@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Problem, atcoder_contest
-
+from problem.models import Problem, atcoder_contest
 
 class AtcoderProblemSerializer(serializers.ModelSerializer):
 
