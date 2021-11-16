@@ -6,7 +6,9 @@ def problem_page_text(url):
                 .find_all('div', {'class' : ''})[0].text
 
 def isSameProblem(url1, url2):
-    text1 = problem_page_text(url1)
-    text2 = problem_page_text(url2)
-
+    try :
+        text1 = problem_page_text(url1)
+        text2 = problem_page_text(url2)
+    except :
+        return False
     return text1 == text2
