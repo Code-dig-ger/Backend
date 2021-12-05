@@ -15,9 +15,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CodeforcesProblemSet',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('child', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='child_problem', to='problem.problem')),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='parent_problem', to='problem.problem')),
+                ('id',
+                 models.AutoField(auto_created=True,
+                                  primary_key=True,
+                                  serialize=False,
+                                  verbose_name='ID')),
+                ('child',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='child_problem',
+                                   to='problem.problem')),
+                ('parent',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='parent_problem',
+                                   to='problem.problem')),
             ],
         ),
     ]

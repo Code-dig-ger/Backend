@@ -6,6 +6,7 @@ from lists.models import Solved
 
 from .models import Problem, atcoder_contest, DIFFICULTY
 
+
 class MiniProblemSerializer(serializers.ModelSerializer):
 
     platform = serializers.CharField(source='get_platform_display')
@@ -18,7 +19,8 @@ class MiniProblemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
         fields = [
-            'name', 'url', 'prob_id', 'contest_id', 'index', 'platform', 'status'
+            'name', 'url', 'prob_id', 'contest_id', 'index', 'platform',
+            'status'
         ]
 
 

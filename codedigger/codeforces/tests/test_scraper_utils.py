@@ -17,12 +17,12 @@ class TestViews(TestSetUp):
 
         url1 = "https://codeforces.com/contest/1603/problem/B"
         self.assertFalse(isSameProblem(url1, url2))
-    
+
     def test_join_problem(self):
-        probA = Problem.objects.get(prob_id = '100001A')
-        probC = Problem.objects.get(prob_id = '1549C')
-        probD = Problem.objects.get(prob_id = '1549D')
-        probE = Problem.objects.get(prob_id = '1549E')
+        probA = Problem.objects.get(prob_id='100001A')
+        probC = Problem.objects.get(prob_id='1549C')
+        probD = Problem.objects.get(prob_id='1549D')
+        probE = Problem.objects.get(prob_id='1549E')
 
         join(probA, probC)
         join(probD, probE)

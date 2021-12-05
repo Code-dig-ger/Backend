@@ -1,8 +1,7 @@
 from datetime import timedelta, datetime, timezone
 from rest_framework import serializers
 
-
-# Models 
+# Models
 from .models import CodeforcesContest
 from problem.models import Problem
 
@@ -16,7 +15,7 @@ from codeforces.codeforcesProblemSet import get_similar_problems
 
 class MiniCodeforcesContestSerializer(serializers.ModelSerializer):
     isFinished = serializers.SerializerMethodField()
-    
+
     def get_isFinished(self, obj):
         return True if datetime.now(tz=timezone.utc) > \
                         obj.startTime + timedelta(seconds= obj.duration)\
@@ -28,10 +27,10 @@ class MiniCodeforcesContestSerializer(serializers.ModelSerializer):
 
 
 class CodeforcesContestSerializer(serializers.ModelSerializer):
-    
+
     isFinished = serializers.SerializerMethodField()
     problems = serializers.SerializerMethodField()
-    
+
     def get_isFinished(self, obj):
         return True if datetime.now(tz=timezone.utc) > \
                         obj.startTime + timedelta(seconds= obj.duration)\
@@ -49,21 +48,27 @@ class CodeforcesContestSerializer(serializers.ModelSerializer):
             similar_prob_qs = list(get_similar_problems(prob))
             similar_prob_qs.append(prob)
 
-            for similar_prob in similar_prob_qs: 
+            for similar_prob in similar_prob_qs:
                 if similar_prob.prob_id in correct_probId:
                     problem_status[prob.prob_id] = 'SOLVED'
-                
-            for similar_prob in similar_prob_qs: 
+
+            for similar_prob in similar_prob_qs:
                 if similar_prob.prob_id in wrong_probId \
                         and prob.probId not in problem_status:
                     problem_status[prob.prob_id] = 'WRONG'
-            
-        return MiniProblemSerializer(contest_problem_qs, many=True, context = {
-                            'problem_status': problem_status}).data
+
+        return MiniProblemSerializer(contest_problem_qs,
+                                     many=True,
+                                     context={
+                                         'problem_status': problem_status
+                                     }).data
 
     class Meta:
         model = CodeforcesContest
-        fields = ['id', 'name', 'duration', 'startTime', 'isFinished', 'problems']
+        fields = [
+            'id', 'name', 'duration', 'startTime', 'isFinished', 'problems'
+        ]
+
 
 # class CodeforcesContestSerializer(serializers.ModelSerializer):
 #     class Meta:

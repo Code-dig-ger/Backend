@@ -3,13 +3,13 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import generics, mixins
 
-# Exceptions and Permissions 
+# Exceptions and Permissions
 from user.exception import ValidationException
 from user.permissions import *
 
-# Models 
+# Models
 from user.models import Profile
-from codeforces.models import contest 
+from codeforces.models import contest
 from .models import *
 
 # Serializers
@@ -18,8 +18,9 @@ from .serializers import CodeforcesContestSerializer, MiniCodeforcesContestSeria
 
 # Utility Functions
 from codeforces.api import user_status
-from codeforces.api_utils import ( codeforces_user_submissions, 
-                        get_correct_submissions, get_wrong_submission)
+from codeforces.api_utils import (codeforces_user_submissions,
+                                  get_correct_submissions,
+                                  get_wrong_submission)
 from codeforces.codeforcesProblemSet import get_similar_problems
 from codeforces.models_utils import validate_handle
 from .model_utils import get_contest_problem_qs, get_user_contests
@@ -97,6 +98,7 @@ class ContestAPIView(
 
         return Response(context)
 
+
 # Codeforces Contest Views Start
 # These Views are specifically designed for Codedigger Extension
 class CodeforcesContestAPIView(generics.GenericAPIView):
@@ -108,10 +110,12 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
         contests = get_user_contests(codeforcesUser)
 
         return Response({
-            'status': 'OK',
-            'result': MiniCodeforcesContestSerializer(contests, many=True).data
+            'status':
+            'OK',
+            'result':
+            MiniCodeforcesContestSerializer(contests, many=True).data
         })
-    
+
     def post(self, request, handle):
         codeforcesUser = validate_handle(handle)
         pastContests = get_user_contests(codeforcesUser)
@@ -122,15 +126,16 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
 
         newContest = CodeforcesContest()
         newContest.owner = codeforcesUser
-        newContest.name = "Codedigger Contest #{} #{}".format(handle, pastContests.count()+1)
+        newContest.name = "Codedigger Contest #{} #{}".format(
+            handle,
+            pastContests.count() + 1)
         newContest.save()
 
         # TODO Assign Problems to this Contest
         # https://github.com/cheran-senthil/TLE/blob/master/tle/cogs/codeforces.py#L178
 
-        return Response({
-            'status': 'OK'
-        })
+        return Response({'status': 'OK'})
+
 
 class CodeforcesContestGetAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
@@ -138,50 +143,56 @@ class CodeforcesContestGetAPIView(generics.GenericAPIView):
 
     def get(self, request, handle, contestId):
         codeforcesUser = validate_handle(handle)
-        if contestId == 0: 
+        if contestId == 0:
             contest = get_user_contests(codeforcesUser)
             if not contest.exists():
                 raise ValidationException('no contest available')
             contest = contest[0]
-        else:       
-            try: 
-                contest = CodeforcesContest.objects.get(id = contestId)
+        else:
+            try:
+                contest = CodeforcesContest.objects.get(id=contestId)
             except:
                 raise ValidationException('contest id is invalid')
             if contest.owner != codeforcesUser:
                 raise ValidationException('you are not allowed')
-        
-        contest_problem_qs = get_contest_problem_qs(contest) 
 
-        unixStartTime = contest.startTime - datetime(1970,1,1,tzinfo=timezone.utc)
+        contest_problem_qs = get_contest_problem_qs(contest)
+
+        unixStartTime = contest.startTime - datetime(
+            1970, 1, 1, tzinfo=timezone.utc)
         unixStartTime = unixStartTime.total_seconds()
 
-        contest_problem_submission = codeforces_user_submissions(codeforcesUser, 
-                                    contest_problem_qs, unixStartTime)
+        contest_problem_submission = codeforces_user_submissions(
+            codeforcesUser, contest_problem_qs, unixStartTime)
 
         correct_probId = get_correct_submissions(
-                            submissions= contest_problem_submission)
-        wrong_probId = get_wrong_submission(    
-                            submissions= contest_problem_submission, 
-                            SolvedProblems = correct_probId)
+            submissions=contest_problem_submission)
+        wrong_probId = get_wrong_submission(
+            submissions=contest_problem_submission,
+            SolvedProblems=correct_probId)
 
         return Response({
-            'status': 'OK',
-            'result': CodeforcesContestSerializer(contest, 
-                        context = {
-                            'correct_probId': correct_probId,
-                            'wrong_probId': wrong_probId,
-                            'contest_problem_qs': contest_problem_qs
-                        }
-                    ).data
+            'status':
+            'OK',
+            'result':
+            CodeforcesContestSerializer(contest,
+                                        context={
+                                            'correct_probId':
+                                            correct_probId,
+                                            'wrong_probId':
+                                            wrong_probId,
+                                            'contest_problem_qs':
+                                            contest_problem_qs
+                                        }).data
         })
+
 
 class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = CodeforcesContestSerializer
 
     def response(self, res):
-        return Response({ 'status': 'OK', 'result': res })
+        return Response({'status': 'OK', 'result': res})
 
     def get(self, request, handle, probId):
         codeforcesUser = validate_handle(handle)
@@ -189,11 +200,11 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
         if not contest.exists():
             # No contest available for this user
             return self.response(False)
-        
-        contest = contest[0] 
+
+        contest = contest[0]
         if datetime.now(tz=timezone.utc) > \
                         contest.startTime + timedelta(seconds= contest.duration) :
-            # No Contest is running at the moment 
+            # No Contest is running at the moment
             return self.response(False)
 
         contest_problem_qs = get_contest_problem_qs(contest)
@@ -201,13 +212,13 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
         for prob in contest_problem_qs:
             similar_prob_qs = list(get_similar_problems(prob))
             similar_prob_qs.append(prob)
-            for similar_prob in similar_prob_qs: 
+            for similar_prob in similar_prob_qs:
                 if similar_prob.prob_id == probId:
                     return self.response(True)
 
         # No Problem is not in any running contest
         return self.response(False)
-        
+
 
 # Costum Contest
 
@@ -230,7 +241,6 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
 # # assign also
 # # isProblem = true
 
-
 # def get_mentor_problems(mentor_codeforces):
 #     mentor_solved = set()
 
@@ -247,7 +257,6 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
 #                         submission["problem"]['index'])
 #     return mentor_solved
 
-
 # def get_participant_problem(participants_codeforces):
 #     participants_solved = set()
 
@@ -262,7 +271,6 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
 #                     str(submission["problem"]['contestId']) +
 #                     submission["problem"]['index'])
 #     return participants_solved
-
 
 # def makeContest(contest):
 

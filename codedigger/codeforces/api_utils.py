@@ -1,6 +1,7 @@
 from .api import user_status
 from .codeforcesProblemSet import get_similar_problems
 
+
 def is_contestant(submission):
     return True if submission['author']['participantType'] == 'CONTESTANT' \
         else False
@@ -14,9 +15,11 @@ def is_practice(submission):
 def is_verdict_ok(submission):
     return True if submission['verdict'] == 'OK' else False
 
+
 def is_verdict_wrong(submission):
     # TODO Check for TC should be greater than 1
     return True if submission['verdict'] != 'OK' else False
+
 
 def get_prob_id(submission):
     return str(
@@ -103,8 +106,9 @@ def multiple_correct_submissions(handles):
     return submissions
 
 
-def codeforces_user_submissions(codeforcesUser, 
-                    contest_problem_qs = [], unixStartTime = 0):
+def codeforces_user_submissions(codeforcesUser,
+                                contest_problem_qs=[],
+                                unixStartTime=0):
     """
         :param codeforcesUser: Object of Model codeforces User
         :param contestProblems: List of Problem Model Object 
@@ -113,7 +117,7 @@ def codeforces_user_submissions(codeforcesUser,
         return contest problem submissions same dict
     """
     handle = codeforcesUser.handle
-    probIds = set() # Problem with Prob Id to consider
+    probIds = set()  # Problem with Prob Id to consider
     for prob in contest_problem_qs:
         probIds.add(prob.prob_id)
         similar_prob_qs = get_similar_problems(prob)
@@ -121,7 +125,7 @@ def codeforces_user_submissions(codeforcesUser,
             probIds.add(similar_prob.prob_id)
 
     contest_submissions = []
-    starting_from = 1 
+    starting_from = 1
     count = 1000
 
     submissions = user_status(handle, starting_from=starting_from, count=count)
@@ -131,13 +135,15 @@ def codeforces_user_submissions(codeforcesUser,
             if 'contestId' in submission:
                 if get_prob_id(submission) in probIds:
                     contest_submissions.append(submission)
-            if submission['creationTimeSeconds'] < unixStartTime :
+            if submission['creationTimeSeconds'] < unixStartTime:
                 flag = True
                 break
-        
+
         if flag:
             break
         starting_from += count
-        submissions = user_status(handle, starting_from=starting_from, count=count)
+        submissions = user_status(handle,
+                                  starting_from=starting_from,
+                                  count=count)
 
     return contest_submissions
