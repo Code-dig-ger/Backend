@@ -18,8 +18,12 @@ from .serializers import CodeforcesContestSerializer, MiniCodeforcesContestSeria
 
 # Utility Functions
 from codeforces.api import user_status
+from codeforces.api_utils import ( codeforces_user_submissions, 
+                        get_correct_submissions, get_wrong_submission)
+from codeforces.codeforcesProblemSet import get_similar_problems
 from codeforces.models_utils import validate_handle
-from .model_utils import get_contest_problem, get_user_contests
+from .model_utils import get_contest_problem_qs, get_user_contests
+
 
 class ContestAPIView(
         mixins.CreateModelMixin,
@@ -94,6 +98,7 @@ class ContestAPIView(
         return Response(context)
 
 # Codeforces Contest Views Start
+# These Views are specifically designed for Codedigger Extension
 class CodeforcesContestAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = MiniCodeforcesContestSerializer
@@ -117,7 +122,7 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
 
         newContest = CodeforcesContest()
         newContest.owner = codeforcesUser
-        newContest.name = "Codedigger Contest #{}".format(pastContests.count()+1)
+        newContest.name = "Codedigger Contest #{} #{}".format(handle, pastContests.count()+1)
         newContest.save()
 
         # TODO Assign Problems to this Contest
@@ -146,46 +151,62 @@ class CodeforcesContestGetAPIView(generics.GenericAPIView):
             if contest.owner != codeforcesUser:
                 raise ValidationException('you are not allowed')
         
-        contest_problem_qs = get_contest_problem(contest)
-        contestProblemsProbId = []    
-        for id in contest_problem_qs:
-            contestProblemsProbId.append(Problem.objects.get(id = id).prob_id)
-        
+        contest_problem_qs = get_contest_problem_qs(contest) 
+
         unixStartTime = contest.startTime - datetime(1970,1,1,tzinfo=timezone.utc)
         unixStartTime = unixStartTime.total_seconds()
 
-        # TODO Get user_status from codeforces API till the unixStartTime
-        # Make sure for Same Div.1 and Div.2 Problems
-        # For a prob_id check if same problem exists or not
-        # If yes consider them same problems
+        contest_problem_submission = codeforces_user_submissions(codeforcesUser, 
+                                    contest_problem_qs, unixStartTime)
+
+        correct_probId = get_correct_submissions(
+                            submissions= contest_problem_submission)
+        wrong_probId = get_wrong_submission(    
+                            submissions= contest_problem_submission, 
+                            SolvedProblems = correct_probId)
 
         return Response({
             'status': 'OK',
-            'result': CodeforcesContestSerializer(contest).data
+            'result': CodeforcesContestSerializer(contest, 
+                        context = {
+                            'correct_probId': correct_probId,
+                            'wrong_probId': wrong_probId,
+                            'contest_problem_qs': contest_problem_qs
+                        }
+                    ).data
         })
 
 class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = CodeforcesContestSerializer
+
+    def response(self, res):
+        return Response({ 'status': 'OK', 'result': res })
 
     def get(self, request, handle, probId):
         codeforcesUser = validate_handle(handle)
         contest = get_user_contests(codeforcesUser)
         if not contest.exists():
-            raise ValidationException('no contest available')
+            # No contest available for this user
+            return self.response(False)
         
         contest = contest[0] 
         if datetime.now(tz=timezone.utc) > \
                         contest.startTime + timedelta(seconds= contest.duration) :
-            raise ValidationException('no contest running')
+            # No Contest is running at the moment 
+            return self.response(False)
 
-        contest_problem_qs = get_contest_problem(contest)
-        for id in contest_problem_qs:
-            if Problem.objects.get(id = id).prob_id == probId:
-                return Response({
-                    'status': 'OK',
-                    'result': True
-                })
-        raise ValidationException('problem is not in any running contest')
+        contest_problem_qs = get_contest_problem_qs(contest)
+
+        for prob in contest_problem_qs:
+            similar_prob_qs = list(get_similar_problems(prob))
+            similar_prob_qs.append(prob)
+            for similar_prob in similar_prob_qs: 
+                if similar_prob.prob_id == probId:
+                    return self.response(True)
+
+        # No Problem is not in any running contest
+        return self.response(False)
         
 
 # Costum Contest

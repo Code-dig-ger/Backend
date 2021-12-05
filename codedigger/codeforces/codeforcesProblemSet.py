@@ -25,7 +25,7 @@ def get_similar_problems(problem):
     childern = list(CodeforcesProblemSet.objects.filter(parent = parent)\
                                 .values_list('child', flat = True))
     if not childern:
-        return None
+        return []
 
     childern.append(parent.id)
     problem_qs = Problem.objects.filter(id__in = childern)\

@@ -128,6 +128,11 @@ def user_status(handle, starting_from=1, count=None):
     # count: Number of returned submissions.
     # returns :
     # list of results if exists else raise exception
+    HANDLES = ('vjudge1 vjudge2 vjudge3 vjudge4 vjudge5 '
+               'luogu_bot1 luogu_bot2 luogu_bot3 luogu_bot4 luogu_bot5').split()
+
+    if handle in HANDLES:
+        raise ValidationException('This Handle can\'t be processed')
 
     payload = {'handle': handle, 'from': starting_from}
     if count != None:

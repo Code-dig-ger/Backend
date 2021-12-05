@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime, timezone
 from rest_framework import serializers
 
+
 # Models 
 from .models import CodeforcesContest
 from problem.models import Problem
@@ -10,6 +11,7 @@ from problem.serializers import MiniProblemSerializer
 
 # Utily Functions
 from .model_utils import get_contest_problem
+from codeforces.codeforcesProblemSet import get_similar_problems
 
 
 class MiniCodeforcesContestSerializer(serializers.ModelSerializer):
@@ -36,12 +38,28 @@ class CodeforcesContestSerializer(serializers.ModelSerializer):
                     else False
 
     def get_problems(self, obj):
-        contest_problem_qs = get_contest_problem(obj)     
-        problem_qs = []
-        for id in contest_problem_qs:
-            problem_qs.append(Problem.objects.get(id = id))
-        # TODO pass which prob_id is solved, wrong, not attempt
-        return MiniProblemSerializer(problem_qs, many=True).data
+        correct_probId = self.context.get("correct_probId", set())
+        wrong_probId = self.context.get("wrong_probId", set())
+        contest_problem_qs = self.context.get("contest_problem_qs", [])
+
+        problem_status = {}
+
+        for prob in contest_problem_qs:
+
+            similar_prob_qs = list(get_similar_problems(prob))
+            similar_prob_qs.append(prob)
+
+            for similar_prob in similar_prob_qs: 
+                if similar_prob.prob_id in correct_probId:
+                    problem_status[prob.prob_id] = 'SOLVED'
+                
+            for similar_prob in similar_prob_qs: 
+                if similar_prob.prob_id in wrong_probId \
+                        and prob.probId not in problem_status:
+                    problem_status[prob.prob_id] = 'WRONG'
+            
+        return MiniProblemSerializer(contest_problem_qs, many=True, context = {
+                            'problem_status': problem_status}).data
 
     class Meta:
         model = CodeforcesContest

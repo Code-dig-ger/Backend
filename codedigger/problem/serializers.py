@@ -13,7 +13,7 @@ class MiniProblemSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         problem_status = self.context.get("problem_status", {})
-        return problem_status.get(obj.prob_id, "not_attempt")
+        return problem_status.get(obj.prob_id, "NOT_ATTEMPT")
 
     class Meta:
         model = Problem

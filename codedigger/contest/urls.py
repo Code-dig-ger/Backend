@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.ContestAPIView.as_view(), name='contest.filter'),
+    # Below Urls are specifically for Codedigger Extension
     path('codeforces/<str:handle>', 
         views.CodeforcesContestAPIView.as_view(), 
         name='codeforces.contest'),
