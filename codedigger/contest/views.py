@@ -146,7 +146,7 @@ class CodeforcesContestGetAPIView(generics.GenericAPIView):
         if contestId == 0:
             contest = get_user_contests(codeforcesUser)
             if not contest.exists():
-                raise ValidationException('no contest available')
+                return Response({'status': 'OK', 'result': {}})
             contest = contest[0]
         else:
             try:
@@ -199,13 +199,13 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
         contest = get_user_contests(codeforcesUser)
         if not contest.exists():
             # No contest available for this user
-            return self.response(False)
+            return self.response({})
 
         contest = contest[0]
         if datetime.now(tz=timezone.utc) > \
-                        contest.startTime + timedelta(seconds= contest.duration) :
+                        contest.startTime + timedelta(seconds= contest.duration):
             # No Contest is running at the moment
-            return self.response(False)
+            return self.response({})
 
         contest_problem_qs = get_contest_problem_qs(contest)
 
@@ -214,10 +214,11 @@ class CodeforcesProblemCheckAPIView(generics.GenericAPIView):
             similar_prob_qs.append(prob)
             for similar_prob in similar_prob_qs:
                 if similar_prob.prob_id == probId:
-                    return self.response(True)
+                    return self.response(
+                        MiniCodeforcesContestSerializer(contest).data)
 
         # No Problem is not in any running contest
-        return self.response(False)
+        return self.response({})
 
 
 # Costum Contest
