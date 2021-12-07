@@ -109,22 +109,13 @@ class TestViews(TestSetUp):
     def test_get_stats(self):
         slug = "testinglist_levelwise"
         test_url = reverse('user-standing', kwargs={'slug': slug})
-        here = User.objects.get(username="testing")
-        here.set_password(self.user_data['password'])
-        here.save()
-        res = self.client.post(self.login_url, self.user_data, format="json")
-        token = res.data['tokens']['access']
+        token = self.login(self.client, self.login_url, self.user_data)
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res = client.get(test_url, format="json")
-
+        
         slug = "testinglist_userlist"
-        test_url = reverse('user-standing', kwargs={'slug': slug})
-        here = User.objects.get(username="testinguser")
-        here.set_password(self.user_data['password'])
-        here.save()
-        res2 = self.client.post(self.login_url, self.user_data, format="json")
-        token = res2.data['tokens']['access']
+        token = self.login(self.client, self.login_url, self.user_data)
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res2 = client.get(test_url, format="json")

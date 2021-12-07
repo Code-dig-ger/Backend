@@ -434,10 +434,6 @@ class UserStandingStats(generics.ListAPIView):
         here = self.request.user
         friend = self.request.GET.get('friend',False)
         try:
-            user = User.objects.get(username=here)
-        except:
-            raise ValidationException('User with given Username not exists.')
-        try:
             list = List.objects.get(slug=slug)
         except:
             raise ValidationException(
@@ -456,7 +452,7 @@ class UserStandingStats(generics.ListAPIView):
             send_data.append({
                 'user': q.get('user',None),
                 'rank': rank+1,
-                'problems_solved': q.get('problems_solved',None)
+                'problems_solved': q.get('problems_solved',0)
             })
         return response.Response({'status':'OK','result':send_data})
 

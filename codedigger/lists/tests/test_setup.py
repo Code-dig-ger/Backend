@@ -17,6 +17,14 @@ class TestSetUp(APITestCase):
         # Set up data for the whole TestCase
         Profile.objects.filter(owner=1).update(**profile1)
         Profile.objects.filter(owner=2).update(**profile2)
+    
+    @classmethod
+    def login(self, client, login_url, user_data):
+        user = User.objects.get(username=user_data['username'])
+        user.set_password(user_data['password'])
+        user.save()
+        response = client.post(login_url, user_data, format="json")
+        return response.data['tokens']['access']
 
     def setUp(self):
         self.register_url = reverse('register')
