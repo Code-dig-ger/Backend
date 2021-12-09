@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import List, ListInfo, Solved, ListExtraInfo, LadderStarted
+from .models import List, ListInfo, Solved, ListExtraInfo, LadderStarted, Enrolled
 
 
 class ListInfoAdmin(admin.ModelAdmin):
@@ -21,9 +21,13 @@ class ListExtraInfoAdmin(admin.ModelAdmin):
 class LadderStartedAdmin(admin.ModelAdmin):
     search_fields = ('ladder_user__name', 'user__username')
 
+class EnrolledAdmin(admin.ModelAdmin):
+    search_fields = ('enroll__user', 'enroll__list')
+
 
 admin.site.register(List, ListAdmin)
 admin.site.register(ListInfo, ListInfoAdmin)
 admin.site.register(Solved, SolvedAdmin)
 admin.site.register(ListExtraInfo, ListExtraInfoAdmin)
 admin.site.register(LadderStarted, LadderStartedAdmin)
+admin.site.register(Enrolled, EnrolledAdmin)
