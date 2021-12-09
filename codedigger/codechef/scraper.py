@@ -42,3 +42,30 @@ def problemScraper(contest_code):
     problem_data = problem_data.json()
 
     return problem_data
+
+def UserSubmissionDetail(problemcode, user):
+    URL = "https://www.codechef.com/SNCKQL21/status/{problemcode},{user}"
+    r = requests.get(URL)
+    soup = BeautifulSoup(r.content, 'html5lib')
+    problemTable = soup.findAll('table', class_ = "dataTable")
+    problemRow = problemTable[0].findAll('tr')
+    submissionList = []
+    for problem in problemRow:
+        problemDetails = i.findAll('td')
+        for details in problemDetails:
+            print(details)
+
+    return submissionList
+    
+
+def recentSubmissions(user):
+    URL = "https://www.codechef.com/recent/user?user_handle={user}"
+    r = requests.get(URL)
+    r = BeautifulSoup(r.content, 'html5lib')
+    recentSubs = r.findAll('tr')
+    recentList = []
+    for sub in recentSubs:
+        subd = sub.findAll('td')
+        print(subd)
+
+    return returnList
