@@ -14,10 +14,10 @@ class MiniProblemSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_type(self, obj):
-        if obj.platform == 'F' and 'gym' in obj.url :
+        if obj.platform == 'F' and 'gym' in obj.url:
             return 'gym'
-        else : 
-            return 'contest' 
+        else:
+            return 'contest'
 
     def get_status(self, obj):
         problem_status = self.context.get("problem_status", {})
