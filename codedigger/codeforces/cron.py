@@ -64,7 +64,7 @@ def codeforces_update_problems():
     except ValidationException as err:
         return
 
-    for codeforces_contest in contests[:50]:
+    for codeforces_contest in contests:
 
         try:
             response = contest_standings(contestId=codeforces_contest['id'],
@@ -81,7 +81,7 @@ def codeforces_update_problems():
     except ValidationException as err:
         return
 
-    for codeforces_contest in contests[-50:]:
+    for codeforces_contest in contests:
         try:
             response = contest_standings(contestId=codeforces_contest['id'],
                                          count=1)

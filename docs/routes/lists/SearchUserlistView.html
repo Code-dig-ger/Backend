@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
     <!-- UPDATE route title -->
-    <title>Codedigger REST API DOC - {route-title}</title>
+    <title>Codedigger REST API DOC - Search Userlists</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
@@ -61,7 +61,7 @@
               GET
             </div>
             <span class="summary get-summary">
-                /lists/userlist/search?q={search_parameter}
+                /lists/userlists
             </span>
           </div>
         </section>
@@ -86,25 +86,27 @@
         </section>
         <section id = "url-param" class="js-section">
           <h3 class="section__title">URL Parameters</h3>
-          <p> 
+          <!-- <p> 
             For GET Request. 
             If URL params exist, specify them in accordance with name mentioned in URL section. 
             Mention if is required or optional. Document data constraints.
-          </p>
+          </p> -->
           <table>
             <tr>
               <th>Param Name</th>
               <th>Required</th>
               <th>Type</th>
               <th>Description</th>
+              <th>Default</th>
             </tr>
             <tr>
-              <td>search_parameter</td>
-              <td>true</td>
+              <td>q</td>
+              <td>false</td>
               <td>string</td>
               <td>
                 Search parameter to find the public list 
               </td>
+              <td>Empty String</td>
             </tr>
           </table>
         </section>
@@ -120,7 +122,7 @@
             <code class="language-json">
         {
             "status": "OK",
-            "lists": [
+            "result": [
                 {
                     "id": 2,
                     "name": "TO-DO",
@@ -140,28 +142,11 @@
             </code>
           </pre>
         </section>
-        <section id = "error-response" class="js-section">
-          <h3 class="section__title">Error Response</h3>
-          <p> 
-            Status Code: 404 NOT FOUND
-          </p>
-          <p> 
-            Error Response:  
-          </p>        
-          <pre >
-            <code class="language-json">
-        {
-            "status": "FAILED",
-            "error": "A list with such name does not exist"
-        }
-            </code>
-          </pre>
-        </section>
         <section id = "sample-call" class="js-section">
           <h3 class="section__title">Sample Call</h3>
           <pre>
             <code class="language-bash">
-              curl -X GET "https://api.codedigger.tech/lists/userlist/search?q=to"
+              curl -X GET "https://api.codedigger.tech/lists/userlists?q=to"
             </code>
           </pre> 
         </section>

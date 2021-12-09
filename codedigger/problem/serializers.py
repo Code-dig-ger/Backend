@@ -1,18 +1,67 @@
+from re import S
 from rest_framework import serializers
-from .models import Problem, atcoder_contest
-from codeforces.models import contest, user_contest_rank
+
+from codeforces.models import contest
+from lists.models import Solved
+
+from .models import Problem, atcoder_contest, DIFFICULTY
+
+
+class MiniProblemSerializer(serializers.ModelSerializer):
+
+    platform = serializers.CharField(source='get_platform_display')
+    type = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        if obj.platform == 'F' and 'gym' in obj.url :
+            return 'gym'
+        else : 
+            return 'contest' 
+
+    def get_status(self, obj):
+        problem_status = self.context.get("problem_status", {})
+        return problem_status.get(obj.prob_id, "NOT_ATTEMPT")
+
+    class Meta:
+        model = Problem
+        fields = [
+            'name', 'url', 'prob_id', 'contest_id', 'index', 'platform',
+            'type', 'status'
+        ]
 
 
 class ProbSerializer(serializers.ModelSerializer):
 
     platform = serializers.CharField(source='get_platform_display')
-    difficulty = serializers.CharField(source='get_difficulty_display')
+    difficulty = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+    solved = serializers.SerializerMethodField()
+
+    def get_rating(self, obj):
+        if obj.rating == None or \
+            (obj.rating % 100 != 0 and obj.platform != 'A'):
+            return None
+        return obj.rating
+
+    def get_difficulty(self, obj):
+        if obj.difficulty != None and obj.difficulty != "" and \
+            (obj.platform == 'C' or obj.rating == None or \
+              obj.rating % 100 == 0 or obj.platform == 'A') :
+            return dict(DIFFICULTY)[obj.difficulty]
+        else:
+            return None
+
+    def get_solved(self, obj):
+        user = self.context.get("user", None)
+        solve = Solved.objects.filter(user=user, problem=obj)
+        return solve.exists()
 
     class Meta:
         model = Problem
         fields = [
             'name', 'url', 'prob_id', 'tags', 'contest_id', 'rating', 'index',
-            'platform', 'difficulty', 'editorial'
+            'platform', 'difficulty', 'editorial', 'solved'
         ]
 
 

@@ -5,8 +5,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
-    <!-- UPDATE route title -->
-    <title>Codedigger REST API DOC - Codeforces Seach User</title>
+    <title>Codedigger REST API DOC - Problem Filter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
@@ -37,21 +36,21 @@
           <li class="js-btn"> <a href="#notes"> Notes </a></li>  
         </ul>
 
-        <p> <b>Author:</b> @AmanJolly16 </p>  
-        <p> <b>Created at:</b> Oct 25, 2021 </p>   
+        <p> <b>Author:</b> @shivamsinghal1 </p>  
+        <p> <b>Created at:</b> Nov 7, 2021 </p>   
         <p> <b>Updated by:</b>
             <ul>
-              <li> @AmanJolly16 </li>
+              <li> @shivamsinghal1 </li>
             </ul> 
         </p>
-        <p> <b>Last Updated:</b> Oct 25, 2021 </p>
+        <p> <b>Last Updated:</b> Nov 7, 2021 </p>
         
       </aside>
       <article class="doc__content">
         <section id="title" class="js-section">
-          <h2 class="section__title">Codeforces Search User</h2>
+          <h2 class="section__title">Problem Filter</h2>
           <p> 
-              To get the Users from the Database. Users whose Codeforces handle is similiar are returned. At max 5 users would be returned.
+            Get List of Problems based on various Filter Provided by User.
           </p>
         </section>
         <section id = "url" class="js-section">
@@ -61,14 +60,14 @@
               GET
             </div>
             <span class="summary get-summary">
-              /codeforces/users
+              /problems/
             </span>
           </div>
         </section>
         <section id = "headers" class="js-section">
           <h3 class="section__title">Headers</h3>
           <!-- <p> 
-            If any Headers is required e.g. Authorisation etc. 
+            If any Headers is required e.g. Authorization etc. 
           </p> -->
           <table>
             <tr>
@@ -102,11 +101,139 @@
               <th>Description</th>
             </tr>
             <tr>
-              <td>q</td>
-              <td>true</td>
+              <td>page</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                page number to go to, default 1
+              </td>
+            </tr>
+            <tr>
+              <td>per_page</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                number of problems in a page, default 20, maximum 50
+              </td>
+            </tr>
+            <tr>
+              <td>tags</td>
+              <td>false</td>
               <td>string</td>
               <td>
-                Codeforces handle on which searching to be done.
+                comma separated topic tags
+              </td>
+            </tr>
+            <tr>
+              <td>and_in_tags</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if true, filter tags by and i.e. all given tags must be present in problem
+              </td>
+            </tr>
+            <tr>
+              <td>platform</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated platform - F,C,A,S,U
+              </td>
+            </tr>
+            <tr>
+              <td>difficulty</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated difficulty - B,E,M,H,S,C
+              </td>
+            </tr>
+            <tr>
+              <td>range_l</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                filter problems rating greater than range_l 
+              </td>
+            </tr>
+            <tr>
+              <td>range_r</td>
+              <td>false</td>
+              <td>integer</td>
+              <td>
+                filter problems rating less than range_r
+              </td>
+            </tr>
+            <tr>
+              <td>index</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated index, to search for index example a,b,c,d,e
+              </td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated search key, to search in problem id, name, url, tags, contest id
+              </td>
+            </tr>
+            <tr>
+              <td>mentor</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                mentor = true, filter problems solved by mentor, applied only in codeforces, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>hide_solved</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if hide_solved = true, problems solved by user will be excluded, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>only_wrong</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if only_wrong = true, filter problems that is wrong attempt by user, requires Authorization Token
+              </td>
+            </tr>
+            <tr>
+              <td>exclude_gym</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                if exclude_gym = true, exclude codeforces gym problems
+              </td>
+            </tr>
+            <tr>
+              <td>contest</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td>
+                comma separated contest filter, to get problems filter by the contests e.g. Div. 1, Educational, etc
+              </td>
+            </tr>
+            <tr>
+              <td>solved_by</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                comma separated codedigger usernames, to get solved problems of the provided username
+              </td>
+            </tr>
+            <tr>
+              <td>sort_by</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                to sort result, example : rating = to sort by rating ascending, -rating = to sort by rating descending, default : -id.
               </td>
             </tr>
           </table>
@@ -149,18 +276,52 @@
           </p>        
           <pre >
             <code class="language-json">
-                {
-                    "status":"OK",
-                    "result":[
-                       {
-                          "name":"Gennady Korotkevich",
-                          "handle":"tourist",
-                          "rating":9999,
-                          "rank":"LGM",
-                          "photoUrl":"https://userpic.codeforces.org/422/title/50a270ed4a722867.jpg"
-                       }
-                    ]
-                 }
+    {
+      "status": "OK",
+      "result": [
+          {
+              "name": "1D Sokoban",
+              "url": "https://codeforces.com/contest/1494/problem/C",
+              "prob_id": "1494C",
+              "tags": "['binary search', 'dp', 'greedy', 'implementation', 'two pointers']",
+              "contest_id": "1494",
+              "rating": 1900,
+              "index": "C",
+              "platform": "Codeforces",
+              "difficulty": "Hard",
+              "editorial": null,
+              "solved": false
+          },
+          {
+              "name": "Berland Crossword",
+              "url": "https://codeforces.com/contest/1494/problem/B",
+              "prob_id": "1494B",
+              "tags": "['bitmasks', 'brute force', 'greedy', 'implementation']",
+              "contest_id": "1494",
+              "rating": 1400,
+              "index": "B",
+              "platform": "Codeforces",
+              "difficulty": "Easy",
+              "editorial": null,
+              "solved": false
+          }
+      ],
+      "link": {
+          "first": "https://api.codedigger.tech/problems/?per_page=2;page=1;range_l=1000;",
+          "last": "https://api.codedigger.tech/problems/?per_page=2;page=224;range_l=1000;",
+          "prev": "https://api.codedigger.tech/problems/?per_page=2;page=4;range_l=1000;",
+          "next": "https://api.codedigger.tech/problems/?per_page=2;page=6;range_l=1000;"
+      },
+      "meta": {
+          "current_page": 5,
+          "from": 9,
+          "last_page": 224,
+          "path": "https://api.codedigger.tech/problems/?per_page=2;page=5;range_l=1000;",
+          "per_page": 2,
+          "to": 10,
+          "total": 448
+      }
+  }
             </code>
           </pre>
         </section>
@@ -195,16 +356,17 @@
           </p> -->
           <pre>
             <code class="language-bash">
-              curl -X GET "https://api.codedigger.tech/codeforces/users?q={codeforces_handle}"
+  curl -X GET 'https://api.codedigger.tech/problems/?per_page=2;page=5;range_l=1000' \
+  -H  "accept: application/json" 
             </code>
           </pre> 
         </section>
         <section id = "notes" class="js-section">
           <h3 class="section__title">Notes</h3>
-          <p> 
-            User can get the users registered with some given handle even if he is not logged in to our site.
-            He has to provide the Codeforces handle on which searching has to be done.
-          </p>
+          <!-- <p> 
+            This is where all uncertainties, commentary, discussion etc. can go.
+            Mention timestamp and identify yourself when leaving comments here.
+          </p> -->
         </section>
       </article>
     </div>

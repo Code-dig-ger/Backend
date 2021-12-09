@@ -728,14 +728,10 @@ class SearchUserlistView(generics.ListAPIView):
     serializer_class = [GetUserlistSerializer]
 
     def get(self, request):
-        param = request.GET.get('q').lower()
-        if List.objects.filter(Q(name__icontains=param) & Q(public=True)):
-            lists = List.objects.filter(
-                Q(name__icontains=param) & Q(public=True))
-            res_lists = GetUserlistSerializer(lists, many=True).data
-            return response.Response({'status': 'OK', 'lists': res_lists})
-        raise NotFoundException("A list with such name does not exist")
-
+        param = request.GET.get('q', '').lower()
+        lists = List.objects.filter(Q(name__icontains=param) & Q(public=True))
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
 
 def testing(request):
     updater()
