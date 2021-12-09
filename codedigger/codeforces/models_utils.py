@@ -1,7 +1,13 @@
+from django.db.models import Q
+
 # Local App Import
 from .api import user_info
-from .models import organization, country, user, contest, user_contest_rank
+from .models import (organization, country, user, contest, user_contest_rank,
+                     CodeforcesProblemSet)
+
 from .utils import send_error_mail, rating_to_difficulty
+from .scraper_utils import isSameProblem
+from .codeforcesProblemSet import join
 
 # Problem App Import
 from problem.models import Problem
@@ -52,6 +58,16 @@ def create_or_update_user(codeforces_user):
     return newUser
 
 
+def validate_handle(handle):
+    if handle is None:
+        raise ValidationException('handle is required')
+    try:
+        return user.objects.get(handle=handle)
+    except:
+        codeforces_user = user_info([handle])[0]
+        return create_or_update_user(codeforces_user)
+
+
 def create_or_update_contest(codeforces_contest, contest_type='R'):
     # param :
     # codeforces_contest : response of codeforces contest
@@ -98,6 +114,13 @@ def create_or_update_problem(contest_problem, type="contest"):
         new_problem.difficulty = rating_to_difficulty(
             int(contest_problem['rating']))
 
+    similar_problems = Problem.objects.exclude(prob_id = prob_id)\
+                            .filter(name = contest_problem['name'])
+
+    for prob in similar_problems:
+        if isSameProblem(prob.url, new_problem.url):
+            join(prob, new_problem)
+
     new_problem.save()
     return new_problem
 
@@ -131,3 +154,17 @@ def update_and_save_contest_data(data, new_contest):
 
         ucr.worldRank = rank
         ucr.save()
+
+
+def get_contests(divs=None):
+
+    contest_qs = contest.objects.all()
+
+    if divs != None:
+        divs = divs.split(',')
+        q = Q()
+        for div in divs:
+            q |= Q(name__icontains=div)
+        contest_qs = contest_qs.filter(q)
+
+    return contest_qs

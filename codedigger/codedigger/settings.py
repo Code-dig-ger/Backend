@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'lists',
     'blog',
     'contest',
+    'codechef',
+    'uva',
 
     #Third Party
     'rest_framework',

@@ -12,9 +12,18 @@
         "model":"codeforces.contest",
         "pk":2,
         "fields":{
-            "name":"1345",
+            "name":"Codeforces Round #555 Div.2",
             "contestId":"1345",
             "Type":"R"
+        }
+    },
+    {
+        "model":"codeforces.contest",
+        "pk":3,
+        "fields":{
+            "name":"GYM-1",
+            "contestId":"100001",
+            "Type":"G"
         }
     }
 ]

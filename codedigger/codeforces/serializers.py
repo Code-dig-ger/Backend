@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import user, country, organization, contest, user_contest_rank
 from problem.models import Problem
+from problem.serializers import UpsolveProblemsSerializer
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -159,4 +160,31 @@ class UserSerializer(serializers.ModelSerializer):
 class MiniUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = user
-        fields = ['name', 'handle', 'rating', 'rank']
+
+        fields = ['name', 'handle', 'rating', 'rank', 'photoUrl']
+
+
+class CodeforcesUpsolveSerializer(serializers.ModelSerializer):
+
+    Type = serializers.CharField(source='get_Type_display')
+    problems = serializers.SerializerMethodField()
+
+    def get_problems(self, obj):
+        context = {
+            'wrong': self.context.get('wrong'),
+            'upsolved': self.context.get('upsolved'),
+            'solved': self.context.get('solved')
+        }
+        pr = Problem.objects.filter(contest_id=obj.contestId).order_by('index')
+        return UpsolveProblemsSerializer(pr, many=True, context=context).data
+
+    class Meta:
+        model = contest
+        fields = [
+            'name',
+            'contestId',
+            'duration',
+            'startTime',
+            'Type',
+            'problems',
+        ]

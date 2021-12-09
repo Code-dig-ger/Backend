@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class TestUpsolve(TestSetUp):
     def test_codeforces_upsolve(self):
+        # Deprecated
         test_url = reverse('cf-upsolve')
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)
@@ -13,6 +14,7 @@ class TestUpsolve(TestSetUp):
         self.assertEqual(len(res.data['result']), res.data['meta']['to'])
 
     def test_codeforces_virtual_upsolve(self):
+        # Deprecated
         test_url = reverse('cf-upsolve') + '?virtual=true'
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)

@@ -15,7 +15,7 @@ from django.template.defaultfilters import slugify
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    platform = serializers.SerializerMethodField()
+    platform = serializers.CharField(source='get_platform_display')
 
     def get_description(self, obj):
         slug = self.context.get("slug")
@@ -29,18 +29,6 @@ class ProblemSerializer(serializers.ModelSerializer):
         user = self.context.get("user")
         solve = Solved.objects.filter(user=user, problem=obj)
         return solve.exists()
-
-    def get_platform(self, obj):
-        if obj.platform == 'F':
-            return "Codeforces"
-        elif obj.platform == 'A':
-            return "Atcoder"
-        elif obj.platform == 'C':
-            return "Codechef"
-        elif obj.platform == 'S':
-            return "Spoj"
-        elif obj.platform == 'U':
-            return "UVA"
 
     class Meta:
         model = Problem
@@ -183,13 +171,10 @@ class UserlistAddSerializer(serializers.Serializer):
     prob_id = serializers.CharField(required=True)
     slug = serializers.CharField(required=True)
     platform = serializers.CharField(required=True)
+    description = serializers.CharField(required=False)
 
     class Meta:
-        fields = (
-            'prob_id',
-            'slug',
-            'platform',
-        )
+        fields = ('prob_id', 'slug', 'platform', 'description')
 
 
 class UpdateLadderSerializer(serializers.Serializer):
@@ -208,6 +193,7 @@ class UpdateListSerializer(serializers.Serializer):
             'slug',
             'page',
         )
+
 
 class AddProblemsAdminSerializer(serializers.Serializer):
     slug = serializers.SlugField(required=True)
