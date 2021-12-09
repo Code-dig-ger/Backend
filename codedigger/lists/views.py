@@ -733,7 +733,7 @@ class SearchUserlistView(generics.ListAPIView):
         res_lists = GetUserlistSerializer(lists, many=True).data
         return response.Response({'status': 'OK', 'result': res_lists})
 
-    
+
 def testing(request):
     updater()
     return JsonResponse({'status': 'OK'})
