@@ -21,6 +21,7 @@ class ListExtraInfoAdmin(admin.ModelAdmin):
 class LadderStartedAdmin(admin.ModelAdmin):
     search_fields = ('ladder_user__name', 'user__username')
 
+
 class EnrolledAdmin(admin.ModelAdmin):
     search_fields = ('enroll__user', 'enroll__list')
 

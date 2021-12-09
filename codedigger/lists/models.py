@@ -133,12 +133,14 @@ class LadderStarted(models.Model):
     def __str__(self):
         return self.ladder.name + " started by " + self.ladder_user.username
 
+
 class Enrolled(models.Model):
-    enroll_user = models.ForeignKey(User, 
+    enroll_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
                                     related_name="enroll_user")
     enroll_list = models.ForeignKey(List,
                                     on_delete=models.CASCADE,
                                     related_name="enroll_user")
+
     def __str__(self):
         return self.enroll_user.username + "enrolled into" + self.enroll_list.name
