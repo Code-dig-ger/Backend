@@ -417,6 +417,7 @@ class ListGetView(generics.ListAPIView):
         send_data = GetUserlistSerializer(qs, many=True).data
         return response.Response({'status': 'OK', 'result': send_data})
 
+
 class ListStats(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = GetUserlistSerializer
@@ -428,38 +429,42 @@ class ListStats(generics.ListAPIView):
             raise ValidationException(
                 "List with the provided slug does not exist")
         qs = ListInfo.objects.filter(p_list=list)
-        send_data = ProblemSerializer(qs,many=True).data
-        return response.Response({'status':'OK','result':send_data})
+        send_data = ProblemSerializer(qs, many=True).data
+        return response.Response({'status': 'OK', 'result': send_data})
+
 
 class UserStandingStats(generics.ListAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
     serializer_class = GetUserlistSerializer
 
-    def get(self,request,slug):
+    def get(self, request, slug):
         here = self.request.user
-        friend = self.request.GET.get('friend',False)
+        friend = self.request.GET.get('friend', False)
         try:
             list = List.objects.get(slug=slug)
         except:
             raise ValidationException(
                 "List with the provided slug does not exist")
-        
-        if here!=list.owner and list.public==False:
+
+        if here != list.owner and list.public == False:
             raise ValidationException("The list must be public")
-        qs = Solved.objects.filter(
-            problem__in=Subquery(ListInfo.objects.filter(p_list=list).values('problem'))
-            ).values('user').annotate(problems_solved=Count('user')).order_by('-problems_solved')
+        qs = Solved.objects.filter(problem__in=Subquery(
+            ListInfo.objects.filter(
+                p_list=list).values('problem'))).values('user').annotate(
+                    problems_solved=Count('user')).order_by('-problems_solved')
 
         if friend:
-            qs = qs.filter(user__in=Subquery(UserFriends.objects.filter(from_user=user).values('to_user_id')))
+            qs = qs.filter(user__in=Subquery(
+                UserFriends.objects.filter(
+                    from_user=user).values('to_user_id')))
         send_data = []
-        for rank,q in enumerate(qs):
+        for rank, q in enumerate(qs):
             send_data.append({
-                'user': q.get('user',None),
-                'rank': rank+1,
-                'problems_solved': q.get('problems_solved',0)
+                'user': q.get('user', None),
+                'rank': rank + 1,
+                'problems_solved': q.get('problems_solved', 0)
             })
-        return response.Response({'status':'OK','result':send_data})
+        return response.Response({'status': 'OK', 'result': send_data})
 
 
 class UserlistCreateView(generics.CreateAPIView):

@@ -152,14 +152,15 @@ def test_get_user_list(self):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res = client.get(test_url, format="json")
-        
+
         slug = "testinglist_userlist"
         token = self.login(self.client, self.login_url, self.user_data)
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res2 = client.get(test_url, format="json")
 
-        self.assertEqual(res.status_code, 200) and self.assertRaises(ValidationException, res2)
+        self.assertEqual(res.status_code, 200) and self.assertRaises(
+            ValidationException, res2)
 
     def test_get_friends_stats(self):
         slug = "testinglist_levelwise"
@@ -174,4 +175,3 @@ def test_get_user_list(self):
         res = client.get(test_url, format="json")
 
         self.assertEqual(res.status_code, 200)
-

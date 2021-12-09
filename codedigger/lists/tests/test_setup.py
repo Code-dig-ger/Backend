@@ -10,14 +10,17 @@ from lists.test_fixtures.profile_fixtures import profile1, profile2
 
 
 class TestSetUp(APITestCase):
-    fixtures = ["user.json", "problems.json", "lists.json", "list_info.json", "solved.json"]
+    fixtures = [
+        "user.json", "problems.json", "lists.json", "list_info.json",
+        "solved.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):
         # Set up data for the whole TestCase
         Profile.objects.filter(owner=1).update(**profile1)
         Profile.objects.filter(owner=2).update(**profile2)
-    
+
     @classmethod
     def login(self, client, login_url, user_data):
         user = User.objects.get(username=user_data['username'])
