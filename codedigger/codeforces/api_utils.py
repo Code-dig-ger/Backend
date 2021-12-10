@@ -17,7 +17,7 @@ def is_verdict_ok(submission):
 
 
 def is_verdict_wrong(submission):
-    # TODO Check for TC should be greater than 1
+    #it will give wrong submission if and only if user's first case isn't wrong but the overall submission is wrong
     if submission['verdict'] != 'OK' and submission['passedTestCount'] < 1:
         return True 
     else:
