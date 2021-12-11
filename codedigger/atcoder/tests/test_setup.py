@@ -8,7 +8,7 @@ from lists.test_fixtures.profile_fixtures import profile1, profile2
 
 class TestSetUp(APITestCase):
     fixtures = [
-        "at_problems.json", "atcoder_contests.json"
+        "user.json","at_problems.json", "atcoder_contests.json"
     ]
 
     @classmethod

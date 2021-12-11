@@ -29,12 +29,20 @@ class ATUpsolveContestAPIView(
         mixins.CreateModelMixin,
         generics.ListAPIView,
 ):
-    permission_classes = [AuthenticatedActivated]
+    permission_classes = [AuthenticatedOrReadOnly]
+
     serializer_class = AtcoderUpsolveContestSerializer
 
     def get(self, request):
-
-        handle = Profile.objects.get(owner=self.request.user).atcoder
+        is_auth = self.request.user.is_authenticated
+        handle = ""
+        if not is_auth:
+            handle = request.GET.get('handle', None)
+            if handle == None:
+                raise ValidationException(
+                    'Any of handle or Bearer Token is required.')
+        else:
+            handle = Profile.objects.get(owner=self.request.user).atcoder
 
         if handle == "" or handle == None:
             raise ValidationException(
