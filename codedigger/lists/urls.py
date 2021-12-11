@@ -61,6 +61,7 @@ urlpatterns = [
          EditUserlistView.as_view(),
          name='userlist-edit'),
     path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
+    path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
     path('testing', testing),
 ]

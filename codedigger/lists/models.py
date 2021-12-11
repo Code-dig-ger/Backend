@@ -140,7 +140,7 @@ class Enrolled(models.Model):
                                     related_name="enroll_user")
     enroll_list = models.ForeignKey(List,
                                     on_delete=models.CASCADE,
-                                    related_name="enroll_user")
+                                    related_name="enroll_list")
 
     def __str__(self):
-        return self.enroll_user.username + "enrolled into" + self.enroll_list.name
+        return self.enroll_user.username + " enrolled into " + self.enroll_list.name
