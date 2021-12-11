@@ -1,29 +1,35 @@
 import requests
+from user.exception import ValidationException
+
+BASEURL = "https://kenkoooo.com/atcoder/"
+
+
+def validated_response(response):
+    if response.status_code != 200:
+        raise ValidationException('Kenkoooo API: Bad Request')
+    return response.json()
+
 
 def get_all_contests():
-    url = "https://kenkoooo.com/atcoder/resources/contests.json"
+    url = "resources/contests.json"
     res = requests.get(url)
-    data = res.json()
-    return data
+    return validated_response(res)
+
 
 def get_all_problems():
-    url = "https://kenkoooo.com/atcoder/resources/problems.json"
+    url = "resources/problems.json"
     res = requests.get(url)
-    data = res.json()
-    return data
+    return validated_response(res)
+
 
 def get_all_problems_models():
-    url = "https://kenkoooo.com/atcoder/resources/problem-models.json"
+    url = "resources/problem-models.json"
     res = requests.get(url)
-    data = res.json()
-    return data
+    return validated_response(res)
 
-def get_user_history(handle):
-    url = "https://atcoder.jp/users/" + handle + "/history"
-    res = requests.get(url)
-    return res
 
 def get_user_results(handle):
-    url = "https://kenkoooo.com/atcoder/atcoder-api/results?user=" + handle
-    res = requests.get(url)
-    return res
+    url = "atcoder-api/results"
+    param = {'user': handle}
+    res = requests.get(url, params=param)
+    return validated_response(res)
