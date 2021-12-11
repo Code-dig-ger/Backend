@@ -16,9 +16,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Enrolled',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('enroll_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enroll_user', to='lists.list')),
-                ('enroll_user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enroll_user', to=settings.AUTH_USER_MODEL)),
+                ('id',
+                 models.AutoField(auto_created=True,
+                                  primary_key=True,
+                                  serialize=False,
+                                  verbose_name='ID')),
+                ('enroll_list',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='enroll_user',
+                                   to='lists.list')),
+                ('enroll_user',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='enroll_user',
+                                   to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
