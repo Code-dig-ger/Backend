@@ -3,17 +3,11 @@ from .cron import updater
 from rest_framework import generics, status, views, response
 from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled
 from problem.models import Problem
-from .serializers import (
-    GetLadderSerializer,
-    GetSerializer,
-    GetUserlistSerializer,
-    EditUserlistSerializer,
-    CreateUserlistSerializer,
-    ProblemSerializer,
-    UserlistAddSerializer,
-    AddProblemsAdminSerializer,
-    EnrollInListSerializer
-)
+from .serializers import (GetLadderSerializer, GetSerializer,
+                          GetUserlistSerializer, EditUserlistSerializer,
+                          CreateUserlistSerializer, ProblemSerializer,
+                          UserlistAddSerializer, AddProblemsAdminSerializer,
+                          EnrollInListSerializer)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -734,6 +728,7 @@ class SearchUserlistView(generics.ListAPIView):
         res_lists = GetUserlistSerializer(lists, many=True).data
         return response.Response({'status': 'OK', 'result': res_lists})
 
+
 class EnrollInListView(generics.GenericAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = EnrollInListSerializer
@@ -744,12 +739,12 @@ class EnrollInListView(generics.GenericAPIView):
         list = data.get('slug')
         curr_list = List.objects.get(slug=list)
         if not List.objects.filter(Q(public=True) & Q(slug=list)):
-            raise ValidationException(
-                "List is not public or doesn't exist")
+            raise ValidationException("List is not public or doesn't exist")
         if not List.objects.filter(slug=list):
             raise ValidationException(
                 "List with the provided slug does not exist")
-        if Enrolled.objects.filter(Q(enroll_list=curr_list) & Q(enroll_user=user)):
+        if Enrolled.objects.filter(
+                Q(enroll_list=curr_list) & Q(enroll_user=user)):
             raise ValidationException(
                 "User has already been enrolled into this list")
         enrolled = Enrolled()
@@ -762,6 +757,7 @@ class EnrollInListView(generics.GenericAPIView):
                 'result': "User has been enrolled into the list"
             },
             status=status.HTTP_200_OK)
+
 
 def testing(request):
     updater()
