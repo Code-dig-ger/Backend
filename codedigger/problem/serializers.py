@@ -1,9 +1,34 @@
+from re import S
 from rest_framework import serializers
 
 from codeforces.models import contest
 from lists.models import Solved
 
 from .models import Problem, atcoder_contest, DIFFICULTY
+
+
+class MiniProblemSerializer(serializers.ModelSerializer):
+
+    platform = serializers.CharField(source='get_platform_display')
+    type = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        if obj.platform == 'F' and 'gym' in obj.url :
+            return 'gym'
+        else : 
+            return 'contest' 
+
+    def get_status(self, obj):
+        problem_status = self.context.get("problem_status", {})
+        return problem_status.get(obj.prob_id, "NOT_ATTEMPT")
+
+    class Meta:
+        model = Problem
+        fields = [
+            'name', 'url', 'prob_id', 'contest_id', 'index', 'platform',
+            'type', 'status'
+        ]
 
 
 class ProbSerializer(serializers.ModelSerializer):
