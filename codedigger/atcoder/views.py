@@ -26,7 +26,7 @@ class ATUpsolveContestAPIView(
     serializer_class = AtcoderUpsolveContestSerializer
 
     def get(self, request):
-        
+
         is_auth = self.request.user.is_authenticated
         handle = ""
         if not is_auth:
