@@ -1,8 +1,5 @@
 import requests
-from math import log2
-from problem.models import Problem, atcoder_contest
-from .api import *
-from utils.common import rating_to_difficulty
+from user.exception import ValidationException
 
 
 def get_user_history(handle):
