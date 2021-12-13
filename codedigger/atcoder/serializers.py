@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import atcoder_contest
 from problem.models import Problem
 
+
 class AtcoderProblemSerializer(serializers.ModelSerializer):
 
     status = serializers.SerializerMethodField()

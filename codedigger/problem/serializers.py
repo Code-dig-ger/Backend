@@ -154,4 +154,3 @@ class SolveProblemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
         fields = ['tags', 'mentors']
-

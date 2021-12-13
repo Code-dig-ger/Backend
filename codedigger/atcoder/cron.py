@@ -50,5 +50,3 @@ def update_atcoder():
                 prob.save()
 
     send_testing_mail('Atcoder Problem Update Process Finished')
-
-
