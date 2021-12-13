@@ -8,7 +8,7 @@ from problem.models import atcoder_contest
 from user.models import Profile
 
 # Serializer and Extra Utils Function
-from problem.serializers import AtcoderUpsolveContestSerializer
+from .serializers import AtcoderUpsolveContestSerializer
 from problem.utils import atcoder_status, get_page_number, get_upsolve_response_dict
 from user.permissions import *
 from user.exception import ValidationException
@@ -25,6 +25,7 @@ class ATUpsolveContestAPIView(
     serializer_class = AtcoderUpsolveContestSerializer
 
     def get(self, request):
+        
         is_auth = self.request.user.is_authenticated
         handle = ""
         if not is_auth:

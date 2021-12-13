@@ -6,3 +6,4 @@ class atcoder_contest(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True)
     startTime = models.CharField(max_length=20, blank=True, null=True)
     duration = models.CharField(max_length=10, blank=True, null=True)
+
