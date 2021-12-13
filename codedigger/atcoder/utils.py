@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from .api import *
 from .scrapers_utils import get_all_contests_details
+from .scrapers import get_user_history
 from lists.utils import get_next_url, get_prev_url, get_total_page
 from user.exception import ValidationException
 from codeforces.api import user_status
@@ -26,7 +27,7 @@ def atcoder_status(handle):
     contests_details = get_all_contests_details(res.content)
 
     res = get_user_results(handle)
-    
+
     if res.status_code != 200:
         return (contests_details, all_contest, solved, wrong)
 

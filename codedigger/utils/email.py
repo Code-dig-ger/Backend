@@ -7,9 +7,9 @@ def send_testing_mail(sub):
     message = 'This is a testing mail send to our testing account.'
     recepient = 'testing.codedigger@gmail.com'
     send_mail(subject,
-            message,
-            EMAIL_HOST_USER, [recepient],
-            fail_silently=False)
+              message,
+              EMAIL_HOST_USER, [recepient],
+              fail_silently=False)
 
 
 def send_error_mail(sub):
@@ -17,6 +17,6 @@ def send_error_mail(sub):
     message = 'OOPS: An error found. This is an error mail send to know error.'
     recepient = 'testing.codedigger@gmail.com'
     send_mail(subject,
-            message,
-            EMAIL_HOST_USER, [recepient],
-            fail_silently=False)
+              message,
+              EMAIL_HOST_USER, [recepient],
+              fail_silently=False)

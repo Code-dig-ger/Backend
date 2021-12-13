@@ -7,18 +7,25 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='atcoder_contest',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id',
+                 models.AutoField(auto_created=True,
+                                  primary_key=True,
+                                  serialize=False,
+                                  verbose_name='ID')),
                 ('contestId', models.CharField(db_index=True, max_length=50)),
-                ('name', models.CharField(blank=True, max_length=200, null=True)),
-                ('startTime', models.CharField(blank=True, max_length=20, null=True)),
-                ('duration', models.CharField(blank=True, max_length=10, null=True)),
+                ('name', models.CharField(blank=True,
+                                          max_length=200,
+                                          null=True)),
+                ('startTime',
+                 models.CharField(blank=True, max_length=20, null=True)),
+                ('duration',
+                 models.CharField(blank=True, max_length=10, null=True)),
             ],
         ),
     ]
