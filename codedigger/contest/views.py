@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone
 from django.db.models import Q
 from rest_framework.response import Response
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, status
 
 # Exceptions and Permissions
 from user.exception import ValidationException
@@ -134,7 +134,7 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
         # TODO Assign Problems to this Contest
         # https://github.com/cheran-senthil/TLE/blob/master/tle/cogs/codeforces.py#L178
 
-        return Response({'status': 'OK'})
+        return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
 
 
 class CodeforcesContestGetAPIView(generics.GenericAPIView):
