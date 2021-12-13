@@ -45,9 +45,3 @@ def get_user_results(handle):
     res = requests.get(url, params=param)
     return validated_response(res)
 
-def get_user_history(handle):
-    url = "https://atcoder.jp/users/" + handle + "/history"
-    res = requests.get(url)
-    if res.status_code != 200:
-        raise ValidationException('User not found in Atcoder')
-    return res
