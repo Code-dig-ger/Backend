@@ -12,7 +12,7 @@ def send_testing_mail(sub):
               fail_silently=False)
 
 
-def send_error_mail(sub):
+def send_error_mail(sub, error):
     subject = sub
     message = 'OOPS: An error found. This is an error mail send to know error.'
     recepient = 'testing.codedigger@gmail.com'

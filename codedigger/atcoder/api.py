@@ -10,17 +10,6 @@ def validated_response(response):
     return response.json()
 
 
-from user.exception import ValidationException
-
-BASEURL = "https://kenkoooo.com/atcoder/"
-
-
-def validated_response(response):
-    if response.status_code != 200:
-        raise ValidationException('Kenkoooo API: Bad Request')
-    return response.json()
-
-
 def get_all_contests():
     url = "resources/contests.json"
     res = requests.get(url)
