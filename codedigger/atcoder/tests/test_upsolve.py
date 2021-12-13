@@ -12,3 +12,10 @@ class TestUpsolve(TestSetUp):
         self.assertEqual(len(res.data['result'][0]['problems']), 5)
         self.assertEqual(res.data['meta']['total'], 1)
         self.assertEqual(len(res.data['result']), res.data['meta']['to'])
+
+    def test_atcoder_without_auth_upsolve(self):
+        test_url = reverse('at-upsolve') + '?practice=true&handle=aaradhya0707'
+        res = self.client.get(test_url, format="json")
+        self.assertEqual(len(res.data['result'][0]['problems']), 5)
+        self.assertEqual(res.data['meta']['total'], 1)
+        self.assertEqual(len(res.data['result']), res.data['meta']['to'])

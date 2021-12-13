@@ -4,22 +4,13 @@ from rest_framework.response import Response
 from rest_framework import generics, mixins, permissions, status
 
 # Django Models Stuff
-from problem.models import Problem, atcoder_contest
-from user.models import Profile, UserFriends
-from codeforces.models import contest, user_contest_rank
-from django.db.models import Q
+from problem.models import atcoder_contest
+from user.models import Profile
 
 # Serializer and Extra Utils Function
-
-from problem.serializers import ProbSerializer, UpsolveContestSerializer, CCUpsolveContestSerializer, AtcoderUpsolveContestSerializer, SolveProblemsSerializer
-from user.serializers import GuruSerializer, FriendsShowSerializer
-from lists.models import Solved
-from problem.utils import codeforces_status, codechef_status, atcoder_status, get_page_number, get_upsolve_response_dict
-import json, requests
-from django.http import JsonResponse
-import random
+from problem.serializers import AtcoderUpsolveContestSerializer
+from problem.utils import atcoder_status, get_page_number, get_upsolve_response_dict
 from user.permissions import *
-from codeforces.api import user_status
 from user.exception import ValidationException
 from lists.utils import get_total_page, getqs
 
@@ -30,12 +21,20 @@ class ATUpsolveContestAPIView(
         mixins.CreateModelMixin,
         generics.ListAPIView,
 ):
-    permission_classes = [AuthenticatedActivated]
+    permission_classes = [AuthenticatedOrReadOnly]
+
     serializer_class = AtcoderUpsolveContestSerializer
 
     def get(self, request):
-
-        handle = Profile.objects.get(owner=self.request.user).atcoder
+        is_auth = self.request.user.is_authenticated
+        handle = ""
+        if not is_auth:
+            handle = request.GET.get('handle', None)
+            if handle == None:
+                raise ValidationException(
+                    'Any of handle or Bearer Token is required.')
+        else:
+            handle = Profile.objects.get(owner=self.request.user).atcoder
 
         if handle == "" or handle == None:
             raise ValidationException(
