@@ -44,4 +44,3 @@ def get_user_results(handle):
     param = {'user': handle}
     res = requests.get(url, params=param)
     return validated_response(res)
-
