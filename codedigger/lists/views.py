@@ -738,11 +738,11 @@ class EnrollInListView(generics.GenericAPIView):
         user = self.request.user
         list = data.get('slug')
         curr_list = List.objects.get(slug=list)
-        if not List.objects.filter(Q(public=True) & Q(slug=list)):
-            raise ValidationException("List is not public or doesn't exist")
         if not List.objects.filter(slug=list):
             raise ValidationException(
                 "List with the provided slug does not exist")
+        if not List.objects.filter(Q(public=True) & Q(slug=list)):
+            raise ValidationException("List is not public or doesn't exist")
         if Enrolled.objects.filter(
                 Q(enroll_list=curr_list) & Q(enroll_user=user)):
             raise ValidationException(
