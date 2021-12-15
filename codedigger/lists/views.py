@@ -737,20 +737,18 @@ class EnrollInListView(generics.GenericAPIView):
         data = request.data
         user = self.request.user
         list = data.get('slug')
-        curr_list = List.objects.get(slug=list)
-        if not List.objects.filter(slug=list):
+        try:
+            curr_list = List.objects.get(slug=list)
+        except: 
             raise ValidationException(
                 "List with the provided slug does not exist")
-        if not List.objects.filter(Q(public=True) & Q(slug=list)):
-            raise ValidationException("List is not public or doesn't exist")
+        if not curr_list.public:
+            raise ValidationException("List is not public")
         if Enrolled.objects.filter(
                 Q(enroll_list=curr_list) & Q(enroll_user=user)):
             raise ValidationException(
                 "User has already been enrolled into this list")
-        enrolled = Enrolled()
-        enrolled.enroll_user = user
-        enrolled.enroll_list = curr_list
-        enrolled.save()
+        Enrolled.objects.get_or_create(enroll_list=curr_list, enroll_user = user)
         return response.Response(
             {
                 "status": 'OK',
@@ -758,6 +756,13 @@ class EnrollInListView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK)
 
+class ViewAllEnrollListView(generics.GenericAPIView):
+    def get(self, request):
+        user = self.request.user
+        enroll_list_ids = Enrolled.objects.filter(enroll_user = user).values_list('enroll_list', flat=True)
+        lists = List.objects.filter(id__in = enroll_list_ids)
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
 
 def testing(request):
     updater()
