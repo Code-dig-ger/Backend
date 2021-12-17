@@ -11,25 +11,25 @@ def validated_response(response):
 
 
 def get_all_contests():
-    url = "resources/contests.json"
+    url = BASEURL + "resources/contests.json"
     res = requests.get(url)
     return validated_response(res)
 
 
 def get_all_problems():
-    url = "resources/problems.json"
+    url = BASEURL + "resources/problems.json"
     res = requests.get(url)
     return validated_response(res)
 
 
 def get_all_problems_models():
-    url = "resources/problem-models.json"
+    url = BASEURL + "resources/problem-models.json"
     res = requests.get(url)
     return validated_response(res)
 
 
 def get_user_results(handle):
-    url = "atcoder-api/results"
+    url = BASEURL + "atcoder-api/results"
     param = {'user': handle}
     res = requests.get(url, params=param)
     return validated_response(res)

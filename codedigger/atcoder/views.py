@@ -13,7 +13,6 @@ from problem.utils import atcoder_status, get_page_number, get_upsolve_response_
 from user.permissions import *
 from user.exception import ValidationException
 from lists.utils import get_total_page, getqs
-
 # Create your views here.
 
 

@@ -2,7 +2,7 @@ from django.core.checks.messages import Error
 from utils.email import send_error_mail, send_testing_mail
 from utils.common import rating_to_difficulty
 
-from problem.models import Problem
+from problem.models import Problem, atcoder_contest
 
 from .model_utils import create_or_update_contest, create_or_update_problem
 from .api import (get_all_contests, get_all_problems, get_all_problems_models)

@@ -1,10 +1,9 @@
-from problem.models import Problem
-from .models import atcoder_contest
+from problem.models import Problem, atcoder_contest
 
 
 def create_or_update_contest(contest):
-    new_contest = atcoder_contest.get_or_create(
-        id=contest['id'],
+    new_contest = atcoder_contest.objects.get_or_create(
+        contestId=contest['id'],
         defaults={
             'name': contest['title'],
             'startTime': contest['start_epoch_second'],
