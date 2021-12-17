@@ -733,7 +733,7 @@ class EnrollInListView(generics.GenericAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = EnrollInListSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         data = request.data
         user = self.request.user
         list = data.get('slug')
@@ -748,15 +748,18 @@ class EnrollInListView(generics.GenericAPIView):
                 Q(enroll_list=curr_list) & Q(enroll_user=user)):
             raise ValidationException(
                 "User has already been enrolled into this list")
-        Enrolled.objects.get_or_create(enroll_list=curr_list, enroll_user = user)
+        Enrolled.objects.get_or_create(enroll_user=user,enroll_list=curr_list)
         return response.Response(
             {
                 "status": 'OK',
                 'result': "User has been enrolled into the list"
             },
-            status=status.HTTP_200_OK)
+            status=status.HTTP_201_CREATED)
 
 class ViewAllEnrollListView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = [GetUserlistSerializer]
+
     def get(self, request):
         user = self.request.user
         enroll_list_ids = Enrolled.objects.filter(enroll_user = user).values_list('enroll_list', flat=True)
