@@ -188,8 +188,9 @@ class TestViews(TestSetUp):
         ok = True
         elist = Enrolled.objects.filter(enroll_user=here)
         for enrolled in elist:
-            if not (enrolled == "testinglist_levelwise" or enrolled == "testinglist_topicwise"):
-                ok= False
+            if not (enrolled == "testinglist_levelwise"
+                    or enrolled == "testinglist_topicwise"):
+                ok = False
         self.assertEqual(res.status_code, 201) and self.assertEqual(ok, True)
 
     def test_auth_check_enrolled_lists_view(self):
@@ -203,6 +204,6 @@ class TestViews(TestSetUp):
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res = client.get(test_url, format="json")
         elist = Enrolled.objects.filter(enroll_user=here)
-        if elist.count()!=1:
-            ok=False
+        if elist.count() != 1:
+            ok = False
         self.assertEqual(res.status_code, 200) and self.assertEqual(ok, True)
