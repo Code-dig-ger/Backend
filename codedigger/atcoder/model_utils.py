@@ -9,11 +9,12 @@ def create_or_update_contest(contest):
             'startTime': contest['start_epoch_second'],
             'duration': contest['duration_second']
         })
-    new_contest.save()
+    cur = atcoder_contest.objects.get(contestId=contest['id'])
+    print(cur)
 
 
 def create_or_update_problem(problem):
-    new_problem = Problem.get_or_create(
+    new_problem = Problem.objects.get_or_create(
         prob_id=problem['id'],
         platform='A',
         defaults={
@@ -27,4 +28,3 @@ def create_or_update_problem(problem):
             'index':
             problem['id'].split("_")[-1]
         })
-    new_problem.save()
