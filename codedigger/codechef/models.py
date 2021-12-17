@@ -6,7 +6,7 @@ import datetime
 # Create your models here.
 class CodechefContest(models.Model):
 
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, blank=True)
     contestId = models.CharField(max_length=10, db_index=True)
     duration = models.IntegerField(blank=True, null=True)
     startTime = models.DateTimeField(blank=True, null=True)
@@ -38,5 +38,12 @@ class User(models.Model):
     country = models.CharField(max_length=50, blank=True)
     country_rank = models.IntegerField(blank=True, null=True, default=0)    
     global_rank = models.IntegerField(blank=True, null=True, default=0)    
+    contests_given = models.ManyToManyField(CodechefContest)
     def __str__(self):
         return self.handle
+
+
+
+# contest given
+# codechef contest filter out 
+# seria
