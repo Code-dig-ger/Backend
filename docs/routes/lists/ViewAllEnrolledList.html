@@ -94,29 +94,48 @@
           </p>        
           <pre >
             <code class="language-json">
+              {
+                "status": "OK",
+                "result": [
+                  {
+                    "id": 2,
+                    "name": "TO-DO",
+                    "description": "Problems in which you have a doubt or want to solve afterwards",
+                    "slug": "to-do-1",
+                    "public": true
+                  },
+                  {
+                    "id": 4,
+                    "name": "TO-DO",
+                    "description": "Problems in which you have a doubt or want to solve afterwards",
+                    "slug": "to-do-2",
+                    "public": true
+                  }
+                ]
+              }
+            </code>
+          </pre>
+        </section>
+        <section id = "error-response" class="js-section">
+          <h3 class="section__title">Error Response</h3>
+          <p>
+            Only authorized users can enroll into a list
+          </p>
+          <p> 
+            Status Code: 401 UNAUTHORIZED
+          </p>
+          <p> 
+            Error Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
         {
-            "status": "OK",
-            "result": [
-                {
-                "id": 2,
-                "name": "TO-DO",
-                "description": "Problems in which you have a doubt or want to solve afterwards",
-                "slug": "to-do-1",
-                "public": true
-                },
-                {
-                "id": 4,
-                "name": "TO-DO",
-                "description": "Problems in which you have a doubt or want to solve afterwards",
-                "slug": "to-do-2",
-                "public": true
-                }
-            ]
+            "status": "FAILED",
+            "error": "Authentication credentials were not provided"
         }
             </code>
           </pre>
         </section>
-        
         <section id = "sample-call" class="js-section">
           <h3 class="section__title">Sample Call</h3>
           <p> 
@@ -125,7 +144,7 @@
           </p>
           <pre>
             <code class="language-bash">
-              curl -X GET "https://api.codedigger.tech/lists/view-enrolled-lists/"
+              curl -X GET "https://api.codedigger.tech/lists/view-enrolled-lists/ "
             </code>
           </pre> 
         </section>

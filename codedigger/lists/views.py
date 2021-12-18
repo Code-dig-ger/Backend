@@ -758,7 +758,7 @@ class EnrollInListView(generics.GenericAPIView):
 
 
 class ViewAllEnrollListView(generics.GenericAPIView):
-    permission_classes = [AuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = [GetUserlistSerializer]
 
     def get(self, request):
