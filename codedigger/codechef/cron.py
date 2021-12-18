@@ -10,5 +10,5 @@ def update_AllContests():
     all_contests = ContestData('past')
     for contest in all_contests:
         create_or_update_codechefContest(contest)
-        contestId = contest['ContestCode']
-        create_or_update_codechefProblem(contestId)
+        contest_problems_info = ProblemData(contest['ContestCode'])
+        create_or_update_codechefProblem(contest_problems_info)
