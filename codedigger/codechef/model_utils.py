@@ -20,18 +20,15 @@ def create_or_update_codechefProblem(problemdata):
                                                              problem=Prob)
 
 
-def create_or_update_codechefContest():
-    all_contests = ContestData()
-
-    for contest in all_contests:
-
-        contestDate = datetime.strptime(contest['contest_start_date'],
+def create_or_update_codechefContest(contest):
+        print(contest)
+        contestDate = datetime.strptime(contest['StartTime'],
                                         "%d %B %Y  %H:%M:%S")
         cont = CodechefContest.objects.get_or_create(
             name=contest['Name'],
             contestId=contest['ContestCode'],
             duration=contest['Duration'],
-            StartTime=contestDate,
+            startTime=contestDate,
             url=contest['ContestURL'])
 
         contest_problems_info = ProblemData(contestId)
