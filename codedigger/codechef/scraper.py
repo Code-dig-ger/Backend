@@ -4,6 +4,8 @@ from time import sleep
 import os, json, django
 from user.exception import ValidationException
 
+from problem.models import *
+from codechef.models import *
 
 def divisionScraper(contest_id):
 
@@ -43,29 +45,103 @@ def problemScraper(contest_code):
 
     return problem_data
 
-def UserSubmissionDetail(problemcode, user):
-    URL = "https://www.codechef.com/SNCKQL21/status/{problemcode},{user}"
+def UserSubmissionDetail(problemcode, contest, user):
+    URL = "https://www.codechef.com/{contest}/status/{problemcode},{user}"
     r = requests.get(URL)
     soup = BeautifulSoup(r.content, 'html5lib')
     problemTable = soup.findAll('table', class_ = "dataTable")
     problemRow = problemTable[0].findAll('tr')
-    submissionList = []
-    for problem in problemRow:
-        problemDetails = i.findAll('td')
-        for details in problemDetails:
-            print(details)
-
-    return submissionList
+    problemRow.pop(0)
+    submissionlist = []
+    if len(problemRow) == 0 or problemRow[0].text == 'No Recent Activity':
+        return submissionlist
     
+    for problem in problemRow:
+        baseurl = "https://www.codechef.com"
+        problemDetails = problem.findAll('td')
+        subid = problemDetails[0].text
+        subtime = problemDetails[1].text
+        verdict = problemDetails[3].find('span').get('title')
+        if len(verdict) == 0:
+            verdict = (problemDetails[3].find('span').text)
+            verdict = verdict[:verdict.index('[')]
+            if int(verdict) == 100:
+                verdict = "accepted [100/100]"
+            else :
+                verdict = "partially accepted [" + verdict + "/100]"
+        lang = problemDetails[6].text
+        link = baseurl + problemDetails[7].find('a').get('href')
 
-def recentSubmissions(user):
-    URL = "https://www.codechef.com/recent/user?user_handle={user}"
+        
+        subformat = {
+            'subid' : subid,
+            'subtime' : subtime,
+            'verdict' : verdict,
+            'lang' : lang,
+            'link' : link,
+        }
+
+        submissionlist.append(subformat)
+        
+    return submissionlist  
+
+
+
+def recentSubmissions(userid):
+    URL = "https://www.codechef.com/recent/user?user_handle={userid}"
     r = requests.get(URL)
     r = BeautifulSoup(r.content, 'html5lib')
-    recentSubs = r.findAll('tr')
-    recentList = []
+    recentSubs = r.findAll('tbody')
+    
+    recentlist = []
     for sub in recentSubs:
-        subd = sub.findAll('td')
-        print(subd)
+        subd = sub.findAll('tr')
+        subd.pop(-1)
+        try:
+            query = subd[0].text[:18]
+        except:
+            query = "Profile found successfully"
+        if query == 'No Recent Activity':
+            break
+        
+        for prob in subd:
+            baseurl = "https://www.codechef.com"
+            det = prob.findAll('td')
 
-    return returnList
+            probid = det[1].find('a').text
+            probid = probid[:probid.index('<')]
+
+            link = det[1].find('a').get('href')
+            link = link.replace("\\","")
+            link = baseurl + link
+    
+            subtime = prob.find('span',class_ = "tooltiptext")
+            try:
+                subtime = subtime.text
+                subtime = subtime[:subtime.index('<')]
+            except:
+                break
+
+            verdict = det[2].find('span').get('title')
+            if len(verdict) == 0:
+                verdict = (det[2].find('span').text)
+                verdict = verdict[:verdict.index('[')]
+                if int(verdict) == 100:
+                    verdict = "accepted [100/100]"
+                else :
+                    verdict = "partially accepted [" + verdict + "/100]"
+
+            lang = det[3].text
+            lang = lang[:lang.index('<')]
+            
+            subformat = {
+                'probid' : probid,
+                'subtime' : subtime,
+                'verdict' : verdict,
+                'lang' : lang,
+                'link' : link,
+            }
+
+            recentlist.append(subformat)
+        
+    return recentlist
