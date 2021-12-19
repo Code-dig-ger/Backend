@@ -729,9 +729,17 @@ class SearchUserlistView(generics.ListAPIView):
         return response.Response({'status': 'OK', 'result': res_lists})
 
 
-class EnrollInListView(generics.GenericAPIView):
+class EnrollListView(generics.GenericAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = EnrollInListSerializer
+
+    def get(self, request):
+        user = self.request.user
+        enroll_list_ids = Enrolled.objects.filter(
+            enroll_user=user).values_list('enroll_list', flat=True)
+        lists = List.objects.filter(id__in=enroll_list_ids)
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
 
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -755,20 +763,6 @@ class EnrollInListView(generics.GenericAPIView):
                 'result': "User has been enrolled into the list"
             },
             status=status.HTTP_201_CREATED)
-
-
-class ViewAllEnrollListView(generics.GenericAPIView):
-    permission_classes = [AuthenticatedActivated]
-    serializer_class = [GetUserlistSerializer]
-
-    def get(self, request):
-        user = self.request.user
-        enroll_list_ids = Enrolled.objects.filter(
-            enroll_user=user).values_list('enroll_list', flat=True)
-        lists = List.objects.filter(id__in=enroll_list_ids)
-        res_lists = GetUserlistSerializer(lists, many=True).data
-        return response.Response({'status': 'OK', 'result': res_lists})
-
 
 def testing(request):
     updater()

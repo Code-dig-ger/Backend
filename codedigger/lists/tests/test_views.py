@@ -194,7 +194,7 @@ class TestViews(TestSetUp):
         self.assertEqual(res.status_code, 201) and self.assertEqual(ok, True)
 
     def test_auth_check_enrolled_lists_view(self):
-        test_url = reverse('view-enrolled-lists')
+        test_url = reverse('enroll-list')
         here = User.objects.get(username="testing")
         here.set_password(self.user_data['password'])
         here.save()
