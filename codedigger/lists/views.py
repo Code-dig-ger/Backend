@@ -764,6 +764,7 @@ class EnrollListView(generics.GenericAPIView):
             },
             status=status.HTTP_201_CREATED)
 
+
 def testing(request):
     updater()
     return JsonResponse({'status': 'OK'})
