@@ -1,18 +1,13 @@
 from django.http import JsonResponse
 from .cron import updater
 from rest_framework import generics, status, views, response
-from .models import List, ListExtraInfo, LadderStarted, ListInfo
+from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled
 from problem.models import Problem
-from .serializers import (
-    GetLadderSerializer,
-    GetSerializer,
-    GetUserlistSerializer,
-    EditUserlistSerializer,
-    CreateUserlistSerializer,
-    ProblemSerializer,
-    UserlistAddSerializer,
-    AddProblemsAdminSerializer,
-)
+from .serializers import (GetLadderSerializer, GetSerializer,
+                          GetUserlistSerializer, EditUserlistSerializer,
+                          CreateUserlistSerializer, ProblemSerializer,
+                          UserlistAddSerializer, AddProblemsAdminSerializer,
+                          EnrollInListSerializer)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -732,6 +727,42 @@ class SearchUserlistView(generics.ListAPIView):
         lists = List.objects.filter(Q(name__icontains=param) & Q(public=True))
         res_lists = GetUserlistSerializer(lists, many=True).data
         return response.Response({'status': 'OK', 'result': res_lists})
+
+
+class EnrollListView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = EnrollInListSerializer
+
+    def get(self, request):
+        user = self.request.user
+        enroll_list_ids = Enrolled.objects.filter(
+            enroll_user=user).values_list('enroll_list', flat=True)
+        lists = List.objects.filter(id__in=enroll_list_ids)
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = self.request.user
+        list = data.get('slug')
+        try:
+            curr_list = List.objects.get(slug=list)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+        if not curr_list.public:
+            raise ValidationException("List is not public")
+        if Enrolled.objects.filter(
+                Q(enroll_list=curr_list) & Q(enroll_user=user)):
+            raise ValidationException(
+                "User has already been enrolled into this list")
+        Enrolled.objects.get_or_create(enroll_user=user, enroll_list=curr_list)
+        return response.Response(
+            {
+                "status": 'OK',
+                'result': "User has been enrolled into the list"
+            },
+            status=status.HTTP_201_CREATED)
 
 
 def testing(request):
