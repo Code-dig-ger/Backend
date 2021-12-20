@@ -18,7 +18,7 @@ def is_verdict_ok(submission):
 
 def is_verdict_wrong(submission):
     #it will give wrong submission if and only if user's first case isn't wrong but the overall submission is wrong
-    if submission['verdict'] != 'OK' and submission['passedTestCount'] < 1:
+    if submission['verdict'] != 'OK' and submission['passedTestCount'] > 0:
         return True 
     else:
         return False
