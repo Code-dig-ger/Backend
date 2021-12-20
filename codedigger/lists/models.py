@@ -131,3 +131,13 @@ class LadderStarted(models.Model):
 
     def __str__(self):
         return self.ladder.name + " started by " + self.ladder_user.username
+
+
+class EditorTable(models.Model):
+    edit_list = models.ForeignKey(List,
+                               on_delete=models.CASCADE,
+                               related_name="edit_list")
+    editor = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    related_name="editor")
+    # firnds = 

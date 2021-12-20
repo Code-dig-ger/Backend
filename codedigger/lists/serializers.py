@@ -1,5 +1,5 @@
 from rest_framework import serializers, status
-from .models import ListInfo, Solved, List, ListInfo, LadderStarted
+from .models import ListInfo, Solved, List, ListInfo, LadderStarted, EditorTable
 from problem.models import Problem
 from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -199,3 +199,11 @@ class AddProblemsAdminSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('slug', )
+
+# class EditorTableSerializer(serializers.Serializer):
+#     user = self.context.get('user')
+    
+#     class Meta:
+#         model = EditorTable
+#         fields = '__all__'
+

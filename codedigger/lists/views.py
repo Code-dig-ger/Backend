@@ -432,7 +432,7 @@ class UserlistCreateView(generics.CreateAPIView):
 
 
 class UserlistAddProblemView(generics.CreateAPIView):
-    permission_classes = [AuthenticatedActivated]
+    permission_classes = []
     serializer_class = UserlistAddSerializer
 
     def post(self, request, *args, **kwargs):
