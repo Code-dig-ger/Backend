@@ -104,7 +104,35 @@ def contestgivenScrapper(user_handle):
         cont = contest.find('strong').contents
         contests_given.append(cont[0][:-1])
     
+    if contests_given[0] == "Practice":
+        contests_given = contests_given[1:]
+        
     return contests_given
+
+def problems_solved(user_handle):
+
+    soup = profilePageScraper(user_handle)
+    print(user_handle)
+    upsolved_problems = []
+    problems_solved_in_contests = []
+
+    all_contests = soup.find('article')
+    contests_list = all_contests.find_all('p')
+    cont = (contests_list[0].find('strong').contents)[0][:-1]
+
+    if cont == "Practice":
+        probs = contests_list[0].find_all('a')
+        for prob in probs:
+            upsolved_problems.append(prob.contents[0])
+    
+    probs = all_contests.find_all('a')
+    
+    for prob in probs:
+        temp = prob.contents[0]
+        if not temp in upsolved_problems:
+            problems_solved_in_contests.append(temp)
+    
+    return (upsolved_problems, problems_solved_in_contests)
 
 
 def userScraper(user_handle):

@@ -3,42 +3,35 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import generics, serializers
 
+from user.exception import ValidationException
 from .models import CodechefContest
 from .serializers import CodechefUpsolveSerializer
-from .scraper_utils import contestgivenScrapper, userScraper
+from .scraper_utils import contestgivenScrapper, problems_solved, userScraper
 from problem.scraper.codechef import codeChefScraper
 from problem.scraper.autocodechef import autoCodechefScrap
 
 # Create your views here.
-
-def testing(request):
-    return HttpResponse("Successfully Scrapped!")
-
-def userDetails(request, handle):
-    print(handle)
-    userScraper(handle)
-    return HttpResponse("user saved")
-
-
-def ContestList(request, handle):
-    contestgivenScrapper(handle)
-    return HttpResponse("users contest collected")
-
-# def ProblemList()
-
-# def ProblemsInContest()
 
 class CodechefUpsolveAPIView(generics.GenericAPIView):
     
     serializer_class = CodechefUpsolveSerializer
 
     def get(self, request):
-        handle = 'anubhavtyagi'
-        contests = contestgivenScrapper(handle)
-        resp = []
-        # codeChefScraper()
-        for contest in contests:
-            cont, isCreated = CodechefContest.objects.get_or_create(contestId = contest)
-            resp.append(CodechefUpsolveSerializer(cont).data)
+    
+        handle = request.GET.get('handle', 'anubhavtyagi')
+        if handle == None:
+            raise ValidationException('Any of handle or Bearer Token is required.')
 
-        return Response({'result' : resp})
+        upsolved, solved = problems_solved(handle)
+        
+        data = {
+            'solved' : solved,
+            'upsolved' : upsolved
+        }
+
+        contests = contestgivenScrapper(handle)
+
+        conts = CodechefContest.objects.filter(contestId__in=contests)
+        result = CodechefUpsolveSerializer(conts, many=True, context=data).data
+
+        return Response({'result' : result})
