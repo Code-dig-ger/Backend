@@ -1,0 +1,13 @@
+[
+    {
+        "model":"user.userfriends",
+        "pk": 1,
+        "fields": {
+            "id":1,
+            "status":1,
+            "from_user_id":1,
+            "to_user_id":2
+		}
+    }
+
+]

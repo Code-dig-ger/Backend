@@ -1,4 +1,4 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 #from faker import Faker
 
@@ -12,7 +12,7 @@ from lists.test_fixtures.profile_fixtures import profile1, profile2
 class TestSetUp(APITestCase):
     fixtures = [
         "user.json", "problems.json", "lists.json", "list_info.json",
-        "solved.json"
+        "solved.json", "profiles.json", "userfriends.json"
     ]
 
     @classmethod
@@ -28,6 +28,12 @@ class TestSetUp(APITestCase):
         user.save()
         response = client.post(login_url, user_data, format="json")
         return response.data['tokens']['access']
+        
+    @classmethod
+    def get_authenticated_client(self, token):
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        return client
 
     def setUp(self):
         self.register_url = reverse('register')

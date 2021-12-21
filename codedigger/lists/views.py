@@ -13,11 +13,11 @@ from .serializers import (
     UserlistAddSerializer,
     AddProblemsAdminSerializer,
 )
-from django.db.models import Q
+from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
 from .utils import *
-from user.models import User
+from user.models import User, UserFriends
 
 
 class TopicwiseGetListView(generics.ListAPIView):
@@ -418,23 +418,25 @@ class ListGetView(generics.ListAPIView):
         return response.Response({'status': 'OK', 'result': send_data})
 
 
-class ListStats(generics.ListAPIView):
-    permission_classes = [AuthenticatedOrReadOnly]
-    serializer_class = GetUserlistSerializer
+# class ListStats(generics.ListAPIView):
+#     permission_classes = [AuthenticatedActivated]
+#     serializer_class = GetUserlistSerializer
 
-    def get(self, request, slug):
-        try:
-            list = List.objects.get(slug=slug)
-        except:
-            raise ValidationException(
-                "List with the provided slug does not exist")
-        qs = ListInfo.objects.filter(p_list=list)
-        send_data = ProblemSerializer(qs, many=True).data
-        return response.Response({'status': 'OK', 'result': send_data})
+#     def get(self, request, slug):
+#         try:
+#             list = List.objects.get(slug=slug)
+#         except:
+#             raise ValidationException(
+#                 "List with the provided slug does not exist")
+#         qs = Solved.objects.filter(problem__in=Subquery(
+#             ListInfo.objects.filter(
+#                 p_list=list).values('problem')))
+#         send_data=[{'total_problems_solved':len(qs)}]
+#         return response.Response({'status': 'OK', 'result': send_data})
 
 
 class UserStandingStats(generics.ListAPIView):
-    permission_classes = [AuthenticatedOrReadOnly]
+    permission_classes = [AuthenticatedActivated]
     serializer_class = GetUserlistSerializer
 
     def get(self, request, slug):
@@ -456,7 +458,7 @@ class UserStandingStats(generics.ListAPIView):
         if friend:
             qs = qs.filter(user__in=Subquery(
                 UserFriends.objects.filter(
-                    from_user=user).values('to_user_id')))
+                    from_user=here).values('to_user_id'))).union(qs.filter(user=here))
         send_data = []
         for rank, q in enumerate(qs):
             send_data.append({
