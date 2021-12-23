@@ -16,9 +16,9 @@ class CodechefUpsolveAPIView(generics.GenericAPIView):
     
     serializer_class = CodechefUpsolveSerializer
 
-    def get(self, request):
+    def get(self, request, username):
     
-        handle = request.GET.get('handle', 'anubhavtyagi')
+        handle = request.GET.get('handle', username)
         if handle == None:
             raise ValidationException('Any of handle or Bearer Token is required.')
 
