@@ -4,7 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from time import sleep
 from user.exception import ValidationException
-from codechef.scraper import problemScraper
+from codechef.scraper import problemScraper, profilePageScraper
+from codechef.models import User
 
 
 def OffsetLoader(contest_type):
@@ -90,3 +91,82 @@ def ProblemData(contest_code):
         all_problems.append(finalProblemData)
 
     return (all_problems)
+
+def contestgivenScrapper(user_handle):
+
+    soup = profilePageScraper(user_handle)
+
+    contests = soup.find('article')
+    contests = contests.find_all('p')
+
+    contests_given = []
+    for contest in contests:
+        cont = contest.find('strong').contents
+        contests_given.append(cont[0][:-1])
+    
+    if contests_given[0] == "Practice":
+        contests_given = contests_given[1:]
+        
+    return contests_given
+
+def problems_solved(user_handle):
+
+    soup = profilePageScraper(user_handle)
+    print(user_handle)
+    upsolved_problems = []
+    problems_solved_in_contests = []
+
+    all_contests = soup.find('article')
+    contests_list = all_contests.find_all('p')
+    cont = (contests_list[0].find('strong').contents)[0][:-1]
+
+    if cont == "Practice":
+        probs = contests_list[0].find_all('a')
+        for prob in probs:
+            upsolved_problems.append(prob.contents[0])
+    
+    probs = all_contests.find_all('a')
+    
+    for prob in probs:
+        temp = prob.contents[0]
+        if not temp in upsolved_problems:
+            problems_solved_in_contests.append(temp)
+    
+    return (upsolved_problems, problems_solved_in_contests)
+
+
+def userScraper(user_handle):
+    
+    soup = profilePageScraper(user_handle)
+    user_details = soup.find('section', class_='user-details')
+
+    name = soup.find('div', class_='user-details-container plr10')
+    name = name.find('h1').contents[0]
+
+    country = user_details.find('span', class_='user-country-name').contents[0]
+
+    rating = soup.find('div', class_='rating-header')
+
+    user_rating = soup.find('div', class_='rating-number')
+    user_rating = (user_rating.contents)[0]
+
+    user_stars = rating.find('div', class_='rating-star')
+    user_stars = len(list(user_stars.find_all('span')))
+
+    user_highest_rating = (rating.find('small').contents)[0]
+    user_highest_rating = str(user_highest_rating).split(' ')[-1][:-1]
+
+    ranks = soup.find('div', class_='rating-ranks')
+    ranks = ranks.find_all('strong')
+    global_rank = ranks[0].contents[0]
+    country_rank = ranks[1].contents[0]
+
+    user, isCreated = User.objects.get_or_create(handle=user_handle, username=user_handle)
+    user.name = name
+    user.stars = user_stars
+    user.rating = int(user_rating)
+    user.maxRating = int(user_highest_rating)
+    user.country = country
+    user.country_rank = country_rank
+    user.global_rank = global_rank
+    user.save()

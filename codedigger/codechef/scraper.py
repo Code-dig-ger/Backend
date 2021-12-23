@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from time import sleep
 import os, json, django
+
+from .models import CodechefContest, User
 from user.exception import ValidationException
 
 from problem.models import *
@@ -145,3 +147,9 @@ def recentSubmissions(userid):
             recentlist.append(subformat)
         
     return recentlist
+def profilePageScraper(user_handle):
+    
+    query_user_profile_url = f"https://www.codechef.com/users/{user_handle}"
+    r = requests.get(query_user_profile_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    return soup
