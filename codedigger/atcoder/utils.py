@@ -15,7 +15,7 @@ def atcoder_status(handle):
         return (contests_details, all_contest, solved, wrong)
 
     contests_details = get_all_contests_details(res.content)
-    
+
     try:
         data = get_user_results(handle)
     except:

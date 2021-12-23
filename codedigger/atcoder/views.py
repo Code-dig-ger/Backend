@@ -51,7 +51,7 @@ class ATUpsolveContestAPIView(
 
         if practice != None:
             path = '{}practice={};'.format(path, practice)
-        
+
         per_page = get_page_number(per_page)
         page = get_page_number(page)
 
