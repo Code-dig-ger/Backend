@@ -206,3 +206,10 @@ class EnrollInListSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('slug', )
+
+
+class UpdateCodeforcesForUserSerializer(serializers.Serializer):
+    limit = serializers.IntegerField(required=False)
+
+    class Meta:
+        fields = ('limit', )

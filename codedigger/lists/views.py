@@ -7,14 +7,14 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
-                          EnrollInListSerializer)
+                          EnrollInListSerializer,UpdateCodeforcesForUserSerializer)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
 from .utils import *
 from user.models import User
-
-
+from codeforces.api import user_status
+from .solved_update import UpdateforUserCodeforces
 class TopicwiseGetListView(generics.ListAPIView):
     serializer_class = GetSerializer
     permission_classes = [AuthenticatedOrReadOnly]
@@ -764,6 +764,23 @@ class EnrollListView(generics.GenericAPIView):
             },
             status=status.HTTP_201_CREATED)
 
+
+class UpdateCodeforcesForUserView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = UpdateCodeforcesForUserSerializer
+    
+    def post(self,request,*args, **kwargs):
+        curr_user = self.request.user
+        data = request.data
+        limit = data.get("limit",None)
+        returned_status,returned_response = UpdateforUserCodeforces(curr_user,limit);
+        if returned_status:
+            return response.Response({'status': 'OK', 'result': returned_response}, status = status.HTTP_200_OK)
+        else:
+            return ValidationException(returned_response)
+        
+        
+        
 
 def testing(request):
     updater()
