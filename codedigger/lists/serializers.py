@@ -200,3 +200,10 @@ class AddProblemsAdminSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('slug', )
+
+
+class EnrollInListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('slug', )

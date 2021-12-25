@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
+    <!-- UPDATE route title -->
+    <title>Codedigger REST API DOC - Enroll Into List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/doc.css">
+  </head>
+  <body>
+    <div class="doc__bg"></div>
+    <nav class="header">
+      <h1 class="logo"> <a href="https://api.codedigger.tech/"> Codedigger {API} </a><span class="logo__thin">Doc</span></h1>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link"><i class="fa fa-github"></i> Github</a></li>
+        <li class="menu__item"><a href="../doc.html" class="link"><i class="fa fa-home"></i> Home</a></li>
+      </ul>
+    </nav>
+    <div class="wrapper">
+      <aside class="doc__nav">
+        <ul>
+          <li class="js-btn selected"> <a href="#title"> Title </a></li>
+          <li class="js-btn"> <a href="#url"> URL </a></li>
+          <li class="js-btn"> <a href="#headers"> Headers </a></li>
+          <li class="js-btn"> <a href="#data-param"> Data Params </a></li>
+          <li class="js-btn"> <a href="#success-response"> Success Response </a></li>
+          <li class="js-btn"> <a href="#error-response"> Error Response </a></li>
+          <li class="js-btn"> <a href="#sample-call"> Sample Call </a></li>
+          <li class="js-btn"> <a href="#notes"> Notes </a></li>  
+        </ul>
+
+        <p> <b>Author:</b> @sreelayavuyyuru </p>  
+        <p> <b>Created at:</b> Dec 17, 2021 </p>   
+        <p> <b>Updated by:</b>
+            <ul>
+              <li> @sreelayavuyyuru </li>
+            </ul> 
+        </p>
+        <p> <b>Last Updated:</b> Dec 17, 2021 </p>
+        
+      </aside>
+      <article class="doc__content">
+        <section id="title" class="js-section">
+          <h2 class="section__title">Title</h2>
+          <p>
+            For a user to enroll into any public list
+          </p>
+        </section>
+        <section id = "url" class="js-section">
+          <h3 class="section__title">URL</h3>
+          <div class="block get-block">
+            <div class="method get-method">
+              POST
+            </div>
+            <span class="summary get-summary">
+                /lists/enroll-list/
+            </span>
+          </div>
+        </section>
+        <section id = "headers" class="js-section">
+          <h3 class="section__title">Headers</h3>
+          <table>
+            <tr>
+              <th>Header Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>Authorization</td>
+              <td>true</td>
+              <td>string</td>
+              <td>
+                Bearer {Token}
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section id = "data-param" class="js-section">
+          <h3 class="section__title">Data Params</h3>
+          <p> 
+            For POST Request. 
+          </p>
+          <table>
+            <tr>
+              <th>Param Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>slug</td>
+              <td>true</td>
+              <td>string</td>
+              <td>
+                slug of the list
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section id = "success-response" class="js-section">
+          <h3 class="section__title">Success Response</h3>
+          <p> 
+            Status Code: 201
+          </p>
+          <p> 
+            Sample Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+        {
+            "status": "OK",
+            "result": "User has been enrolled into the list"
+        }
+            </code>
+          </pre>
+        </section>
+        <section id = "error-response" class="js-section">
+          <h3 class="section__title">Error Response</h3>
+          <p>
+            Only authorized users can enroll into a list
+          </p>
+          <p> 
+            Status Code: 401 UNAUTHORIZED
+          </p>
+          <p> 
+            Error Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+        {
+            "status": "FAILED",
+            "error": "Authentication credentials were not provided"
+        }
+            </code>
+          </pre>
+        </section>
+        <section id = "error-response" class="js-section">
+            <h3 class="section__title">Error Response</h3>
+            <p>
+                The list enrolled into should be public
+            </p>
+            <p> 
+              Status Code: 400 BAD REQUEST 
+            </p>
+            <p> 
+              Error Response:  
+            </p>        
+            <pre >
+              <code class="language-json">
+        {
+            "status": "FAILED",
+            "error": "List is not public"
+        }
+              </code>
+            </pre>
+          </section>
+          <section id = "error-response" class="js-section">
+            <h3 class="section__title">Error Response</h3>
+            <p>
+                The user should not have already enrolled into that list
+            </p>
+            <p> 
+              Status Code: 400 BAD REQUEST 
+            </p>
+            <p> 
+              Error Response:  
+            </p>        
+            <pre >
+              <code class="language-json">
+        {
+            "status": "FAILED",
+            "error": "User has already been enrolled into this list"
+        }
+              </code>
+            </pre>
+          </section>
+        <section id = "sample-call" class="js-section">
+          <h3 class="section__title">Sample Call</h3>
+          <pre>
+            <code class="language-bash">
+              curl -X GET "https://api.codedigger.tech/lists/enroll-list"
+            </code>
+          </pre> 
+        </section>
+        <section id = "notes" class="js-section">
+          <h3 class="section__title">Notes</h3>
+          <p> 
+            This is where all uncertainties, commentary, discussion etc. can go.
+            Mention timestamp and identify yourself when leaving comments here.
+          </p>
+        </section>
+      </article>
+    </div>
+
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
+    </script>
+    <script src="../static/js/docs.js"></script>
+  </body>
+</html>

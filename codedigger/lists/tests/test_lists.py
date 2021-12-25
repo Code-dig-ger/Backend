@@ -138,9 +138,7 @@ class TestViews(TestSetUp):
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)
         res3 = client.get(test_url, format="json")
-
-        print(res3.data)
-
+        
         self.assertEqual(res.data['result'][0]['rank'], 1) and self.assertGreaterEqual(res.data['result'][0]['problems_solved'],
             res.data['result'][1]['problems_solved'])
 
