@@ -7,6 +7,7 @@ import os, json, django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "codedigger.settings")
 django.setup()
 from problem.models import Problem
+from codechef.models import CodechefContest, CodechefContestProblems
 
 platform = "C"
 
@@ -143,6 +144,9 @@ def storeProb(data, cont, b_url):
             else:
                 p.contest_id = cont
                 p.save()
+
+        cont = CodechefContest.objects.create(contestId=cont)
+        CodechefContestProblems.objects.create(contest=cont, problem=p)      
 
 
 def contestIdScraper():

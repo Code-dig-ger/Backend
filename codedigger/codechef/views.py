@@ -1,14 +1,37 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework import generics, serializers
+
+from user.exception import ValidationException
+from .models import CodechefContest
+from .serializers import CodechefUpsolveSerializer
+from .scraper_utils import contestgivenScrapper, problems_solved, userScraper
+from problem.scraper.codechef import codeChefScraper
+from problem.scraper.autocodechef import autoCodechefScrap
 
 # Create your views here.
 
-# def testing(request):
-#     go_scraper()
-#     return HttpResponse("Successfully Scrapped!")
+class CodechefUpsolveAPIView(generics.GenericAPIView):
+    
+    serializer_class = CodechefUpsolveSerializer
 
-# def ContestList():
+    def get(self, request, username):
+    
+        handle = request.GET.get('handle', username)
+        if handle == None:
+            raise ValidationException('Any of handle or Bearer Token is required.')
 
-# def ProblemList()
+        upsolved, solved = problems_solved(handle)
+        
+        data = {
+            'solved' : solved,
+            'upsolved' : upsolved
+        }
 
-# def ProblemsInContest()
+        contests = contestgivenScrapper(handle)
+
+        conts = CodechefContest.objects.filter(contestId__in=contests)
+        result = CodechefUpsolveSerializer(conts, many=True, context=data).data
+
+        return Response({'result' : result})

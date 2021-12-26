@@ -26,6 +26,7 @@ urlpatterns = [
                  namespace="social_auth")),
     path('problems/', include('problem.urls')),
     path('codeforces/', include('codeforces.urls')),
+    path('codechef/', include('codechef.urls')),
     path('lists/', include('lists.urls')),
     path('blog/', include('blog.urls')),
     path('contest/', include('contest.urls')),
