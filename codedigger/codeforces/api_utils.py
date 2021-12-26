@@ -29,6 +29,14 @@ def get_prob_id(submission):
         submission['problem']['contestId']) + submission['problem']['index']
 
 
+def get_all_submission(submissions):
+    probIds = set()
+    for submission in submissions:
+        if 'contestId' in submission:
+            probIds.add(get_prob_id(submission))
+    return probIds
+
+
 def get_wrong_submission(submissions,
                          SolvedProblems=set(),
                          UpsolvedProblems=set()):

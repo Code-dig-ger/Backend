@@ -1,45 +1,37 @@
 from .models import contest
 from problem.models import Problem
 from .api import user_status
-from .api_utils import get_prob_id
+from .api_utils import get_all_submission
 
-def CodeforcesAssignProblem(cf_user):
+def AssignCodeforcesProblem(cf_user):
 
-    contests=contest.objects.filter(Type__exact='R')
+    # Set Minimum rating as 1000 and maximum rating as 2500
+    userRating = cf_user.rating // 100 * 100
+    userRating = min(max(userRating, 1000), 2500)
+
+    contests = contest.objects.filter(Type__exact='R')
     contestIds = [ contest.contestId for contest in contests]
-    
-    Userrating=cf_user['rating']
-    Userrating=Userrating // 100 * 100
+ 
+    problems = Problem.objects.filter(contest_id__in = contestIds, 
+                                    platform = 'F',
+                                    difficulty__isnull = False,
+                                    rating__gte = userRating-200, 
+                                    rating__lte = userRating+200)
 
-    # Making a below line that Minimum rating as 1000 and maximum rating as 2500
-    if Userrating<=1000:
-        Userrating=1000
-    if Userrating>=2500:
-        Userrating=2500
-
-    # problems -> superset 
-    problems=Problem.objects.filter(contest_id__in = contestIds, platform = 'F',difficulty__isnull=False,rating__gte=(Userrating-200),rating__lte=(Userrating+200))
-
-
-    #taking all the user Submissions that he have done before
-    UserSubmissions=user_status(cf_user['handle'])
-
-#  problems2 - >filtered out problems Exculding the problems that user solved
-    FilteredProblems=[]
-    for problem in problems:
-        for submission in UserSubmissions:
-            if get_prob_id(submission)!=(problem['prob_id']):
-                FilteredProblems.append(problem)
+    # Excluding all the submissions that have seen by the user                            
+    submissions = user_status(cf_user.handle)
+    probIds = get_all_submission(submissions)
+    problems = problems.exclude(prob_id__in = probIds)
     
     # Assigning the problem as per the order 
     # rating-200,rating-100,=rating,rating+100,rating+200
-    AssignedProblem=[]
-    Temp_rating=Userrating-200      #Temprary variable for checking the rating
+    AssignedProblem = []
+    userRating -= 200 
     for i in range(5):
-        for problem in FilteredProblems:
-            if (problem['rating']//100*100)==Temp_rating:
+        for problem in problems:
+            if problem.rating == userRating:
                 AssignedProblem.append(problem)
                 break
-        Temp_rating+=100
+        userRating += 100
 
     return AssignedProblem

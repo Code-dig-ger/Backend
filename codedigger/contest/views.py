@@ -21,9 +21,10 @@ from codeforces.api import user_status
 from codeforces.api_utils import (codeforces_user_submissions,
                                   get_correct_submissions,
                                   get_wrong_submission)
+from codeforces.contestProblem import AssignCodeforcesProblem
 from codeforces.codeforcesProblemSet import get_similar_problems
 from codeforces.models_utils import validate_handle
-from .model_utils import get_contest_problem_qs, get_user_contests
+from .model_utils import get_contest_problem_qs, get_user_contests, put_contest_problem
 
 
 class ContestAPIView(
@@ -131,8 +132,8 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
             pastContests.count() + 1)
         newContest.save()
 
-        # TODO Assign Problems to this Contest
-        # https://github.com/cheran-senthil/TLE/blob/master/tle/cogs/codeforces.py#L178
+        problems = AssignCodeforcesProblem(codeforcesUser)
+        put_contest_problem(newContest, problems)
 
         return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
 
