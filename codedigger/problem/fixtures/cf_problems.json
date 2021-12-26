@@ -22,7 +22,8 @@
             "url":"https://codeforces.com/gym/100001/problem/B",
             "platform":"F",
             "contest_id":"100001",
-            "rating": 1200,
+            "rating": 2400,
+            "difficulty": "S",
             "index":"B",
             "tags":"['dp', 'graphs']"
         }
@@ -50,7 +51,8 @@
             "url":"https://codeforces.com/contest/1549/problem/D",
             "platform":"F",
             "contest_id":"1549",
-            "rating": 1900,
+            "rating": 2300,
+            "difficulty": "S",
             "index":"D"
         }
     },
@@ -63,7 +65,8 @@
             "url":"https://codeforces.com/contest/1549/problem/E",
             "platform":"F",
             "contest_id":"1549",
-            "rating": 2601,
+            "rating": 2600,
+            "difficulty": "S",
             "index":"E"
         }
     },
@@ -89,7 +92,8 @@
             "url":"https://codeforces.com/contest/1345/problem/B",
             "platform":"F",
             "contest_id":"1345",
-            "rating": 1252,
+            "rating": 2400,
+            "difficulty": "S",
             "index":"B"
         }
     },
@@ -115,7 +119,8 @@
             "url":"https://codeforces.com/contest/1345/problem/D",
             "platform":"F",
             "contest_id":"1345",
-            "rating": 1656,
+            "rating": 2700,
+            "difficulty": "S",
             "index":"D"
         }
     },
@@ -128,7 +133,8 @@
             "url":"https://codeforces.com/contest/1345/problem/E",
             "platform":"F",
             "contest_id":"1345",
-            "rating": 2525,
+            "rating": 2500,
+            "difficulty": "S",
             "index":"E"
         }
     }
