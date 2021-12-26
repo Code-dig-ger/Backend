@@ -139,7 +139,7 @@ from .contestProblem import AssignCodeforcesProblem
 
 
 def testing(request):
-    cf_user = user.objects.get(handle = "shivamsinghal1012")
+    cf_user = user.objects.get(handle="shivamsinghal1012")
     problems = AssignCodeforcesProblem(cf_user)
     print(problems)
     return JsonResponse({'status': 'OK'})
