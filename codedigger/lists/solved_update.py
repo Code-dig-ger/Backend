@@ -149,3 +149,34 @@ def atcoder_scraper_check(user, prob):
     check = soup.find_all("span", {"class": "label label-success"})
     if check:
         Solved.objects.create(user=user, problem=prob)
+
+def UpdateforUserCodeforces(user, limit):
+    # limit should either be None, or be an integer greater than or equal to 1.
+    if user is None:
+        return (False,"Given User object cannot be None")
+    cf_handle = Profile.objects.get(owner=user).codeforces
+    if cf_handle == None:
+        return (False,"cf_handle cannot be None.")
+    try:
+        submission_user = user_status(cf_handle)
+    except ValidationException:
+        return (False, "Not able to fetch submission data from codeforces.")
+    for ele in submission_user:
+        if 'verdict' not in ele or 'contestId' not in ele or ele[
+                'verdict'] != 'OK':
+            continue
+        prob_id = str(ele['problem']['contestId']) + str(
+            ele['problem']['index'])
+        prob = Problem.objects.filter(prob_id=prob_id, platform='F')
+        if not prob.exists():
+            continue
+        solve, created = Solved.objects.get_or_create(user=user,
+                                                      problem=prob[0])
+        if not created and limit != None:
+            limit -= 1
+            if limit <= 0:
+                break
+            continue
+    return (True, "Submission data for the given user has been saved successfully.")
+
+

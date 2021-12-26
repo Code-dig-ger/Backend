@@ -2,7 +2,7 @@ from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
 from rest_framework.test import APIClient
-from lists.models import Solved, ListInfo
+from lists.models import Solved, ListInfo, Enrolled
 from problem.models import Problem
 
 
@@ -171,3 +171,39 @@ class TestViews(TestSetUp):
                 flag = 1
             self.assertEqual(response.status_code, 200) and self.assertEqual(
                 flag, 1)
+
+    def test_auth_check_enrolled_into_list(self):
+        test_url = reverse('enroll-list')
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        data = {
+            "slug": "testinglist_topicwise",
+        }
+        res = client.post(test_url, data, format="json")
+        ok = True
+        elist = Enrolled.objects.filter(enroll_user=here)
+        for enrolled in elist:
+            if not (enrolled == "testinglist_levelwise"
+                    or enrolled == "testinglist_topicwise"):
+                ok = False
+        self.assertEqual(res.status_code, 201) and self.assertEqual(ok, True)
+
+    def test_auth_check_enrolled_lists_view(self):
+        test_url = reverse('enroll-list')
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url, format="json")
+        elist = Enrolled.objects.filter(enroll_user=here)
+        if elist.count() != 1:
+            ok = False
+        self.assertEqual(res.status_code, 200) and self.assertEqual(ok, True)

@@ -11,7 +11,7 @@ def OffsetLoader(contest_type):
     requested_contests = []
     for i in range(0, 60,
                    20):  #offset {0, 20, 40} for multiple pages of contests.
-        contests_data = contestData(i, contest_type)
+        contests_data = contestScraper(i, contest_type)
 
         for contests in contests_data['contests']:
             requested_contests.append(contests)
@@ -35,9 +35,9 @@ def getContestDivision(contest_id):
     return subcontests
 
 
-def ContestData():
+def ContestData(type):
 
-    contests_data = OffsetLoader('past')
+    contests_data = OffsetLoader(type)
     all_contests = []
     dateDict = {
         "Jan": "January",

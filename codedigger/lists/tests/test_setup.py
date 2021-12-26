@@ -3,14 +3,17 @@ from django.urls import reverse
 #from faker import Faker
 
 from user.models import User, Profile
-from lists.models import List, Solved, ListInfo
+from lists.models import List, Solved, ListInfo, Enrolled
 from problem.models import Problem
 
 from lists.test_fixtures.profile_fixtures import profile1, profile2
 
 
 class TestSetUp(APITestCase):
-    fixtures = ["user.json", "problems.json", "lists.json", "list_info.json"]
+    fixtures = [
+        "user.json", "problems.json", "lists.json", "list_info.json",
+        "enrolled.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):

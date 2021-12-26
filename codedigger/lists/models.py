@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields import related
 from problem.models import Problem
 from user.models import User
 from django.template.defaultfilters import slugify
@@ -131,3 +132,15 @@ class LadderStarted(models.Model):
 
     def __str__(self):
         return self.ladder.name + " started by " + self.ladder_user.username
+
+
+class Enrolled(models.Model):
+    enroll_user = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    related_name="enroll_user")
+    enroll_list = models.ForeignKey(List,
+                                    on_delete=models.CASCADE,
+                                    related_name="enroll_list")
+
+    def __str__(self):
+        return self.enroll_list.slug
