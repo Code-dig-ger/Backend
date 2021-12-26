@@ -18,7 +18,8 @@ def is_verdict_ok(submission):
 
 def is_verdict_wrong(submission):
     #it will give wrong submission if and only if user's first case isn't wrong but the overall submission is wrong
-    if submission['verdict'] != 'OK' and submission['passedTestCount'] < 1:
+
+    if submission['verdict'] != 'OK' and submission['passedTestCount'] > 0:
         return True
     else:
         return False
@@ -27,6 +28,14 @@ def is_verdict_wrong(submission):
 def get_prob_id(submission):
     return str(
         submission['problem']['contestId']) + submission['problem']['index']
+
+
+def get_all_submission(submissions):
+    probIds = set()
+    for submission in submissions:
+        if 'contestId' in submission:
+            probIds.add(get_prob_id(submission))
+    return probIds
 
 
 def get_wrong_submission(submissions,
