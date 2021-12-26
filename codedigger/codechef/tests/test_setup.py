@@ -2,6 +2,7 @@ from rest_framework.test import APITestCase
 
 
 class TestSetUp(APITestCase):
+
     def setUp(self):
         # set up test case do some calculation
         return super().setUp()

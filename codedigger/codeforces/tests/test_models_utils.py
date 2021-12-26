@@ -12,6 +12,7 @@ from problem.models import Problem
 
 
 class TestViews(TestSetUp):
+
     def test_create_user(self):
         newUser = create_or_update_user(cf_user)
         users = user.objects.filter(handle=cf_user['handle'])

@@ -105,6 +105,7 @@ class GetLadderSerializer(serializers.ModelSerializer):
 
 
 class GetUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = ('id', 'name', 'description', 'slug', 'public')
@@ -158,6 +159,7 @@ class ProblemUserlisterializer(serializers.ModelSerializer):
 
 
 class EditUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = (

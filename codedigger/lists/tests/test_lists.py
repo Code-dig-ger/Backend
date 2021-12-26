@@ -10,6 +10,7 @@ from lists.models import Solved
 
 
 class TestViews(TestSetUp):
+
     def test_check_owner_can_change_visibility_view(self):
         slug = "testinglist_userlist"
         test_url = reverse('userlist-edit', kwargs={'slug': slug})

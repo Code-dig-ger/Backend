@@ -719,6 +719,7 @@ class AddProblemsAdminView(generics.GenericAPIView):
 
 
 class ProblemsPublicListView(views.APIView):
+
     def get_object(self, slug):
         if not List.objects.filter(slug=slug).exists():
             raise NotFoundException(

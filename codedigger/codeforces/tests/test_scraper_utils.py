@@ -6,6 +6,7 @@ from codeforces.codeforcesProblemSet import join, get_similar_problems
 
 
 class TestViews(TestSetUp):
+
     def test_is_same_problem(self):
         url1 = "https://codeforces.com/problemset/problem/1355/B"
         url2 = "https://codeforces.com/gym/102599/problem/D"
