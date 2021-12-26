@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import (
-#     ListStats,
     TopicwiseGetListView,
     TopicWiseRetrieveView,
     TopicwiseGetLadderView,
@@ -14,12 +13,13 @@ from .views import (
     UserlistCreateView,
     UserlistGetView,
     UserlistAddProblemView,
+    UserStandingStats,
     EditUserlistView,
     AddProblemsAdminView,
     ProblemsPublicListView,
     SearchUserlistView,
     ListGetView,
-    UserStandingStats,
+    EnrollListView,
     testing)
 
 urlpatterns = [
@@ -62,6 +62,7 @@ urlpatterns = [
     path('userlist/edit/<str:slug>',
          EditUserlistView.as_view(),
          name='userlist-edit'),
+    path('enroll-list/', EnrollListView.as_view(), name='enroll-list'),
     path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
 #     path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),

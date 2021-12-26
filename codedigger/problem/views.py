@@ -15,8 +15,8 @@ from .models import Problem, atcoder_contest
 # Serializers
 from user.serializers import FriendsShowSerializer
 from .serializers import (ProbSerializer, UpsolveContestSerializer,
-                          CCUpsolveContestSerializer,
-                          AtcoderUpsolveContestSerializer)
+                          CCUpsolveContestSerializer)
+from atcoder.serializers import AtcoderUpsolveContestSerializer
 
 # Utility Functions
 from codeforces.models_utils import get_contests
