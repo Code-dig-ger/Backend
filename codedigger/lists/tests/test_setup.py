@@ -28,7 +28,7 @@ class TestSetUp(APITestCase):
         user.save()
         response = client.post(login_url, user_data, format="json")
         return response.data['tokens']['access']
-        
+
     @classmethod
     def get_authenticated_client(self, token):
         client = APIClient()

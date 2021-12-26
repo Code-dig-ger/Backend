@@ -453,7 +453,8 @@ class UserStandingStats(generics.ListAPIView):
         if friend:
             qs = qs.filter(user__in=Subquery(
                 UserFriends.objects.filter(
-                    from_user=here).values('to_user_id'))).union(qs.filter(user=here))
+                    from_user=here).values('to_user_id'))).union(
+                        qs.filter(user=here))
         send_data = []
         for rank, q in enumerate(qs):
             send_data.append({

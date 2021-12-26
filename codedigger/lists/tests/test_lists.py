@@ -120,7 +120,7 @@ class TestViews(TestSetUp):
                     break
         self.assertEqual(res.status_code, 200) and self.assertEqual(
             res2.status_code, 400) and ok
-    
+
     def test_get_user_stats(self):
         slug = "testinglist_levelwise"
         test_url = reverse('user-standing', kwargs={'slug': slug})
@@ -134,13 +134,16 @@ class TestViews(TestSetUp):
         res2 = client.get(test_url, format="json")
 
         slug = "testinglist_levelwise"
-        test_url = reverse('user-standing', kwargs={'slug': slug}) + f'?friend={True}'
+        test_url = reverse('user-standing', kwargs={'slug': slug
+                                                    }) + f'?friend={True}'
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)
         res3 = client.get(test_url, format="json")
-        
-        self.assertEqual(res.data['result'][0]['rank'], 1) and self.assertGreaterEqual(res.data['result'][0]['problems_solved'],
-            res.data['result'][1]['problems_solved'])
+
+        self.assertEqual(res.data['result'][0]['rank'],
+                         1) and self.assertGreaterEqual(
+                             res.data['result'][0]['problems_solved'],
+                             res.data['result'][1]['problems_solved'])
 
 
 def test_get_user_list(self):
