@@ -130,18 +130,16 @@ class CodeforcesUpsolveAPIView(generics.GenericAPIView):
         return Response(res)
 
 
-from .cron import codeforces_update_problems
+# from .cron import codeforces_update_problems
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from .test_fixtures.rating_change_fixture import contest_rank, rating_change
 from .utils import *
-from .contestProblem import AssignCodeforcesProblem
-
+from codeforces.api import contest_submissions
 
 def testing(request):
-    cf_user = user.objects.get(handle="shivamsinghal1012")
-    problems = AssignCodeforcesProblem(cf_user)
-    print(problems)
+    submissions =contest_submissions(contestId=1619,count=10)
+    print(submissions)
     return JsonResponse({'status': 'OK'})
 
 

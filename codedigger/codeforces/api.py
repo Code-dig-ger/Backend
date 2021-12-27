@@ -141,3 +141,15 @@ def user_status(handle, starting_from=1, count=None):
     url = "https://codeforces.com/api/user.status"
     response = requests.get(url, params=payload)
     return validated_response(response)
+
+def contest_submissions(contestId,handle=None,from_=1,count=1000):
+    url = "https://codeforces.com/api/contest.status"
+    payload = {
+        'contestId': contestId,
+        'handle': handle,
+        'from': from_,
+        'count': count
+    }
+
+    response = requests.get(url=url, params=payload)
+    return validated_response(response)
