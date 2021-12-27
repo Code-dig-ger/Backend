@@ -8,6 +8,7 @@ from codechef.test_fixtures.scraper_utils_fixture import (problemResult,
 
 
 class TestScraper(TestSetUp):
+
     def test_problemScraper(self):
 
         code = "APRIL19B"

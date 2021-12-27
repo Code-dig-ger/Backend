@@ -6,6 +6,7 @@ from .models import Profile
 
 
 class AuthenticatedOrReadOnly(BasePermission):
+
     def has_permission(self, request, view):
         if request.user or request.user.is_authenticated or request.method in SAFE_METHODS:
             return True
@@ -22,6 +23,7 @@ class ForbiddenAdmin(APIException):
 
 
 class AuthenticatedAdmin(permissions.BasePermission):
+
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated and request.user.is_staff:
             return True
@@ -30,6 +32,7 @@ class AuthenticatedAdmin(permissions.BasePermission):
 
 
 class IsOwner(permissions.BasePermission):
+
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
 
@@ -43,6 +46,7 @@ class Forbidden(APIException):
 
 
 class Authenticated(permissions.BasePermission):
+
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             raise Forbidden
@@ -56,6 +60,7 @@ class ForbiddenActivation(APIException):
 
 
 class AuthenticatedActivated(permissions.BasePermission):
+
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated:
             if Profile.objects.get(owner=request.user).codeforces is not None:

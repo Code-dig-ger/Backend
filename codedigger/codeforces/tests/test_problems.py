@@ -5,6 +5,7 @@ from codeforces.models import user
 
 
 class Test_assign_problem(TestSetUp):
+
     def test_Assign(self):
         test_user = user.objects.get(handle='tourist')
         problems = AssignCodeforcesProblem(test_user)

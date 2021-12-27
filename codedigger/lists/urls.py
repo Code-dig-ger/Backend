@@ -13,6 +13,7 @@ from .views import (
     UserlistCreateView,
     UserlistGetView,
     UserlistAddProblemView,
+    UserStandingStats,
     EditUserlistView,
     AddProblemsAdminView,
     ProblemsPublicListView,
@@ -64,5 +65,9 @@ urlpatterns = [
     path('enroll-list/', EnrollListView.as_view(), name='enroll-list'),
     path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
+    #     path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),
+    path('<str:slug>/stats/standing',
+         UserStandingStats.as_view(),
+         name='user-standing'),
     path('testing', testing),
 ]

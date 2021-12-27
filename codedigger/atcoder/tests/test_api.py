@@ -4,6 +4,7 @@ from ..api import *
 
 
 class Test(TestSetUp):
+
     def test_atcoder_get_all_contests(self):
         res = get_all_contests()
         self.assertEqual(res[0]["id"], "APG4b")
