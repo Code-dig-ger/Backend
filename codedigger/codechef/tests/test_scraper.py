@@ -11,7 +11,7 @@ class TestScraper(TestSetUp):
 
     def test_problemScraper(self):
 
-        code = "APRIL19B"
+        code = "COOK117B"
 
         output_result = problemScraper(code)
         self.assertEqual("status" in output_result, True,
