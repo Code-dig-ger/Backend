@@ -146,7 +146,7 @@ def storeProb(data, cont, b_url):
                 p.save()
 
         cont = CodechefContest.objects.create(contestId=cont)
-        CodechefContestProblems.objects.create(contest=cont, problem=p)      
+        CodechefContestProblems.objects.create(contest=cont, problem=p)
 
 
 def contestIdScraper():

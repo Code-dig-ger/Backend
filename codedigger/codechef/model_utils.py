@@ -2,6 +2,7 @@ from datetime import datetime
 from problem.models import Problem
 from codechef.models import CodechefContest, CodechefContestProblems
 
+
 def create_or_update_codechefProblem(problemdata):
     for problem in problemdata:
         Prob, created = Problem.objects.get_or_create(
