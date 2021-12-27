@@ -1,9 +1,10 @@
 from codechef.scraper import contestScraper, problemScraper, profilePageScraper
 
+
 def OffsetLoader(contest_type):
 
     requested_contests = []
-    for i in range(0, 60, 20):  
+    for i in range(0, 60, 20):
         #offset {0, 20, 40} for multiple pages of contests.
         contests_data = contestScraper(i, contest_type)
 
@@ -11,6 +12,7 @@ def OffsetLoader(contest_type):
             requested_contests.append(contests)
 
     return requested_contests
+
 
 def getContestDivision(contest_id):
 
@@ -85,6 +87,7 @@ def ProblemData(contest_code):
 
     return (all_problems)
 
+
 def contestgivenScrapper(user_handle):
 
     soup = profilePageScraper(user_handle)
@@ -96,11 +99,12 @@ def contestgivenScrapper(user_handle):
     for contest in contests:
         cont = contest.find('strong').contents
         contests_given.append(cont[0][:-1])
-    
+
     if contests_given[0] == "Practice":
         contests_given = contests_given[1:]
-        
+
     return contests_given
+
 
 def problems_solved(user_handle):
 
@@ -117,19 +121,19 @@ def problems_solved(user_handle):
         probs = contests_list[0].find_all('a')
         for prob in probs:
             upsolved_problems.append(prob.contents[0])
-    
+
     probs = all_contests.find_all('a')
-    
+
     for prob in probs:
         temp = prob.contents[0]
         if not temp in upsolved_problems:
             problems_solved_in_contests.append(temp)
-    
+
     return (upsolved_problems, problems_solved_in_contests)
 
 
 def userScraper(user_handle):
-    
+
     soup = profilePageScraper(user_handle)
     user_details = soup.find('section', class_='user-details')
 

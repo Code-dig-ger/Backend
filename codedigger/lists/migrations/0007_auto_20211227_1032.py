@@ -14,6 +14,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='enrolled',
             name='enroll_list',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enroll_list', to='lists.list'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='enroll_list',
+                to='lists.list'),
         ),
     ]

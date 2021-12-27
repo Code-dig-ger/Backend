@@ -6,6 +6,7 @@ from user.exception import ValidationException
 from problem.models import *
 from codechef.models import *
 
+
 def divisionScraper(contest_id):
 
     contest_url = f"https://www.codechef.com/api/contests/{contest_id}"
@@ -44,17 +45,18 @@ def problemScraper(contest_code):
 
     return problem_data
 
+
 def UserSubmissionDetail(problemcode, contest, user):
     URL = f"https://www.codechef.com/{contest}/status/{problemcode},{user}"
     r = requests.get(URL)
     soup = BeautifulSoup(r.content, 'html5lib')
-    problemTable = soup.findAll('table', class_ = "dataTable")
+    problemTable = soup.findAll('table', class_="dataTable")
     problemRow = problemTable[0].findAll('tr')
     problemRow.pop(0)
     submissionlist = []
     if len(problemRow) == 0 or problemRow[0].text == 'No Recent Activity':
         return submissionlist
-    
+
     for problem in problemRow:
         baseurl = "https://www.codechef.com"
         problemDetails = problem.findAll('td')
@@ -66,24 +68,22 @@ def UserSubmissionDetail(problemcode, contest, user):
             verdict = verdict[:verdict.index('[')]
             if int(verdict) == 100:
                 verdict = "accepted [100/100]"
-            else :
+            else:
                 verdict = "partially accepted [" + verdict + "/100]"
         lang = problemDetails[6].text
         link = baseurl + problemDetails[7].find('a').get('href')
 
-        
         subformat = {
-            'subid' : subid,
-            'subtime' : subtime,
-            'verdict' : verdict,
-            'lang' : lang,
-            'link' : link,
+            'subid': subid,
+            'subtime': subtime,
+            'verdict': verdict,
+            'lang': lang,
+            'link': link,
         }
 
         submissionlist.append(subformat)
-        
-    return submissionlist  
 
+    return submissionlist
 
 
 def recentSubmissions(userid):
@@ -91,7 +91,7 @@ def recentSubmissions(userid):
     r = requests.get(URL)
     r = BeautifulSoup(r.content, 'html5lib')
     recentSubs = r.findAll('tbody')
-    
+
     recentlist = []
     for sub in recentSubs:
         subd = sub.findAll('tr')
@@ -102,7 +102,7 @@ def recentSubmissions(userid):
             query = "Profile found successfully"
         if query == 'No Recent Activity':
             break
-        
+
         for prob in subd:
             baseurl = "https://www.codechef.com"
             det = prob.findAll('td')
@@ -111,10 +111,10 @@ def recentSubmissions(userid):
             probid = probid[:probid.index('<')]
 
             link = det[1].find('a').get('href')
-            link = link.replace("\\","")
+            link = link.replace("\\", "")
             link = baseurl + link
-    
-            subtime = prob.find('span',class_ = "tooltiptext")
+
+            subtime = prob.find('span', class_="tooltiptext")
             try:
                 subtime = subtime.text
                 subtime = subtime[:subtime.index('<')]
@@ -127,27 +127,27 @@ def recentSubmissions(userid):
                 verdict = verdict[:verdict.index('[')]
                 if int(verdict) == 100:
                     verdict = "accepted [100/100]"
-                else :
+                else:
                     verdict = "partially accepted [" + verdict + "/100]"
 
             lang = det[3].text
             lang = lang[:lang.index('<')]
-            
+
             subformat = {
-                'probid' : probid,
-                'subtime' : subtime,
-                'verdict' : verdict,
-                'lang' : lang,
-                'link' : link,
+                'probid': probid,
+                'subtime': subtime,
+                'verdict': verdict,
+                'lang': lang,
+                'link': link,
             }
 
             recentlist.append(subformat)
-        
+
     return recentlist
 
-    
+
 def profilePageScraper(user_handle):
-    
+
     query_user_profile_url = f"https://www.codechef.com/users/{user_handle}"
     r = requests.get(query_user_profile_url)
     soup = BeautifulSoup(r.text, 'html.parser')
