@@ -1,8 +1,8 @@
 from .test_setup import TestSetUp
 from codechef.models import CodechefContest, CodechefContestProblems
 from problem.models import Problem
-from codechef.model_utils import (create_or_update_codechefContest, 
-                                    create_or_update_codechefProblem)
+from codechef.model_utils import (create_or_update_codechefContest,
+                                  create_or_update_codechefProblem)
 from codechef.test_fixtures.model_utils_fixture import (codechef_contest,
                                                         codechef_problem)
 from datetime import datetime
