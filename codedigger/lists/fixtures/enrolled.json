@@ -1,0 +1,10 @@
+[
+    {
+        "model": "lists.enrolled",
+        "pk": 1,
+        "fields": {
+            "enroll_user": 1,
+            "enroll_list": 2
+        }
+    }
+]

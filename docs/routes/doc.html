@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="static/images/codedigger-logo-48px.png" type="image/icon type">
+    <title>Codedigger REST API DOC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/global.css">
+    <link rel="stylesheet" href="static/css/doc.css">
+  </head>
+  <body>
+    <div class="doc__bg"></div>
+    <nav class="header">
+      <h1 class="logo"> <a href="https://api.codedigger.tech/"> Codedigger {API} </a><span class="logo__thin">Doc</span></h1>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link"><i class="fa fa-github"></i> Github</a></li>
+        <li class="menu__item"><a href="../index.html" class="link"><i class="fa fa-home"></i> Home</a></li>
+      </ul>
+    </nav>
+    <div class="wrapper">
+      <aside class="doc__nav">
+        <ul>
+          <li class="js-btn selected"><a href="#sample"> Sample </a></li>
+          <li class="js-btn"><a href="#codeforces"> Codeforces </a></li>
+        </ul>
+      </aside>
+      <article class="doc__content">
+        <section id = "sample" class="js-section">
+          <h2 class="section__title">Sample App</h3>
+            <a href="./sample/sample.html">
+              <div class="block get-block">
+                <div class="method get-method">
+                  GET
+                </div>
+                <span class="summary get-summary">
+                  /sample
+                </span>
+              </div>
+            </a> 
+        </section>
+        <section id = "atcoder" class="js-section">
+          <h2 class="section__title">Atcoder</h3>
+            <a href="atcoder/atcoderUpsolve.html">
+              <div class="block get-block">
+                <div class="method get-method">
+                  GET
+                </div>
+                <span class="summary">
+                  /atcoder/upsolve
+                </span>
+              </div>
+            </a> 
+        </section>
+        <section id = "codeforces" class="js-section">
+          <h2 class="section__title">Codeforces</h3>
+            <a href="codeforces/codeforcesUpsolve.html">
+              <div class="block get-block">
+                <div class="method get-method">
+                  GET
+                </div>
+                <span class="summary">
+                  /codeforces/upsolve
+                </span>
+              </div>
+            </a>
+            <a href="codeforces/codeforcesSearchUser.html">
+              <div class="block get-block">
+                <div class="method get-method">
+                  GET
+                </div>
+                <span class="summary">
+                  /codeforces/search
+                </span>
+              </div>
+            </a>
+        </section>
+        <section id = "lists" class="js-section">
+          <h2 class="section__title">Lists</h3>
+            <a href="lists/UserlistAddProblemView.html">
+              <div class="block post-block">
+                <div class="method post-method">
+                  POST
+                </div>
+                <span class="summary">
+                  /lists/userlist/add
+                </span>
+              </div>
+            </a> 
+            <a href="lists/SearchUserlistView.html">
+              <div class="block post-block">
+                <div class="method post-method">
+                  GET 
+                </div>
+                <span class="summary">
+                  lists/userlists?q=to
+                </span>
+              </div>
+            </a> 
+            <a href="lists/EnrollIntoList.html">
+              <div class="block post-block">
+                <div class="method post-method">
+                  POST
+                </div>
+                <span class="summary">
+                  /lists/enroll-list
+                </span>
+              </div>
+            </a> 
+            <a href="lists/ViewAllEnrolledList.html">
+              <div class="block post-block">
+                <div class="method post-method">
+                  GET
+                </div>
+                <span class="summary">
+                  /lists/enroll-list
+                </span>
+              </div>
+            </a> 
+        </section>
+        <section id = "lists" class="js-section">
+          <h2 class="section__title">Problem</h3>
+            <a href="problem/problemFilter.html">
+              <div class="block get-block">
+                <div class="method get-method">
+                  GET
+                </div>
+                <span class="summary">
+                  /problems/
+                </span>
+              </div>
+            </a> 
+        </section>
+      </article>
+    </div>
+
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="static/js/docs.js"></script>
+  </body>
+</html>

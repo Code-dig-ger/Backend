@@ -4,7 +4,7 @@ from problem.models import Problem
 from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, fields
 from rest_framework.response import Response
 from .solved_update import *
 from user.exception import ValidationException
@@ -14,7 +14,7 @@ from django.template.defaultfilters import slugify
 class ProblemSerializer(serializers.ModelSerializer):
     solved = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    platform = serializers.SerializerMethodField()
+    platform = serializers.CharField(source='get_platform_display')
 
     def get_description(self, obj):
         slug = self.context.get("slug")
@@ -28,18 +28,6 @@ class ProblemSerializer(serializers.ModelSerializer):
         user = self.context.get("user")
         solve = Solved.objects.filter(user=user, problem=obj)
         return solve.exists()
-
-    def get_platform(self, obj):
-        if obj.platform == 'F':
-            return "Codeforces"
-        elif obj.platform == 'A':
-            return "Atcoder"
-        elif obj.platform == 'C':
-            return "Codechef"
-        elif obj.platform == 'S':
-            return "Spoj"
-        elif obj.platform == 'U':
-            return "UVA"
 
     class Meta:
         model = Problem
@@ -116,6 +104,7 @@ class GetLadderSerializer(serializers.ModelSerializer):
 
 
 class GetUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = ('id', 'name', 'description', 'slug', 'public')
@@ -169,6 +158,7 @@ class ProblemUserlisterializer(serializers.ModelSerializer):
 
 
 class EditUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = (
@@ -182,13 +172,10 @@ class UserlistAddSerializer(serializers.Serializer):
     prob_id = serializers.CharField(required=True)
     slug = serializers.CharField(required=True)
     platform = serializers.CharField(required=True)
+    description = serializers.CharField(required=False)
 
     class Meta:
-        fields = (
-            'prob_id',
-            'slug',
-            'platform',
-        )
+        fields = ('prob_id', 'slug', 'platform', 'description')
 
 
 class UpdateLadderSerializer(serializers.Serializer):
@@ -211,6 +198,13 @@ class UpdateListSerializer(serializers.Serializer):
 
 class AddProblemsAdminSerializer(serializers.Serializer):
     slug = serializers.SlugField(required=True)
+
+    class Meta:
+        fields = ('slug', )
+
+
+class EnrollInListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
 
     class Meta:
         fields = ('slug', )

@@ -1,166 +1,167 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics, mixins, permissions, status
-
-# Django Models Stuff
-from .models import Problem, atcoder_contest
-from user.models import Profile, UserFriends
-from codeforces.models import contest, user_contest_rank
 from django.db.models import Q
+from rest_framework.response import Response
+from rest_framework import generics, mixins, status
 
-# Serializer and Extra Utils Function
-
-from .serializers import ProbSerializer, UpsolveContestSerializer, CCUpsolveContestSerializer, AtcoderUpsolveContestSerializer, SolveProblemsSerializer
-from user.serializers import GuruSerializer, FriendsShowSerializer
-from lists.models import Solved
-from .utils import codeforces_status, codechef_status, atcoder_status, get_page_number, get_upsolve_response_dict
-import json, requests
-from django.http import JsonResponse
-import random
-from user.permissions import *
-from codeforces.api import user_status
+# Exceptions and Permissions
 from user.exception import ValidationException
+from user.permissions import *
+
+# Models Stuff
+from user.models import User, Profile, UserFriends
+from codeforces.models import contest as CodeforcesContest
+from lists.models import Solved
+from .models import Problem, atcoder_contest
+
+# Serializers
+from user.serializers import FriendsShowSerializer
+from .serializers import (ProbSerializer, UpsolveContestSerializer,
+                          CCUpsolveContestSerializer)
+from atcoder.serializers import AtcoderUpsolveContestSerializer
+
+# Utility Functions
+from codeforces.models_utils import get_contests
+from codeforces.api_utils import wrong_submissions, multiple_correct_submissions
 from lists.utils import get_total_page, getqs
-
-
-class MentorProblemAPIView(
-        mixins.CreateModelMixin,
-        generics.ListAPIView,
-):
-    permission_classes = [AuthenticatedActivated]
-    serializer_class = GuruSerializer
-
-    def get(self, request):
-
-        #Mentors from Profile
-        mentor = request.GET.get('mentor')
-        #User handle from Profile
-        student = Profile.objects.get(owner=self.request.user).codeforces
-
-        #fetch student  submissions from api
-        submissions_student = user_status(handle=student)
-        student_solved_set = set()
-        for submission in submissions_student:
-            if 'contestId' in submission['problem']:
-                if submission['verdict'] == 'OK':
-                    student_solved_set.add(
-                        str(submission["problem"]['contestId']) +
-                        submission["problem"]['index'])
-
-        if mentor != 'true':
-            return Response({'status': 'OK', 'result': student_solved_set})
-
-        guru_solved_set = set()
-        guru_solved_list = []
-        gurus = Profile.objects.get(
-            owner=self.request.user).gurus.split(',')[1:-1]
-
-        #print(gurus)
-        for guru in gurus:
-            submissions_guru = user_status(handle=guru)
-            for submission in submissions_guru:
-
-                if 'contestId' in submission['problem']:
-
-                    if str(
-                            submission["problem"]['contestId']
-                    ) + submission["problem"]['index'] in guru_solved_set:
-                        continue
-
-                    elif submission['verdict'] == 'OK':
-                        guru_solved_set.add(
-                            str(submission["problem"]['contestId']) +
-                            submission["problem"]['index'])
-                        guru_solved_list.append(submission["problem"])
-        #print(guru_solved_list)
-        problems_data = []
-        for problem in guru_solved_list:
-
-            if str(problem["contestId"]
-                   ) + problem['index'] not in student_solved_set:
-                problems_data.append(
-                    str(problem['contestId']) + problem['index'])
-
-        return Response({'status': 'OK', 'result': problems_data})
+from .utils import (codeforces_status, codechef_status, atcoder_status,
+                    get_page_number, get_upsolve_response_dict,
+                    get_problem_filter_response)
 
 
 class SolveProblemsAPIView(mixins.CreateModelMixin, generics.ListAPIView,
                            generics.GenericAPIView):
 
     permission_classes = [AuthenticatedOrReadOnly]
-    serializer_class = SolveProblemsSerializer
+    serializer_class = ProbSerializer
 
     def get(self, request):
 
+        page = get_page_number(request.GET.get('page'))
+        per_page = get_page_number(request.GET.get('per_page'), 20)
+
+        if per_page > 50:
+            raise ValidationException('max limit of per_page is 50')
+
         tags = request.GET.get('tags')
+        and_in_tags = request.GET.get('and_in_tags', 'false').lower()
         platforms = request.GET.get('platform')
         difficulty = request.GET.get('difficulty')
         range_l = request.GET.get('range_l')
         range_r = request.GET.get('range_r')
         searches = request.GET.get('search')
-        mentors = request.GET.get('mentor')
+        mentor = request.GET.get('mentor', 'false').lower()
+        only_wrong = request.GET.get('only_wrong', 'false').lower()
+        hide_solved = request.GET.get('hide_solved', 'false').lower()
+        exclude_gym = request.GET.get('exclude_gym', 'false').lower()
+        contest = request.GET.get('contest')
+        solved_by = request.GET.get('solved_by')
+        sort_by = request.GET.get('sort_by', '-id')
+        index = request.GET.get('index')
+
+        url = request.build_absolute_uri(request.get_full_path())
+        if url[-1] == '/':
+            url += '?'
+        if url[-1] != ';' and url[-1] != '?':
+            url += ';'
+
+        problem_qs = Problem.objects.all()
 
         if request.user.is_authenticated:
 
-            problems_list = MentorProblemAPIView.get(self, request).data
+            user_profile = Profile.objects.get(owner=self.request.user)
+            if user_profile.codeforces == None or user_profile.codeforces == "":
+                raise ValidationException(
+                    'Please Activate your account by updating your Profile.')
 
-            if (problems_list['status'] != 'OK'):
-                return JsonResponse(problems_list)
-            else:
-                problems_list = problems_list['result']
+            if mentor == 'true':
+                mentors = user_profile.gurus.split(',')[1:-1]
+                if len(mentors) == 0:
+                    raise ValidationException(
+                        'Please add some mentors in your Profile to use this filter.'
+                    )
 
-            if mentors == 'true':
-                problem_qs = Problem.objects.filter(prob_id__in=problems_list)
+                mentors_correct = multiple_correct_submissions(mentors)
+                problem_qs = problem_qs.filter(prob_id__in=mentors_correct)
 
-            else:
-                q = Q()
-                for prob_id in problems_list:
-                    q |= Q(prob_id=prob_id)
-                problem_qs = Problem.objects.exclude(q)
-        else:
-            problem_qs = Problem.objects.all()
+            if only_wrong == 'true':
+                wrong = wrong_submissions(user_profile.codeforces)
+                problem_qs = problem_qs.filter(prob_id__in=wrong)
+
+            if hide_solved == 'true':
+                solved_prob = Solved.objects.filter(user=request.user)
+                problem_qs = problem_qs.exclude(
+                    id__in=[o.problem.id for o in solved_prob])
 
         if platforms is not None:
             platforms = platforms.split(',')
             problem_qs = problem_qs.filter(platform__in=platforms)
 
+        rating_q = Q()
+        rating_q |= (Q(platform='A') & Q(difficulty__isnull=False))
+        rating_q |= Q(rating__endswith='00')
+        rating_q |= (Q(platform='C') & Q(difficulty__isnull=False))
+
         if difficulty is not None:
             difficulty = difficulty.split(',')
-            problem_qs = problem_qs.filter(difficulty__in=difficulty)
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(difficulty__in=difficulty)
 
         if range_l is not None:
-            problem_qs = problem_qs.filter(rating__gt=int(range_l))
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(rating__gt=int(range_l))
 
         if range_r is not None:
-            problem_qs = problem_qs.filter(rating__lt=int(range_r))
+            problem_qs = problem_qs.filter(rating_q)\
+                                   .filter(rating__lt=int(range_r))
+
+        if index is not None:
+            indices = index.split(',')
+            q = Q()
+            for index in indices:
+                q |= Q(index__iexact=index)
+            problem_qs = problem_qs.filter(q)
 
         if searches is not None:
             searches = searches.split(',')
+            q = Q()
             for search in searches:
-                q = Q()
                 q |= Q(name__icontains=search)
                 q |= Q(prob_id__icontains=search)
                 q |= Q(url__icontains=search)
                 q |= Q(tags__icontains=search)
                 q |= Q(contest_id__icontains=search)
-
             problem_qs = problem_qs.filter(q)
 
         if tags is not None:
             tags = tags.split(',')
             q = Q()
-
             for tag in tags:
-                q |= Q(tags__icontains=tag)
+                if and_in_tags == 'true':
+                    q &= Q(tags__icontains=tag)
+                else:
+                    q |= Q(tags__icontains=tag)
             problem_qs = problem_qs.filter(q)
 
-        problem_qs = problem_qs.order_by('?')[:20]
-        return JsonResponse({
-            'status':
-            'OK',
-            'result':
-            ProbSerializer(problem_qs, many=True).data
-        })
+        if solved_by is not None:
+            solved_by = solved_by.split(',')
+            users = User.objects.filter(username__in=solved_by)
+            solved_prob = Solved.objects.filter(user__in=users)
+            problem_qs = problem_qs.filter(
+                id__in=[o.problem.id for o in solved_prob])
+
+        if exclude_gym == 'true':
+            contest_qs = CodeforcesContest.objects.filter(Type='G')
+            problem_qs = problem_qs.exclude(
+                contest_id__in=[c.contestId for c in contest_qs])
+
+        if contest != None:
+            contest_qs = get_contests(divs=contest)
+            problem_qs = problem_qs.filter(
+                contest_id__in=[c.contestId for c in contest_qs])
+
+        problem_qs = problem_qs.order_by(sort_by)
+        res = get_problem_filter_response(request.user, page, per_page, url,
+                                          problem_qs)
+        return Response(res)
 
 
 class ProblemSolvedByFriend(generics.GenericAPIView):
@@ -208,6 +209,7 @@ class UpsolveContestAPIView(
         mixins.CreateModelMixin,
         generics.ListAPIView,
 ):
+    # Deprecated
     permission_classes = [AuthenticatedActivated]
     serializer_class = UpsolveContestSerializer
 
@@ -239,7 +241,7 @@ class UpsolveContestAPIView(
         if virtual == 'true':
             RContest = RContest.union(VContest)
 
-        c = contest.objects.filter(contestId__in=RContest)\
+        c = CodeforcesContest.objects.filter(contestId__in=RContest)\
                             .order_by('-startTime')
 
         total_contest = c.count()

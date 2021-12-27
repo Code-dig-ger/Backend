@@ -10,6 +10,7 @@ from .scraper_utils import contestgivenScrapper, problems_solved, userScraper
 from problem.scraper.codechef import codeChefScraper
 from problem.scraper.autocodechef import autoCodechefScrap
 
+from codechef.cron import *
 # Create your views here.
 
 class CodechefUpsolveAPIView(generics.GenericAPIView):
@@ -35,3 +36,8 @@ class CodechefUpsolveAPIView(generics.GenericAPIView):
         result = CodechefUpsolveSerializer(conts, many=True, context=data).data
 
         return Response({'result' : result})
+
+def testing(request):
+    update_AllContests()
+    return HttpResponse("Successfully Scrapped!")
+

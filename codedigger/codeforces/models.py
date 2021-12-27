@@ -1,4 +1,5 @@
 from django.db import models
+from problem.models import Problem
 
 
 class organization(models.Model):
@@ -80,3 +81,16 @@ class user_contest_rank(models.Model):
     def __str__(self):
         return str(self.user.handle) + ' is participated in ' + str(
             self.contest.contestId)
+
+
+class CodeforcesProblemSet(models.Model):
+    parent = models.ForeignKey(Problem,
+                               related_name='parent_problem',
+                               on_delete=models.CASCADE)
+    child = models.ForeignKey(Problem,
+                              related_name='child_problem',
+                              on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} is same problem as {}'.format(self.child.prob_id,
+                                                 self.parent.prob_id)

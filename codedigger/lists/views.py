@@ -1,15 +1,18 @@
+from django.http import JsonResponse
+from .cron import updater
 from rest_framework import generics, status, views, response
-from .models import List, ListExtraInfo, LadderStarted
+from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled
 from problem.models import Problem
 from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
-                          UserlistAddSerializer, AddProblemsAdminSerializer)
-from django.db.models import Q
+                          UserlistAddSerializer, AddProblemsAdminSerializer,
+                          EnrollInListSerializer)
+from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
 from .utils import *
-from user.models import User
+from user.models import User, UserFriends
 
 
 class TopicwiseGetListView(generics.ListAPIView):
@@ -57,7 +60,7 @@ class TopicWiseRetrieveView(views.APIView):
 
         if not page_number:
             page_number, unsolved_prob, isCompleted = \
-                            get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
         else:
             isCompleted = False
             if page_number.isdigit():
@@ -136,7 +139,7 @@ class TopicWiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if user:
             unsolved_page, unsolved_prob, isCompleted = \
-                    get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
 
         if page_number:
             isCompleted = False
@@ -201,7 +204,7 @@ class LevelwiseRetrieveView(views.APIView):
 
         if not page_number:
             page_number, unsolved_prob, isCompleted = \
-                            get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
         else:
             isCompleted = False
             if page_number.isdigit():
@@ -280,7 +283,7 @@ class LevelwiseLadderRetrieveView(generics.RetrieveAPIView):
 
         if user:
             unsolved_page, unsolved_prob, isCompleted = \
-                    get_unsolved_page_number(problem_qs, user, page_size)
+                get_unsolved_page_number(problem_qs, user, page_size)
 
         if page_number:
             isCompleted = False
@@ -387,6 +390,81 @@ class UserlistGetView(generics.ListAPIView):
             return qs
 
 
+class ListGetView(generics.ListAPIView):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = GetUserlistSerializer
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        try:
+            user = User.objects.get(username=username)
+        except:
+            raise ValidationException('User with given Username not exists.')
+
+        if self.request.user.is_authenticated and username == self.request.user.username:
+            qs = List.objects.filter(owner=self.request.user)
+        else:
+            qs = List.objects.filter(Q(owner=user) & Q(public=True))
+        return qs
+
+    def get(self, request, username):
+        qs = self.get_queryset()
+        send_data = GetUserlistSerializer(qs, many=True).data
+        return response.Response({'status': 'OK', 'result': send_data})
+
+
+# class ListStats(generics.ListAPIView):
+#     permission_classes = [AuthenticatedActivated]
+#     serializer_class = GetUserlistSerializer
+
+#     def get(self, request, slug):
+#         try:
+#             list = List.objects.get(slug=slug)
+#         except:
+#             raise ValidationException(
+#                 "List with the provided slug does not exist")
+#         qs = Solved.objects.filter(problem__in=Subquery(
+#             ListInfo.objects.filter(
+#                 p_list=list).values('problem')))
+#         send_data=[{'total_problems_solved':len(qs)}]
+#         return response.Response({'status': 'OK', 'result': send_data})
+
+
+class UserStandingStats(generics.ListAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = GetUserlistSerializer
+
+    def get(self, request, slug):
+        here = self.request.user
+        friend = self.request.GET.get('friend', False)
+        try:
+            list = List.objects.get(slug=slug)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+
+        if here != list.owner and list.public == False:
+            raise ValidationException("The list must be public")
+        qs = Solved.objects.filter(problem__in=Subquery(
+            ListInfo.objects.filter(
+                p_list=list).values('problem'))).values('user').annotate(
+                    problems_solved=Count('user')).order_by('-problems_solved')
+
+        if friend:
+            qs = qs.filter(user__in=Subquery(
+                UserFriends.objects.filter(
+                    from_user=here).values('to_user_id'))).union(
+                        qs.filter(user=here))
+        send_data = []
+        for rank, q in enumerate(qs):
+            send_data.append({
+                'user': q.get('user', None),
+                'rank': rank + 1,
+                'problems_solved': q.get('problems_solved', 0)
+            })
+        return response.Response({'status': 'OK', 'result': send_data})
+
+
 class UserlistCreateView(generics.CreateAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = CreateUserlistSerializer
@@ -410,6 +488,7 @@ class UserlistAddProblemView(generics.CreateAPIView):
         prob_id = data.get('prob_id', None)
         slug = data.get('slug', None)
         platform = data.get('platform', None)
+        description = data.get('description', "")
         if prob_id is None or slug is None or platform is None:
             raise ValidationException(
                 "prob_id or slug or platform not provided")
@@ -430,7 +509,11 @@ class UserlistAddProblemView(generics.CreateAPIView):
         if curr_list.owner != here:
             raise ValidationException(
                 "Only the owner of the list can add problems to this list")
-        curr_list.problem.add(curr_prob)
+        listinfo = ListInfo()
+        listinfo.p_list = curr_list
+        listinfo.problem = curr_prob
+        listinfo.description = description
+        listinfo.save()
         return response.Response(
             {
                 "status": 'OK',
@@ -635,8 +718,104 @@ class AddProblemsAdminView(generics.GenericAPIView):
             status=status.HTTP_200_OK)
 
 
-from .cron import updater
-from django.http import JsonResponse
+class ProblemsPublicListView(views.APIView):
+
+    def get_object(self, slug):
+        if not List.objects.filter(slug=slug).exists():
+            raise NotFoundException(
+                "The list with the given slug does not exist")
+        list = List.objects.get(slug=slug)
+        if list.owner == self.request.user:
+            return list
+        else:
+            if list.public:
+                return list
+            raise ValidationException('You cannot view this list')
+
+    def get(self, request, slug):
+        curr_list = self.get_object(slug)
+        page_number = self.request.GET.get('page', None)
+        page_size = self.request.GET.get('pageSize', '6')
+
+        if page_size.isdigit():
+            page_size = int(page_size)
+        else:
+            raise ValidationException('Page Size must be an integer')
+
+        problem_qs = curr_list.problem.all().order_by('rating', 'id')
+        total_problems = problem_qs.count()
+        if total_problems == 0:
+            return response.Response({'status': 'OK', 'result': []})
+
+        url = request.build_absolute_uri(f'/lists/{slug}/problems')
+        user = self.request.user
+        if user.is_anonymous:
+            user = None
+
+        if not page_number:
+            page_number, unsolved_prob, isCompleted = \
+                get_unsolved_page_number(problem_qs, user, page_size)
+        else:
+            isCompleted = False
+            if page_number.isdigit():
+                page_number = int(page_number)
+            else:
+                raise ValidationException('Page must be an integer')
+            total_page = get_total_page(total_problems, page_size)
+            if page_number > total_page:
+                raise ValidationException('Page Out of Bound')
+            update_page_submission(problem_qs, user, page_size, page_number)
+
+        res = get_response_dict(curr_list, user, page_number, page_size, url,
+                                problem_qs, isCompleted)
+        return response.Response(res)
+
+
+class SearchUserlistView(generics.ListAPIView):
+    permission_classes = [AuthenticatedOrReadOnly]
+    serializer_class = [GetUserlistSerializer]
+
+    def get(self, request):
+        param = request.GET.get('q', '').lower()
+        lists = List.objects.filter(Q(name__icontains=param) & Q(public=True))
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
+
+
+class EnrollListView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = EnrollInListSerializer
+
+    def get(self, request):
+        user = self.request.user
+        enroll_list_ids = Enrolled.objects.filter(
+            enroll_user=user).values_list('enroll_list', flat=True)
+        lists = List.objects.filter(id__in=enroll_list_ids)
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = self.request.user
+        list = data.get('slug')
+        try:
+            curr_list = List.objects.get(slug=list)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+        if not curr_list.public:
+            raise ValidationException("List is not public")
+        if Enrolled.objects.filter(
+                Q(enroll_list=curr_list) & Q(enroll_user=user)):
+            raise ValidationException(
+                "User has already been enrolled into this list")
+        Enrolled.objects.get_or_create(enroll_user=user, enroll_list=curr_list)
+        return response.Response(
+            {
+                "status": 'OK',
+                'result': "User has been enrolled into the list"
+            },
+            status=status.HTTP_201_CREATED)
 
 
 def testing(request):
