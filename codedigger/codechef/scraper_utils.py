@@ -1,13 +1,10 @@
-
 from codechef.scraper import contestScraper, problemScraper, profilePageScraper
-from codechef.models import User
-
 
 def OffsetLoader(contest_type):
 
     requested_contests = []
-    for i in range(0, 60,
-                   20):  #offset {0, 20, 40} for multiple pages of contests.
+    for i in range(0, 60, 20):  
+        #offset {0, 20, 40} for multiple pages of contests.
         contests_data = contestScraper(i, contest_type)
 
         for contests in contests_data['contests']:
@@ -157,12 +154,12 @@ def userScraper(user_handle):
     global_rank = ranks[0].contents[0]
     country_rank = ranks[1].contents[0]
 
-    user, isCreated = User.objects.get_or_create(handle=user_handle, username=user_handle)
-    user.name = name
-    user.stars = user_stars
-    user.rating = int(user_rating)
-    user.maxRating = int(user_highest_rating)
-    user.country = country
-    user.country_rank = country_rank
-    user.global_rank = global_rank
-    user.save()
+    # user, isCreated = User.objects.get_or_create(handle=user_handle, username=user_handle)
+    # user.name = name
+    # user.stars = user_stars
+    # user.rating = int(user_rating)
+    # user.maxRating = int(user_highest_rating)
+    # user.country = country
+    # user.country_rank = country_rank
+    # user.global_rank = global_rank
+    # user.save()

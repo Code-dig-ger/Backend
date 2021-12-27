@@ -1,9 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from time import sleep
-import os, json, django
 
-from .models import CodechefContest, User
 from user.exception import ValidationException
 
 from problem.models import *
@@ -38,7 +35,7 @@ def contestScraper(offset, contest_type):
 def problemScraper(contest_code):
 
     query_problem_url = f"https://www.codechef.com/api/contests/{contest_code}"
-    # Query URL might change in future.
+    # Query URL might change inuserid future.
     problem_data = requests.get(query_problem_url)
     if problem_data.status_code != 200:
         raise ValidationException('Failed Scrapping Codechef Problems')
@@ -48,7 +45,7 @@ def problemScraper(contest_code):
     return problem_data
 
 def UserSubmissionDetail(problemcode, contest, user):
-    URL = "https://www.codechef.com/{contest}/status/{problemcode},{user}"
+    URL = f"https://www.codechef.com/{contest}/status/{problemcode},{user}"
     r = requests.get(URL)
     soup = BeautifulSoup(r.content, 'html5lib')
     problemTable = soup.findAll('table', class_ = "dataTable")
@@ -90,7 +87,7 @@ def UserSubmissionDetail(problemcode, contest, user):
 
 
 def recentSubmissions(userid):
-    URL = "https://www.codechef.com/recent/user?user_handle={userid}"
+    URL = f"https://www.codechef.com/recent/user?user_handle={userid}"
     r = requests.get(URL)
     r = BeautifulSoup(r.content, 'html5lib')
     recentSubs = r.findAll('tbody')
@@ -147,6 +144,8 @@ def recentSubmissions(userid):
             recentlist.append(subformat)
         
     return recentlist
+
+    
 def profilePageScraper(user_handle):
     
     query_user_profile_url = f"https://www.codechef.com/users/{user_handle}"
