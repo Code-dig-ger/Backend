@@ -16,7 +16,7 @@ class TestModelUtils(TestSetUp):
 
     def test_CreateProblem(self):
         create_or_update_codechefContest(codechef_contest)
-        create_or_update_codechefProblem('COOK117B')
+        create_or_update_codechefProblem(codechef_problem)
         problemModel = Problem.objects.get(prob_id = codechef_problem[0]['ProblemCode'])
         firstProbCode = codechef_problem[0]['ProblemCode']
         codechefProblem = CodechefContestProblems.objects.filter(problem = problemModel)
