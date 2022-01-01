@@ -15,9 +15,8 @@ from .models import *
 # Serializers
 from codeforces.serializers import ContestSerializer
 from .serializers import CodeforcesContestSerializer, MiniCodeforcesContestSerializer
-
 # Utility Functions
-from codeforces.api import user_status
+from codeforces.api import user_status, contest_submissions
 from codeforces.api_utils import (codeforces_user_submissions,
                                   get_correct_submissions,
                                   get_wrong_submission)
@@ -137,6 +136,21 @@ class CodeforcesContestAPIView(generics.GenericAPIView):
 
         return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
 
+class CodeforcesContestSubmissionsGetAPIView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedOrReadOnly]
+    # serializer_class = CodeforcesContestSubmissionSerializer
+    
+    def get(self, request, handle,contestId):
+        codeforcesUser = validate_handle(handle)
+        submissions=contest_submissions(handle=codeforcesUser.handle,contestId=contestId)
+        #submissions are of codeforces contest (not of codedigger)
+        return Response({
+            'status':
+            'OK',
+            'result':submissions
+            # CodeforcesContestSubmissionSerializer(contest,submissions).data
+            # a serializer which returns both contest object + submissions object 
+        })
 
 class CodeforcesContestGetAPIView(generics.GenericAPIView):
     permission_classes = [AuthenticatedOrReadOnly]
