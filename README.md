@@ -68,6 +68,16 @@ git checkout -b feature/AmazingFeature
 git checkout -b bugfix/user
 ```
 
+#### Steps to Follow (Recommended) - 
+
+If you're working on a issue or issue is assigned to you - 
+
+- Create a branch for issue by commenting `/cib` or `/cib 2-3 word desc.` on the issue.
+- This will create a branch with descriptive name. 
+- You can push all your code related to issue in this branch. 
+- When you're done, create a merge PR to master branch. 
+- After review, your branch will be merged.  
+
 ### Setting Environment First Time
 
 #### Basic Requirements 

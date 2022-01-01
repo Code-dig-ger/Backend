@@ -21,3 +21,10 @@ def get_contest_problem_qs(contest):
     for id in contest_problem_ids:
         contest_problem_qs.append(Problem.objects.get(id=id))
     return contest_problem_qs
+
+
+def put_contest_problem(contest, problems):
+    for idx, problem in enumerate(problems):
+        CodeforcesContestProblem(codeforcesContest=contest,
+                                 problem=problem,
+                                 index=idx).save()

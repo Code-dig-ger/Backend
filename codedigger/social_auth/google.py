@@ -4,6 +4,7 @@ from google.oauth2 import id_token
 
 class Google:
     """Google class to fetch the user info and return it"""
+
     @staticmethod
     def validate(auth_token):
         """

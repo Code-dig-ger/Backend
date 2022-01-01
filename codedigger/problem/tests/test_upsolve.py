@@ -4,6 +4,7 @@ from django.urls import reverse
 
 
 class TestUpsolve(TestSetUp):
+
     def test_codeforces_upsolve(self):
         # Deprecated
         test_url = reverse('cf-upsolve')

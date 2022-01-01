@@ -158,6 +158,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MiniUserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = user
 
