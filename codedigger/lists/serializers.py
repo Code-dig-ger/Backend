@@ -202,7 +202,17 @@ class AddProblemsAdminSerializer(serializers.Serializer):
 
 
 class EnrollInListSerializer(serializers.Serializer):
-    slug = serializers.CharField(required=True)
+    slug = serializers.SlugField(required=True)
 
     class Meta:
         fields = ('slug', )
+
+class ListEditViewSerializer(serializers.Serializer):
+    editor = serializers.CharField(required=True)
+    slug = serializers.SlugField(required=True)
+
+    class Meta:
+        fields = (
+            'editor',
+            'slug', 
+        )

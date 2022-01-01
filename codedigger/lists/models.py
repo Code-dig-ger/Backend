@@ -144,3 +144,14 @@ class Enrolled(models.Model):
 
     def __str__(self):
         return self.enroll_list.slug
+
+class Editor(models.Model):
+    edit_user = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    related_name="edit_user")
+    edit_list = models.ForeignKey(List,
+                                    on_delete=models.CASCADE,
+                                    related_name="edit_list")
+
+    def __str__(self):
+        return self.edit_user.username + " is added to " + self.edit_list.slug

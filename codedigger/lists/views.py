@@ -7,7 +7,7 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
-                          EnrollInListSerializer)
+                          EnrollInListSerializer, ListEditViewSerializer)
 from django.db.models import Q
 from user.permissions import *
 from user.exception import *
@@ -763,6 +763,20 @@ class EnrollListView(generics.GenericAPIView):
                 'result': "User has been enrolled into the list"
             },
             status=status.HTTP_201_CREATED)
+
+class ListEditView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = ListEditViewSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = self.request.user
+        list = data.get('slug')
+        try:
+            curr_list = List.objects.get(slug=list)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
 
 def testing(request):
     updater()
