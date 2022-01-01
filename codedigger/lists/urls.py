@@ -67,7 +67,7 @@ urlpatterns = [
     path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
     path('userlist/add-user', ListEditView.as_view(), name='userlist-add-user'),
-    path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),
+#     path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),
     path('<str:slug>/stats/standing',
          UserStandingStats.as_view(),
          name='user-standing'),
