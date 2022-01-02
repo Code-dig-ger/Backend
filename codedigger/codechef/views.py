@@ -5,7 +5,7 @@ from rest_framework import generics, serializers
 from user.exception import ValidationException
 from .models import CodechefContest
 from .serializers import CodechefUpsolveSerializer
-from .scraper_utils import contestgivenScrapper, problems_solved
+from .scraper_utils import contestgivenScrapper, problems_solved, RecentSubmission, UserSubmissionDetails
 
 from codechef.cron import *
 # Create your views here.
@@ -30,6 +30,20 @@ class CodechefUpsolveAPIView(generics.GenericAPIView):
 
         conts = CodechefContest.objects.filter(contestId__in=contests)
         result = CodechefUpsolveSerializer(conts, many=True, context=data).data
+
+        return Response({'status': 'OK', 'result': result})
+
+
+class CodechefRecentSubmissionAPIView(generics.GenericAPIView):
+
+    def get(self, request, username):
+
+        handle = request.GET.get('handle', username)
+        if handle == None:
+            raise ValidationException(
+                'Any of handle or Bearer Token is required.')
+
+        result = RecentSubmission(handle)
 
         return Response({'status': 'OK', 'result': result})
 
