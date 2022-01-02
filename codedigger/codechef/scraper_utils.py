@@ -227,8 +227,45 @@ def RecentSubmission(user_handle):
 
     return recentlist
 
-def UserSubmissionDetails(problemcode, contest,user_handle):
-    soup = UserSubmissionScraper(problemcode, contest, user_handle)
+def allProblemsSolved(user_handle):
+
+    soup = profilePageScraper(user_handle)
+    print(user_handle)
+    problems_solved = []
+
+    all_contests = soup.find('article')
+    contests_list = all_contests.find_all('p')
+    cont = (contests_list[0].find('strong').contents)[0][:-1]
+
+    # if cont == "Practice":
+    #     probs = contests_list[0].find_all('a')
+    #     for prob in probs:
+    #         upsolved_problems.append(prob.contents[0])
+    
+    probs = all_contests.find_all('a')
+    for prob in probs:
+        link = prob['href']
+        name = prob.contents[0]
+
+        problems_solved.append((name,link))
+
+    return problems_solved
+
+def UserSubmissionDetails(problemcode, user_handle):
+
+    url = ""
+    solvedByUser = allProblemsSolved(user_handle)
+
+    for solved in solvedByUser:
+        if solved[0] == problemcode:
+            url = solved[1]
+            break
+
+    if len(url) == 0 :
+        return []
+
+    baseurl = f'https://www.codechef.com/'
+    soup = UserSubmissionScraper(baseurl + url)
     problemTable = soup.findAll('table', class_="dataTable")
     problemRow = problemTable[0].findAll('tr')
     problemRow.pop(0)

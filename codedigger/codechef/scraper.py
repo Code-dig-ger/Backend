@@ -46,16 +46,15 @@ def problemScraper(contest_code):
     return problem_data
 
 
-def UserSubmissionScraper(problemcode, contest, user):
+def UserSubmissionScraper(URL):
 
-    URL = f"https://www.codechef.com/{contest}/status/{problemcode},{user}"
     r = requests.get(URL)
     soup = BeautifulSoup(r.content, 'html5lib')
     return soup
 
 
 def recentSubmissionScraper(user_handle):
-    
+
     URL = f"https://www.codechef.com/recent/user?user_handle={user_handle}"
     r = requests.get(URL)
     soup = BeautifulSoup(r.content, 'html5lib')

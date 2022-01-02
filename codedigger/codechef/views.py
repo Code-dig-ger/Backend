@@ -48,6 +48,25 @@ class CodechefRecentSubmissionAPIView(generics.GenericAPIView):
         return Response({'status': 'OK', 'result': result})
 
 
+class CodechefUserSubmissionAPIView(generics.GenericAPIView):
+
+    def get(self, request, username, problem):
+
+        handle = request.GET.get('handle', username)
+        problemcode = request.GET.get('problemcode', problem)
+        if handle == None:
+            raise ValidationException(
+                'Any of handle or Bearer Token is required.')
+        
+        if problemcode == None:
+            raise ValidationException(
+                'Any of valid problem code is required.')
+
+        result = UserSubmissionDetails(problemcode, handle)
+
+        return Response({'status': 'OK', 'result': result})
+
+
 def testing(request):
     update_AllContests()
     return HttpResponse("Successfully Scrapped!")
