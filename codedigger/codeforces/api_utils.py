@@ -159,3 +159,49 @@ def codeforces_user_submissions(codeforcesUser,
                                   count=count)
 
     return contest_submissions
+
+def is_contest_gym(contestId):
+
+    return True if contestId >= 100001 else False
+    
+def profile_status(handle):
+    response = user_status(handle)
+    problems_solved_rating, problems_solved_index, problems_solved_index_gym = {}, {}, {}
+    problems_solved_contest = set()
+    number_of_upsolved = 0
+    solved_problems = set()
+    incorrect_submissions, correct_submissions = 0, 0
+    for submission in response:
+        if submission["passedTestCount"] == 0:
+            continue    
+        if is_verdict_ok(submission):
+            correct_submissions += 1
+            index = submission["problem"]["index"]
+            solved_problems.add(get_prob_id(submission))
+            if not is_contest_gym(submission["contestId"]):
+                if index in problems_solved_index:
+                    problems_solved_index[index].append(get_prob_id(submission))
+                else:
+                    problems_solved_index[index] = [ get_prob_id(submission) ]
+                    
+                if submission["problem"]["rating"] in problems_solved_rating:
+                    problems_solved_rating[submission["problem"]["rating"]].append(get_prob_id(submission))
+                else:
+                    problems_solved_rating[submission["problem"]["rating"]] = [ get_prob_id(submission) ]
+                
+                if is_contestant(submission):
+                    problems_solved_contest.add(get_prob_id(submission))
+                else:
+                    number_of_upsolved += 1
+            else:
+                if index in problems_solved_index_gym:
+                    problems_solved_index_gym[index].append(get_prob_id(submission))
+                else:
+                    problems_solved_index_gym[index] = [ get_prob_id(submission) ]
+        else:
+            if get_prob_id(submission) in solved_problems:
+                incorrect_submissions += 1
+
+    return (problems_solved_rating, problems_solved_index, problems_solved_index_gym,
+            number_of_upsolved, problems_solved_contest, correct_submissions, incorrect_submissions    
+            )
