@@ -67,6 +67,20 @@ class CodechefUserSubmissionAPIView(generics.GenericAPIView):
         return Response({'status': 'OK', 'result': result})
 
 
+class CodechefContestProblemsAPIView(generics.GenericAPIView):
+
+    def get(self, request, contest):
+
+        contest_id = request.GET.get('contest_id', contest)
+
+        if contest_id == None:
+            raise ValidationException(
+                'A valid Contest ID is required.')
+
+        result = ProblemData(contest_id)
+
+        return Response({'status': 'OK', 'result': result})
+
 def testing(request):
     update_AllContests()
     return HttpResponse("Successfully Scrapped!")
