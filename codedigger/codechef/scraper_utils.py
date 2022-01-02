@@ -168,6 +168,7 @@ def userScraper(user_handle):
     # user.global_rank = global_rank
     # user.save()
 
+
 def RecentSubmission(user_handle):
     soup = recentSubmissionScraper(user_handle)
     recentSubs = soup.findAll('tbody')
@@ -227,6 +228,7 @@ def RecentSubmission(user_handle):
 
     return recentlist
 
+
 def allProblemsSolved(user_handle):
 
     soup = profilePageScraper(user_handle)
@@ -241,15 +243,16 @@ def allProblemsSolved(user_handle):
     #     probs = contests_list[0].find_all('a')
     #     for prob in probs:
     #         upsolved_problems.append(prob.contents[0])
-    
+
     probs = all_contests.find_all('a')
     for prob in probs:
         link = prob['href']
         name = prob.contents[0]
 
-        problems_solved.append((name,link))
+        problems_solved.append((name, link))
 
     return problems_solved
+
 
 def UserSubmissionDetails(problemcode, user_handle):
 
@@ -261,7 +264,7 @@ def UserSubmissionDetails(problemcode, user_handle):
             url = solved[1]
             break
 
-    if len(url) == 0 :
+    if len(url) == 0:
         return []
 
     baseurl = f'https://www.codechef.com/'

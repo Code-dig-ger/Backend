@@ -57,10 +57,9 @@ class CodechefUserSubmissionAPIView(generics.GenericAPIView):
         if handle == None:
             raise ValidationException(
                 'Any of handle or Bearer Token is required.')
-        
+
         if problemcode == None:
-            raise ValidationException(
-                'Any of valid problem code is required.')
+            raise ValidationException('Any of valid problem code is required.')
 
         result = UserSubmissionDetails(problemcode, handle)
 
@@ -74,12 +73,12 @@ class CodechefContestProblemsAPIView(generics.GenericAPIView):
         contest_id = request.GET.get('contest_id', contest)
 
         if contest_id == None:
-            raise ValidationException(
-                'A valid Contest ID is required.')
+            raise ValidationException('A valid Contest ID is required.')
 
         result = ProblemData(contest_id)
 
         return Response({'status': 'OK', 'result': result})
+
 
 def testing(request):
     update_AllContests()
