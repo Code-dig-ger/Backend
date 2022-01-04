@@ -153,63 +153,38 @@
   "result": [
     {
       "name": "",
-      "contestId": "LTIME85B",
+      "contestId": "APRIL21C",
       "duration": null,
       "startTime": null,
-      "problems": [
-        {
-          "name": null,
-          "url": "ABC.COM",
-          "prob_id": "CHFMOT18",
-          "tags": null,
-          "contest_id": null,
-          "rating": 1966,
-          "index": null,
-          "platform": "C",
-          "difficulty": "H",
-          "editorial": null,
-          "status": "solved"
-        },
-        {
-          "name": null,
-          "url": "test.com",
-          "prob_id": "INCRDEC",
-          "tags": null,
-          "contest_id": null,
-          "rating": 1962,
-          "index": null,
-          "platform": "C",
-          "difficulty": null,
-          "editorial": null,
-          "status": "upsolved"
-        },
-        {
-          "name": " COLLEGE FAIR",
-          "url": "https://www.codechef.com/problems/COF01",
-          "prob_id": "COF01",
-          "tags": "[]",
-          "contest_id": "",
-          "rating": 3746,
-          "index": "",
-          "platform": "C",
-          "difficulty": "",
-          "editorial": null,
-          "status": "not_attempt"
-        },
-        {
-          "name": " Minimum Moves",
-          "url": "https://www.codechef.com/problems/MINMOVES",
-          "prob_id": "MINMOVES",
-          "tags": "[]",
-          "contest_id": "",
-          "rating": 2900,
-          "index": "",
-          "platform": "C",
-          "difficulty": "",
-          "editorial": null,
-          "status": "not_attempt"
-        }
-      ]
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "AUG20B",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "CCRC21C",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "COOK120B",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "COOK121B",
+      "duration": null,
+      "startTime": null,
+      "problems": []
     },
     {
       "name": "",
@@ -217,8 +192,51 @@
       "duration": null,
       "startTime": null,
       "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "JAN21C",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "JULY20B",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "LRNDSA01",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    },
+    {
+      "name": "",
+      "contestId": "LRNDSA02",
+      "duration": null,
+      "startTime": null,
+      "problems": []
     }
-  ]
+  ],
+  "links": {
+    "first": "https://api.codedigger.tech/codechef/upsolve?page=1",
+    "last": "https://api.codedigger.tech/codechef/upsolve?page=2",
+    "prev": null,
+    "next": "https://api.codedigger.tech/codechef/upsolve?page=2;"
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 2,
+    "path": "https://api.codedigger.tech/codechef/upsolve?",
+    "per_page": 10,
+    "to": 10,
+    "total": 18
+  }
 }
             </code>
           </pre>
@@ -259,7 +277,7 @@
           <pre>
             <p>With Bearer Token : </p>
             <code class="language-bash">
-  curl -X GET "https://api.codedigger.tech/atcoder/upsolve" \ 
+  curl -X GET "https://api.codedigger.tech/codechef/upsolve" \ 
     -H  "accept: application/json" \
     -H  "Authorization: Bearer {Access Token}"
             </code>
@@ -267,7 +285,7 @@
           <pre>
             <p>Without Bearer Token : </p>
             <code class="language-bash">
-  curl -X GET "https://api.codedigger.tech/atcoder/upsolve?handle={atcoder_handle}" \ 
+  curl -X GET "https://api.codedigger.tech/codechef/upsolve?handle={codechef_handle}" \ 
     -H  "accept: application/json" 
             </code>
           </pre> 
