@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="../static/images/codedigger-logo-48px.png" type="image/icon type">
+    <title>Codedigger REST API DOC - Codechef Upsolve</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/monokai-sublime.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/doc.css">
+  </head>
+  <body>
+    <div class="doc__bg"></div>
+    <nav class="header">
+      <h1 class="logo"> <a href="https://api.codedigger.tech/"> Codedigger {API} </a><span class="logo__thin">Doc</span></h1>
+      <ul class="menu">
+        <div class="menu__item toggle"><span></span></div>
+        <li class="menu__item"><a href="https://github.com/Code-dig-ger" class="link"><i class="fa fa-github"></i> Github</a></li>
+        <li class="menu__item"><a href="../doc.html" class="link"><i class="fa fa-home"></i> Home</a></li>
+      </ul>
+    </nav>
+    <div class="wrapper">
+      <aside class="doc__nav">
+        <ul>
+          <li class="js-btn selected"> <a href="#title"> Title </a></li>
+          <li class="js-btn"> <a href="#url"> URL </a></li>
+          <li class="js-btn"> <a href="#headers"> Headers </a></li>
+          <li class="js-btn"> <a href="#url-param"> URL Parameters </a></li>
+          <li class="js-btn"> <a href="#data-param"> Data Params </a></li>
+          <li class="js-btn"> <a href="#success-response"> Success Response </a></li>
+          <li class="js-btn"> <a href="#error-response"> Error Response </a></li>
+          <li class="js-btn"> <a href="#sample-call"> Sample Call </a></li>
+          <li class="js-btn"> <a href="#notes"> Notes </a></li>  
+        </ul>
+
+        <p> <b>Author:</b> @anubhav-08 </p>  
+        <p> <b>Created at:</b> Jan 03, 2022 </p>   
+        <p> <b>Updated by:</b>
+            <ul>
+              <li> @anubhav-08 </li>
+            </ul>   
+        </p>
+        <p> <b>Last Updated:</b> Jan 03, 2022 </p>
+        
+      </aside>
+      <article class="doc__content">
+        <section id="title" class="js-section">
+          <h2 class="section__title">Codechef Upsolve</h2>
+          <p> 
+            To get Codechef Upsolve Contests List with Problems of a user.  
+          </p>
+        </section>
+        <section id = "url" class="js-section">
+          <h3 class="section__title">URL</h3>
+          <div class="block get-block">
+            <div class="method get-method">
+              GET
+            </div>
+            <span class="summary get-summary">
+              /codechef/upsolve
+            </span>
+          </div>
+        </section>
+        <section id = "headers" class="js-section">
+          <h3 class="section__title">Headers</h3>
+          <!-- <p> 
+            If any Headers is required e.g. Authorisation etc. 
+          </p> -->
+          <table>
+            <tr>
+              <th>Header Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>Authorization</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                Bearer {Token}
+              </td>
+            </tr>
+          </table>
+        </section>
+        <section id = "url-param" class="js-section">
+          <h3 class="section__title">URL Parameters</h3>
+          <!-- <p> 
+            For GET Request. 
+            If URL params exist, specify them in accordance with name mentioned in URL section. 
+            Mention if is required or optional. Document data constraints.
+          </p> -->
+          <table>
+            <tr>
+              <th>Param Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>handle</td>
+              <td>false</td>
+              <td>string</td>
+              <td>
+                Codechef handle of user (required if not authenticated).
+              </td>
+            </tr>
+          </table>
+        </section>
+        <!-- <section id = "data-param" class="js-section">
+          <h3 class="section__title">Data Params</h3>
+          <p> 
+            For POST Request. 
+            If making a post request, what should the body payload look like? 
+            URL Params rules apply here too.
+          </p>
+          <table>
+            <tr>
+              <th>Param Name</th>
+              <th>Required</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>username</td>
+              <td>true</td>
+              <td>string</td>
+              <td>
+                username of user
+              </td>
+            </tr>
+          </table>
+        </section> -->
+        <section id = "success-response" class="js-section">
+          <h3 class="section__title">Success Response</h3>
+          <!-- <p> 
+            What should the status code be on success and is there any returned data? 
+            This is useful when people need to to know what their callbacks should expect!
+          </p> -->
+          <p> 
+            Status Code: 200 
+          </p>
+          <p> 
+            Sample Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+{
+  "status": "OK",
+  "result": [
+    {
+      "name": "",
+      "contestId": "LTIME85B",
+      "duration": null,
+      "startTime": null,
+      "problems": [
+        {
+          "name": null,
+          "url": "ABC.COM",
+          "prob_id": "CHFMOT18",
+          "tags": null,
+          "contest_id": null,
+          "rating": 1966,
+          "index": null,
+          "platform": "C",
+          "difficulty": "H",
+          "editorial": null,
+          "status": "solved"
+        },
+        {
+          "name": null,
+          "url": "test.com",
+          "prob_id": "INCRDEC",
+          "tags": null,
+          "contest_id": null,
+          "rating": 1962,
+          "index": null,
+          "platform": "C",
+          "difficulty": null,
+          "editorial": null,
+          "status": "upsolved"
+        },
+        {
+          "name": " COLLEGE FAIR",
+          "url": "https://www.codechef.com/problems/COF01",
+          "prob_id": "COF01",
+          "tags": "[]",
+          "contest_id": "",
+          "rating": 3746,
+          "index": "",
+          "platform": "C",
+          "difficulty": "",
+          "editorial": null,
+          "status": "not_attempt"
+        },
+        {
+          "name": " Minimum Moves",
+          "url": "https://www.codechef.com/problems/MINMOVES",
+          "prob_id": "MINMOVES",
+          "tags": "[]",
+          "contest_id": "",
+          "rating": 2900,
+          "index": "",
+          "platform": "C",
+          "difficulty": "",
+          "editorial": null,
+          "status": "not_attempt"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "contestId": "FEB21C",
+      "duration": null,
+      "startTime": null,
+      "problems": []
+    }
+  ]
+}
+            </code>
+          </pre>
+        </section>
+        <section id = "error-response" class="js-section">
+          <h3 class="section__title">Error Response</h3>
+          <!-- <p> 
+            Most endpoints will have many ways they can fail. 
+            From unauthorized access, to wrongful parameters etc. 
+            All of those should be liste d here. It might seem repetitive, 
+            but it helps prevent assumptions from being made where they should be.
+          </p> -->
+          <p> 
+            Reason of Error: If handle and Bearer Token is not provided. Any one is required. 
+          </p>
+          <p> 
+            Status Code: 400 BAD REQUEST 
+          </p>
+          
+          <p> 
+            Error Response:  
+          </p>        
+          <pre >
+            <code class="language-json">
+    {
+      "status": "FAILED",
+      "error": "Any of handle or Bearer Token is required."
+    }
+            </code>
+          </pre>
+        </section>
+        <section id = "sample-call" class="js-section">
+          <h3 class="section__title">Sample Call</h3>
+          <!-- <p> 
+            Just a sample call to your endpoint in a runnable format 
+            ($.ajax call or a curl request) - this makes life easier and more predictable.
+          </p> -->
+          <pre>
+            <p>With Bearer Token : </p>
+            <code class="language-bash">
+  curl -X GET "https://api.codedigger.tech/atcoder/upsolve" \ 
+    -H  "accept: application/json" \
+    -H  "Authorization: Bearer {Access Token}"
+            </code>
+          </pre> 
+          <pre>
+            <p>Without Bearer Token : </p>
+            <code class="language-bash">
+  curl -X GET "https://api.codedigger.tech/atcoder/upsolve?handle={atcoder_handle}" \ 
+    -H  "accept: application/json" 
+            </code>
+          </pre> 
+        </section>
+        <section id = "notes" class="js-section">
+          <h3 class="section__title">Notes</h3>
+          <p>
+          User can get his upsolve contests list even if he is not logged in to our site.
+          He has to provide his Codechef handle.
+          </p>
+          <!-- <p> 
+            This is where all uncertainties, commentary, discussion etc. can go.
+            Mention timestamp and identify yourself when leaving comments here.
+          </p> -->
+        </section>
+      </article>
+    </div>
+
+    <footer class="footer"> &copy; Copyright <a href="https://codedigger.tech" target="_blank" class="link link--light">Codedigger</a> 2021.</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
+    </script>
+    <script src="../static/js/docs.js"></script>
+  </body>
+</html>
