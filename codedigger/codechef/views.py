@@ -45,17 +45,17 @@ class CodechefUpsolveAPIView(generics.GenericAPIView):
             return Response({'status': 'OK', 'result': []})
 
         total_page = get_total_page(total_contest, per_page)
-        
+
         if page != None and page > total_page:
             raise ValidationException('Page Out of Bound')
 
         qs = getqs(conts, per_page, page)
         result = CodechefUpsolveSerializer(qs, many=True, context=data).data
-        res = get_upsolve_response_dict(result, path, page,
-                                        total_contest, per_page)
+        res = get_upsolve_response_dict(result, path, page, total_contest,
+                                        per_page)
         return Response(res)
 
 
 def testing(request):
     update_AllContests()
-    return HttpResponse("Successfully Scrapped!")  
+    return HttpResponse("Successfully Scrapped!")
