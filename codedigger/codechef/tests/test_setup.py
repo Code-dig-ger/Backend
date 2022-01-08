@@ -4,6 +4,7 @@ from django.urls import reverse
 from user.models import Profile, User
 from lists.test_fixtures.profile_fixtures import profile1, profile2
 
+
 class TestSetUp(APITestCase):
 
     # def setUp(self):
@@ -11,8 +12,9 @@ class TestSetUp(APITestCase):
     #     return super().setUp()
 
     fixtures = [
-        "user.json", "cc_problems.json", "cc_contests.json", "cc_contest_problem.json"
-        ]
+        "user.json", "cc_problems.json", "cc_contests.json",
+        "cc_contest_problem.json"
+    ]
 
     @classmethod
     def setUpTestData(cls):
