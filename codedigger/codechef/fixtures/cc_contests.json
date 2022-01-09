@@ -1,0 +1,26 @@
+[
+    {
+        "model":"codechef.codechefcontest",
+        "pk":1,
+        "fields":{
+            "name":"April Challenge",
+            "contestId":"APRIL20B"
+        }
+    },
+    {
+        "model":"codechef.codechefContest",
+        "pk":2,
+        "fields":{
+            "name":"July CookOff",
+            "contestId":"COOK120B"
+        }
+    },
+    {
+        "model":"codechef.codechefContest",
+        "pk":3,
+        "fields":{
+            "name":"September Challenge",
+            "contestId":"SEPT20B"
+        }
+    }
+]

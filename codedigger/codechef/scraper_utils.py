@@ -92,10 +92,14 @@ def contestgivenScrapper(user_handle):
 
     soup = profilePageScraper(user_handle)
 
+    contests_given = []
     contests = soup.find('article')
+
+    if contests == None:
+        return contests_given
+
     contests = contests.find_all('p')
 
-    contests_given = []
     for contest in contests:
         cont = contest.find('strong').contents
         contests_given.append(cont[0][:-1])
@@ -109,11 +113,14 @@ def contestgivenScrapper(user_handle):
 def problems_solved(user_handle):
 
     soup = profilePageScraper(user_handle)
-    print(user_handle)
+    # print(user_handle)
     upsolved_problems = []
     problems_solved_in_contests = []
 
     all_contests = soup.find('article')
+    if all_contests == None:
+        return (upsolved_problems, problems_solved_in_contests)
+
     contests_list = all_contests.find_all('p')
     cont = (contests_list[0].find('strong').contents)[0][:-1]
 
