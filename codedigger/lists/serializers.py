@@ -104,6 +104,7 @@ class GetLadderSerializer(serializers.ModelSerializer):
 
 
 class GetUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = ('id', 'name', 'description', 'slug', 'public')
@@ -157,6 +158,7 @@ class ProblemUserlisterializer(serializers.ModelSerializer):
 
 
 class EditUserlistSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = List
         fields = (
@@ -200,10 +202,9 @@ class AddProblemsAdminSerializer(serializers.Serializer):
     class Meta:
         fields = ('slug', )
 
-# class EditorTableSerializer(serializers.Serializer):
-#     user = self.context.get('user')
-    
-#     class Meta:
-#         model = EditorTable
-#         fields = '__all__'
 
+class EnrollInListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+
+    class Meta:
+        fields = ('slug', )

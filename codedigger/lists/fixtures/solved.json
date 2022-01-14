@@ -1,0 +1,26 @@
+[
+    {
+        "model":"lists.solved",
+        "pk":1,
+        "fields": {
+            "user":1,
+            "problem":1
+        }
+    },
+    {
+        "model":"lists.solved",
+        "pk":2,
+        "fields": {
+            "user":1,
+            "problem":2
+        }
+    },
+    {
+        "model":"lists.solved",
+        "pk":3,
+        "fields": {
+            "user":2,
+            "problem":1
+        }
+    }
+]

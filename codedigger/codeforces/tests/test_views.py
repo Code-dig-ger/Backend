@@ -8,6 +8,7 @@ from django.urls import reverse
 
 
 class TestViews(TestSetUp):
+
     def test_search_user(self):
         url = reverse('search-user')
         url += '?q=tou'

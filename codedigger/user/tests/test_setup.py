@@ -6,6 +6,7 @@ from user.models import User
 
 
 class TestSetUp(APITestCase):
+
     def setUp(self):
         self.register_url = reverse('register')
         self.login_url = reverse('login')

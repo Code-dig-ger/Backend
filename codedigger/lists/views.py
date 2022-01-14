@@ -1,23 +1,18 @@
 from django.http import JsonResponse
 from .cron import updater
 from rest_framework import generics, status, views, response
-from .models import List, ListExtraInfo, LadderStarted, ListInfo
+from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled
 from problem.models import Problem
-from .serializers import (
-    GetLadderSerializer,
-    GetSerializer,
-    GetUserlistSerializer,
-    EditUserlistSerializer,
-    CreateUserlistSerializer,
-    ProblemSerializer,
-    UserlistAddSerializer,
-    AddProblemsAdminSerializer,
-)
-from django.db.models import Q
+from .serializers import (GetLadderSerializer, GetSerializer,
+                          GetUserlistSerializer, EditUserlistSerializer,
+                          CreateUserlistSerializer, ProblemSerializer,
+                          UserlistAddSerializer, AddProblemsAdminSerializer,
+                          EnrollInListSerializer)
+from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
 from .utils import *
-from user.models import User
+from user.models import User, UserFriends
 
 
 class TopicwiseGetListView(generics.ListAPIView):
@@ -418,6 +413,58 @@ class ListGetView(generics.ListAPIView):
         return response.Response({'status': 'OK', 'result': send_data})
 
 
+# class ListStats(generics.ListAPIView):
+#     permission_classes = [AuthenticatedActivated]
+#     serializer_class = GetUserlistSerializer
+
+#     def get(self, request, slug):
+#         try:
+#             list = List.objects.get(slug=slug)
+#         except:
+#             raise ValidationException(
+#                 "List with the provided slug does not exist")
+#         qs = Solved.objects.filter(problem__in=Subquery(
+#             ListInfo.objects.filter(
+#                 p_list=list).values('problem')))
+#         send_data=[{'total_problems_solved':len(qs)}]
+#         return response.Response({'status': 'OK', 'result': send_data})
+
+
+class UserStandingStats(generics.ListAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = GetUserlistSerializer
+
+    def get(self, request, slug):
+        here = self.request.user
+        friend = self.request.GET.get('friend', False)
+        try:
+            list = List.objects.get(slug=slug)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+
+        if here != list.owner and list.public == False:
+            raise ValidationException("The list must be public")
+        qs = Solved.objects.filter(problem__in=Subquery(
+            ListInfo.objects.filter(
+                p_list=list).values('problem'))).values('user').annotate(
+                    problems_solved=Count('user')).order_by('-problems_solved')
+
+        if friend:
+            qs = qs.filter(user__in=Subquery(
+                UserFriends.objects.filter(
+                    from_user=here).values('to_user_id'))).union(
+                        qs.filter(user=here))
+        send_data = []
+        for rank, q in enumerate(qs):
+            send_data.append({
+                'user': q.get('user', None),
+                'rank': rank + 1,
+                'problems_solved': q.get('problems_solved', 0)
+            })
+        return response.Response({'status': 'OK', 'result': send_data})
+
+
 class UserlistCreateView(generics.CreateAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = CreateUserlistSerializer
@@ -672,6 +719,7 @@ class AddProblemsAdminView(generics.GenericAPIView):
 
 
 class ProblemsPublicListView(views.APIView):
+
     def get_object(self, slug):
         if not List.objects.filter(slug=slug).exists():
             raise NotFoundException(
@@ -732,6 +780,42 @@ class SearchUserlistView(generics.ListAPIView):
         lists = List.objects.filter(Q(name__icontains=param) & Q(public=True))
         res_lists = GetUserlistSerializer(lists, many=True).data
         return response.Response({'status': 'OK', 'result': res_lists})
+
+
+class EnrollListView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = EnrollInListSerializer
+
+    def get(self, request):
+        user = self.request.user
+        enroll_list_ids = Enrolled.objects.filter(
+            enroll_user=user).values_list('enroll_list', flat=True)
+        lists = List.objects.filter(id__in=enroll_list_ids)
+        res_lists = GetUserlistSerializer(lists, many=True).data
+        return response.Response({'status': 'OK', 'result': res_lists})
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        user = self.request.user
+        list = data.get('slug')
+        try:
+            curr_list = List.objects.get(slug=list)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+        if not curr_list.public:
+            raise ValidationException("List is not public")
+        if Enrolled.objects.filter(
+                Q(enroll_list=curr_list) & Q(enroll_user=user)):
+            raise ValidationException(
+                "User has already been enrolled into this list")
+        Enrolled.objects.get_or_create(enroll_user=user, enroll_list=curr_list)
+        return response.Response(
+            {
+                "status": 'OK',
+                'result': "User has been enrolled into the list"
+            },
+            status=status.HTTP_201_CREATED)
 
 
 def testing(request):
