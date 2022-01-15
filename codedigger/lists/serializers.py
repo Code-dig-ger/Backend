@@ -1,5 +1,5 @@
 from rest_framework import serializers, status
-from .models import ListInfo, Solved, List, ListInfo, LadderStarted, EditorTable
+from .models import ListInfo, Solved, List, ListInfo, LadderStarted, Editor
 from problem.models import Problem
 from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -208,3 +208,11 @@ class EnrollInListSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('slug', )
+
+class EditorListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+    friend = serializers.CharField(required=True)
+
+    class Meta:
+        model = Editor
+        fields = ('slug', 'friend')

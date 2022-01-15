@@ -1,13 +1,13 @@
 from django.http import JsonResponse
 from .cron import updater
 from rest_framework import generics, status, views, response
-from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled
+from .models import List, ListExtraInfo, LadderStarted, ListInfo, Enrolled, Editor
 from problem.models import Problem
 from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
-                          EnrollInListSerializer)
+                          EnrollInListSerializer, EditorListSerializer)
 from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
@@ -506,9 +506,12 @@ class UserlistAddProblemView(generics.CreateAPIView):
             raise ValidationException(
                 "Problem with the given prob_id and platform already exists within the list"
             )
-        if curr_list.owner != here:
-            raise ValidationException(
-                "Only the owner of the list can add problems to this list")
+        if curr_list.owner!=here:
+            try:
+                can_edit = Editor.objects.get(editor_list=curr_list, editor_user=here)
+            except:
+                raise ValidationException("The user can not add problems to the list")
+        
         listinfo = ListInfo()
         listinfo.p_list = curr_list
         listinfo.problem = curr_prob
@@ -814,6 +817,45 @@ class EnrollListView(generics.GenericAPIView):
             {
                 "status": 'OK',
                 'result': "User has been enrolled into the list"
+            },
+            status=status.HTTP_201_CREATED)
+
+class UserListEdit(generics.GenericAPIView):
+    serializer_class = EditorListSerializer
+    
+    def post(self,request, *args, **kwargs):
+        data = request.data
+        here = self.request.user
+        list = data.get('slug')
+        friend = data.get('friend')
+        print(data)
+
+        try:
+            curr_list = List.objects.get(slug=list)
+        except:
+            raise ValidationException(
+                "List with the provided slug does not exist")
+        try:
+            friend_id = User.objects.get(username=friend)
+        except:
+            raise ValidationException('User with given Username not exists.')
+
+        if curr_list.owner!=here:
+            raise ValidationException("User is not Owner of the list")
+        
+        try:
+            is_friend = UserFriends.objects.get(Q(from_user=here) & Q(to_user=friend_id))
+        except:
+            raise ValidationException("Users are not friends")
+        if is_friend.status!=1:
+            raise ValidationException('Users are not friends')
+        
+        Editor.objects.get_or_create(editor_user=friend_id, editor_list=curr_list)
+        
+        return response.Response(
+            {
+                "status": 'OK',
+                'result': "User has been added to the list"
             },
             status=status.HTTP_201_CREATED)
 
