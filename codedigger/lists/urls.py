@@ -70,8 +70,6 @@ urlpatterns = [
     path('<str:slug>/stats/standing',
          UserStandingStats.as_view(),
          name='user-standing'),
-     
-     path('add' , UserListEdit.as_view(), name='add-users'),
-    
+    path('add', UserListEdit.as_view(), name='add-users'),
     path('testing', testing),
 ]

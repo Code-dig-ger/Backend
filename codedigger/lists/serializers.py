@@ -209,6 +209,7 @@ class EnrollInListSerializer(serializers.Serializer):
     class Meta:
         fields = ('slug', )
 
+
 class EditorListSerializer(serializers.Serializer):
     slug = serializers.CharField(required=True)
     friend = serializers.CharField(required=True)

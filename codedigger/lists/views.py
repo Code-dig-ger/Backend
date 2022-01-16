@@ -506,12 +506,14 @@ class UserlistAddProblemView(generics.CreateAPIView):
             raise ValidationException(
                 "Problem with the given prob_id and platform already exists within the list"
             )
-        if curr_list.owner!=here:
+        if curr_list.owner != here:
             try:
-                can_edit = Editor.objects.get(editor_list=curr_list, editor_user=here)
+                can_edit = Editor.objects.get(editor_list=curr_list,
+                                              editor_user=here)
             except:
-                raise ValidationException("The user can not add problems to the list")
-        
+                raise ValidationException(
+                    "The user can not add problems to the list")
+
         listinfo = ListInfo()
         listinfo.p_list = curr_list
         listinfo.problem = curr_prob
@@ -820,10 +822,11 @@ class EnrollListView(generics.GenericAPIView):
             },
             status=status.HTTP_201_CREATED)
 
+
 class UserListEdit(generics.GenericAPIView):
     serializer_class = EditorListSerializer
-    
-    def post(self,request, *args, **kwargs):
+
+    def post(self, request, *args, **kwargs):
         data = request.data
         here = self.request.user
         list = data.get('slug')
@@ -840,18 +843,20 @@ class UserListEdit(generics.GenericAPIView):
         except:
             raise ValidationException('User with given Username not exists.')
 
-        if curr_list.owner!=here:
+        if curr_list.owner != here:
             raise ValidationException("User is not Owner of the list")
-        
+
         try:
-            is_friend = UserFriends.objects.get(Q(from_user=here) & Q(to_user=friend_id))
+            is_friend = UserFriends.objects.get(
+                Q(from_user=here) & Q(to_user=friend_id))
         except:
             raise ValidationException("Users are not friends")
-        if is_friend.status!=1:
+        if is_friend.status != 1:
             raise ValidationException('Users are not friends')
-        
-        Editor.objects.get_or_create(editor_user=friend_id, editor_list=curr_list)
-        
+
+        Editor.objects.get_or_create(editor_user=friend_id,
+                                     editor_list=curr_list)
+
         return response.Response(
             {
                 "status": 'OK',
