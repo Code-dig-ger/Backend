@@ -391,25 +391,38 @@ class UserlistGetView(generics.ListAPIView):
 
 
 class ListGetView(generics.ListAPIView):
-    permission_classes = [AuthenticatedOrReadOnly]
+    permission_classes = []
     serializer_class = GetUserlistSerializer
 
-    def get_queryset(self):
+    def get_queryset(self,type):
         username = self.kwargs['username']
         try:
             user = User.objects.get(username=username)
         except:
             raise ValidationException('User with given Username not exists.')
-
-        if self.request.user.is_authenticated and username == self.request.user.username:
-            qs = List.objects.filter(owner=self.request.user)
-        else:
+        if(type=="public"):
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
-        return qs
+            return qs
+        elif(type=="private"):
+            h = User.objects.get(username="testinguser")
+            if self.request.user.is_authenticated and username == h:
+                qs = List.objects.filter(Q(owner=h) & Q(public=False))
+            else:
+                qs = List.objects.filter(Q(owner=user) & Q(public=False))
+            return qs
+        else:
+            qs = Editor.objects.filter(editor_user=user)
+            return qs
 
     def get(self, request, username):
-        qs = self.get_queryset()
-        send_data = GetUserlistSerializer(qs, many=True).data
+        send_data = {"public":[],"private":[],"shared":[]}
+        qs1 = self.get_queryset("public")
+        send_data["public"] = GetUserlistSerializer(qs1, many=True).data
+        qs2 = self.get_queryset("private")
+        send_data["private"] = GetUserlistSerializer(qs2, many=True).data
+        qs3 = self.get_queryset("shared")
+        send_data["shared"] = GetUserlistSerializer(qs3, many=True).data
+
         return response.Response({'status': 'OK', 'result': send_data})
 
 
@@ -828,7 +841,6 @@ class UserListEdit(generics.GenericAPIView):
         here = self.request.user
         list = data.get('slug')
         friend = data.get('friend')
-        print(data)
 
         try:
             curr_list = List.objects.get(slug=list)

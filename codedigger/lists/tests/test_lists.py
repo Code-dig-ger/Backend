@@ -146,6 +146,33 @@ class TestViews(TestSetUp):
                              res.data['result'][0]['problems_solved'],
                              res.data['result'][1]['problems_solved'])
 
+    def test_add_editors(self):
+        slug = "testinglist_topicwise"
+        friend = "testinguser"
+        username = "testing"
+        test_url = reverse('add-users')
+        token = self.login(self.client, self.login_url, self.user_data)
+        client = self.get_authenticated_client(token)
+        res = client.post(test_url, {"slug":slug,"friend":friend}, format="json")
+        print(res.data)
+        self.assertEqual(res.data['result'],"User has been added to the list")
+
+        # prob_id = "2113"
+        # slug = "testinglist_topicwise"
+        # platform = "U"
+        # description = "problem description"
+        # username1 = "testinguser"
+        # test_url1 = reverse('userlist-add')
+        # token1 = self.login(self.client, self.login_url, self.user_data)
+        # client1 = self.get_authenticated_client(token1)
+        # res1 = client1.post(test_url, {"prob_id":prob_id,"slug":slug,"platform":platform,"description":description}, format="json")
+        # print(res1.data)
+        # self.assertEqual(res1.data,"Given problem has been added to the list")
+
+
+
+
+        
 
 def test_get_user_list(self):
     username = "testing"
