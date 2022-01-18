@@ -1,6 +1,6 @@
 from django.test import client
 
-from user.exception import ValidationException
+from utils.exception import ValidationException
 from .test_setup import TestSetUp
 from user.models import User, Profile
 from django.urls import reverse
