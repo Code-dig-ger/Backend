@@ -25,8 +25,10 @@ class LadderStartedAdmin(admin.ModelAdmin):
 class EnrolledAdmin(admin.ModelAdmin):
     search_fields = ('enroll__user', 'enroll__list')
 
+
 class EditorAdmin(admin.ModelAdmin):
     search_fields = ('editor__user', 'editor__list')
+
 
 admin.site.register(List, ListAdmin)
 admin.site.register(ListInfo, ListInfoAdmin)
@@ -35,4 +37,3 @@ admin.site.register(ListExtraInfo, ListExtraInfoAdmin)
 admin.site.register(LadderStarted, LadderStartedAdmin)
 admin.site.register(Enrolled, EnrolledAdmin)
 admin.site.register(Editor, EditorAdmin)
-

@@ -210,11 +210,11 @@ class EnrollInListSerializer(serializers.Serializer):
     class Meta:
         fields = ('slug', )
 
+
 class EditorListSerializer(serializers.Serializer):
     # slug = serializers.CharField(required=True)
     # friend = serializers.CharField(required=True)
 
     class Meta:
         model = Editor
-        # fields = ('slug', 'friend')
-        fields = '__all__'
+        fields = ('slug', 'friend')

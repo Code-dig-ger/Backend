@@ -145,6 +145,7 @@ class Enrolled(models.Model):
     def __str__(self):
         return self.enroll_list.slug
 
+
 class Editor(models.Model):
     editor_user = models.ForeignKey(User,
                                     on_delete=models.CASCADE,
@@ -152,7 +153,7 @@ class Editor(models.Model):
     editor_list = models.ForeignKey(List,
                                     on_delete=models.CASCADE,
                                     related_name="editor_list")
-    
+
     def __str__(self):
         return str(self.editor_user)+" can edit list "+str(self.editor_list)
     
