@@ -84,8 +84,10 @@ class TestViews(TestSetUp):
             'platform': 'A'
         }
         res2 = client2.post(test_url, data2, format="json")
-        self.assertEqual(res.status_code, 200) and self.assertEqual(
-            res2.status_code, 400)
+        self.assertEqual(res.status_code, 200) and \
+             self.assertEqual(res.data['result'],"Given problem has been added to the list") and \
+                self.assertEqual(res2.status_code, 400) and \
+                  self.assertRaises(ValidationException, res)
 
     def test_check_owner_can_change_visibility_view(self):
         slug = "testinglist_userlist"
@@ -154,45 +156,26 @@ class TestViews(TestSetUp):
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)
         res = client.post(test_url, {"slug":slug,"friend":friend}, format="json")
-        print(res.data)
         self.assertEqual(res.data['result'],"User has been added to the list")
-
-        # prob_id = "2113"
-        # slug = "testinglist_topicwise"
-        # platform = "U"
-        # description = "problem description"
-        # username1 = "testinguser"
-        # test_url1 = reverse('userlist-add')
-        # token1 = self.login(self.client, self.login_url, self.user_data)
-        # client1 = self.get_authenticated_client(token1)
-        # res1 = client1.post(test_url, {"prob_id":prob_id,"slug":slug,"platform":platform,"description":description}, format="json")
-        # print(res1.data)
-        # self.assertEqual(res1.data,"Given problem has been added to the list")
-
-
-
-
         
 
-def test_get_user_list(self):
-    username = "testing"
-    test_url = reverse('user-list', kwargs={'username': username})
-    here = User.objects.get(username="testing")
-    here.set_password(self.user_data['password'])
-    here.save()
-    res = self.client.post(self.login_url, self.user_data, format="json")
-    token = res.data['tokens']['access']
-    client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-    res = client.get(test_url, format="json")
+    def test_get_user_list(self):
+        username = "testing"
+        test_url = reverse('user-list', kwargs={'username': username})
+        here = User.objects.get(username="testing")
+        here.set_password(self.user_data['password'])
+        here.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        token = res.data['tokens']['access']
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res = client.get(test_url, format="json")
 
-    username2 = "testing1"
-    test_url = reverse('user-list', kwargs={'username': username2})
-    client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-    res2 = client.get(test_url, format="json")
+        username2 = "testing1"
+        test_url = reverse('user-list', kwargs={'username': username2})
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        res2 = client.get(test_url, format="json")
 
-    self.assertEqual(res.status_code, 200) and self.assertRaises(
-        ValidationException, res2)
-    if (len(res.data['result']) > 0):
-        self.assertEqual(res.data['result'][0]['public'], True)
+        self.assertEqual(res.status_code, 200) and self.assertEqual(len(res.data['result']),3) and self.assertRaises(
+            ValidationException, res2)
