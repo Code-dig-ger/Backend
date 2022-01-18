@@ -404,24 +404,21 @@ class ListGetView(generics.ListAPIView):
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
             return qs
         elif(type=="private"):
-            h = User.objects.get(username="testinguser")
-            if self.request.user.is_authenticated and username == h:
-                qs = List.objects.filter(Q(owner=h) & Q(public=False))
-            else:
-                qs = List.objects.filter(Q(owner=user) & Q(public=False))
-            return qs
+            if self.request.user.is_authenticated and username == self.request.user.username:
+                qs = List.objects.filter(Q(owner=self.request.user) & Q(public=False))
+                return qs
         else:
-            qs = Editor.objects.filter(editor_user=user)
+            list_ids = Editor.objects.filter(editor_user=user).values('editor_list')
+            qs = List.objects.filter(id__in=list_ids)
             return qs
 
     def get(self, request, username):
         send_data = {"public":[],"private":[],"shared":[]}
-        qs1 = self.get_queryset("public")
-        send_data["public"] = GetUserlistSerializer(qs1, many=True).data
-        qs2 = self.get_queryset("private")
-        send_data["private"] = GetUserlistSerializer(qs2, many=True).data
-        qs3 = self.get_queryset("shared")
-        send_data["shared"] = GetUserlistSerializer(qs3, many=True).data
+        type_list = ["public","private","shared"]
+
+        for i in type_list:
+            qs = self.get_queryset(i)
+            send_data[i] = GetUserlistSerializer(qs, many=True).data
 
         return response.Response({'status': 'OK', 'result': send_data})
 
