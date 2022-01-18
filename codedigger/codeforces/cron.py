@@ -1,4 +1,4 @@
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 from .api import (contest_list, contest_ratingChanges, contest_standings,
                   user_ratedList)

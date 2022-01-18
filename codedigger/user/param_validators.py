@@ -1,4 +1,4 @@
-from .exception import ValidationException
+from utils.exception import ValidationException
 from . import validator_functions as validators
 
 

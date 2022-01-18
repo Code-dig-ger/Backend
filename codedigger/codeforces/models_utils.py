@@ -13,7 +13,7 @@ from .codeforcesProblemSet import join
 from problem.models import Problem
 
 # User App Import
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 
 def create_or_update_user(codeforces_user):

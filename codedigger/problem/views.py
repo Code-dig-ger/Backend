@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import generics, mixins, status
 
 # Exceptions and Permissions
-from user.exception import ValidationException
-from user.permissions import *
+from utils.exception import ValidationException
+from utils.permissions import *
 
 # Models Stuff
 from user.models import User, Profile, UserFriends

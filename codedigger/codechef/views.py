@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import generics, serializers
 
-from user.exception import ValidationException
+from utils.exception import ValidationException
 from .models import CodechefContest
 from .serializers import CodechefUpsolveSerializer
 from .scraper_utils import contestgivenScrapper, problems_solved

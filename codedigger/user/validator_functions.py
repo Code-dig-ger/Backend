@@ -1,4 +1,4 @@
-from .exception import ValidationException
+from utils.exception import ValidationException
 
 
 def numeric(param, key, *args, **kwargs):

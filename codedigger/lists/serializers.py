@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, fields
 from rest_framework.response import Response
 from .solved_update import *
-from user.exception import ValidationException
+from utils.exception import ValidationException
 from django.template.defaultfilters import slugify
 
 

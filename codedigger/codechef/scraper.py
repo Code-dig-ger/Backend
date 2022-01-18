@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 from problem.models import *
 from codechef.models import *

@@ -9,8 +9,8 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
                           EnrollInListSerializer)
 from django.db.models import Q, Subquery, Count
-from user.permissions import *
-from user.exception import *
+from utils.permissions import *
+from utils.exception import *
 from .utils import *
 from user.models import User, UserFriends
 
