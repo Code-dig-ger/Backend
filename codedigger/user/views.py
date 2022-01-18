@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics, status, permissions, views
 from .serializers import (
     RegisterSerializer, ProfileSerializer, EmailVerificationSerializer,
@@ -36,7 +35,7 @@ load_dotenv(find_dotenv())
 # Validations
 from .param_validators import isValidRequest
 # Return Response
-from .response import response
+from utils.response import OKResponse
 from utils.exception import ValidationException
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
@@ -85,7 +84,7 @@ class RegisterView(generics.GenericAPIView):
             'to_email': user.email
         }
         Util.send_email(data)
-        return response(user_data, Status=status.HTTP_201_CREATED)
+        return OKResponse(user_data, status=status.HTTP_201_CREATED)
 
 
 class VerifyEmail(views.APIView):
@@ -139,7 +138,7 @@ class CheckAuthView(views.APIView):
         """
         Endpoint for checking if user is authenticated or not by checking if the JWT token is valid or not.
         """
-        return response(Data="Token is Valid")
+        return OKResponse("Token is Valid")
 
 
 class SendVerificationMail(generics.GenericAPIView):
@@ -173,7 +172,7 @@ class SendVerificationMail(generics.GenericAPIView):
             'to_email': user.email
         }
         Util.send_email(data)
-        return response(Data="A Verification Email has been sent")
+        return OKResponse("A Verification Email has been sent")
 
 
 class ProfileGetView(ListAPIView):
@@ -236,7 +235,7 @@ class ChangePassword(generics.GenericAPIView):
             raise ValidationException("Wrong Password")
         user.set_password(new_pass)
         user.save()
-        return response(Data="Password Change Complete")
+        return OKResponse("Password Change Complete")
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
@@ -277,8 +276,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 'email_subject': 'Codedigger - Password Reset'
             }
             Util.send_email(data)
-            return response(
-                Data="We have sent you a link to reset your password")
+            return OKResponse("We have sent you a link to reset your password")
         raise ValidationException('The given email does not exist')
 
 
@@ -334,7 +332,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return response(Data="Password reset success")
+        return OKResponse("Password reset success")
 
 
 class SearchUser(generics.GenericAPIView):
@@ -539,7 +537,7 @@ class UserProfileGetView(generics.GenericAPIView):
         else:
             raise ValidationException('Invalid GET Request')
 
-        return response(Data=data)
+        return OKResponse(data)
 
 
 # Friends Related View Start
@@ -597,13 +595,13 @@ class SendFriendRequest(generics.GenericAPIView):
                     raise ValidationException('You are already Friends.')
                 else:
                     status.status = True
-                    return response(Data="You are now Friends")
+                    return OKResponse("You are now Friends")
 
             except UserFriends.DoesNotExist:
                 UserFriends.objects.create(from_user=request.user,
                                            to_user=to_user,
                                            status=False)
-                return response(Data="Friend Request Sent")
+                return OKResponse("Friend Request Sent")
 
 
 class RemoveFriend(generics.GenericAPIView):
@@ -644,13 +642,13 @@ class RemoveFriend(generics.GenericAPIView):
             except UserFriends.DoesNotExist:
                 its_ok = True
             uf.delete()
-            return response(Data="Removed Successfully!")
+            return OKResponse("Removed Successfully!")
         except UserFriends.DoesNotExist:
             try:
                 opp_status = UserFriends.objects.get(from_user=user,
                                                      to_user=request.user)
                 opp_status.delete()
-                return response(Data="Removed Successfully!")
+                return OKResponse("Removed Successfully!")
             except UserFriends.DoesNotExist:
                 raise ValidationException('Already Deleted!')
 
@@ -691,7 +689,7 @@ class AcceptFriendRequest(generics.GenericAPIView):
                 raise ValidationException('You are already Friends!')
             uf.status = True
             uf.save()
-            return Response({'status': 'OK', 'result': 'You are now Friends!'})
+            return OKResponse('You are now Friends!')
         except UserFriends.DoesNotExist:
             raise ValidationException(
                 'No Request Found! It seems User have removed Request.')
@@ -728,7 +726,7 @@ class FriendsShowView(generics.GenericAPIView):
                                                 many=True).data
 
         friends = friendsbyrequest + friendsbyaccept
-        return response(Data=friends)
+        return OKResponse(friends)
 
 
 class FriendRequestShowView(generics.GenericAPIView):
@@ -752,7 +750,7 @@ class FriendRequestShowView(generics.GenericAPIView):
                                                     'by_to_user': False
                                                 },
                                                 many=True).data
-        return response(Data=friendsbyaccept)
+        return OKResponse(friendsbyaccept)
 
 
 class RequestSendShowView(generics.GenericAPIView):
@@ -776,7 +774,7 @@ class RequestSendShowView(generics.GenericAPIView):
                                                      'by_to_user': True
                                                  },
                                                  many=True).data
-        return response(Data=friendsbyrequest)
+        return OKResponse(friendsbyrequest)
 
 
 # Friends Related View Ends
