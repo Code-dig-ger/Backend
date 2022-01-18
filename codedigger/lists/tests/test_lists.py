@@ -38,7 +38,7 @@ class TestViews(TestSetUp):
             res2.status_code, 400)
 
     def test_check_restrict_change_visibility_view(self):
-        slug = "testinglist_userlist"
+        slug = "testinglist_userlist1"
         test_url = reverse('userlist-edit', kwargs={'slug': slug})
         here = User.objects.get(username="testing")
         here.set_password(self.user_data['password'])
@@ -90,7 +90,7 @@ class TestViews(TestSetUp):
                   self.assertRaises(ValidationException, res)
 
     def test_check_owner_can_change_visibility_view(self):
-        slug = "testinglist_userlist"
+        slug = "testinglist_userlist1"
         test_url = reverse('problem-publiclist', kwargs={'slug': slug})
         here = User.objects.get(username="testing")
         here.set_password(self.user_data['password'])
