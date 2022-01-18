@@ -7,8 +7,8 @@ from rest_framework.response import Response
 
 from rest_framework import generics, mixins
 
-from user.permissions import AuthenticatedActivated, AuthenticatedOrReadOnly
-from user.exception import ValidationException
+from utils.permissions import AuthenticatedActivated, AuthenticatedOrReadOnly
+from utils.exception import ValidationException
 
 from user.serializers import GuruSerializer
 from user.models import Profile

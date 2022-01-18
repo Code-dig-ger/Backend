@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from lists.utils import (sub_page_number, get_next_url, get_prev_url,
                          get_total_page, getqs)
-from user.exception import ValidationException
+from utils.exception import ValidationException
 from codeforces.api import user_status
 
 from .serializers import ProbSerializer

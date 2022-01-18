@@ -14,7 +14,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.conf import settings
 import jwt, json
-from .permissions import *
+from utils.permissions import *
 from rest_framework.generics import RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -37,7 +37,7 @@ load_dotenv(find_dotenv())
 from .param_validators import isValidRequest
 # Return Response
 from .response import response
-from .exception import ValidationException
+from utils.exception import ValidationException
 # Profile
 from .profile import get_atcoder_profile, get_spoj_profile, get_uva_profile, get_codechef_profile, get_codeforces_profile
 from codeforces.models import user as CodeforcesUser

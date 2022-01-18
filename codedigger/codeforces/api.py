@@ -2,7 +2,7 @@
 import requests
 
 # User App
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 
 def validated_response(response):

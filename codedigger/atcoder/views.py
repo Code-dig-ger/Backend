@@ -8,8 +8,8 @@ from user.models import Profile
 # Serializer and Extra Utils Function
 from .serializers import AtcoderUpsolveContestSerializer
 from problem.utils import atcoder_status, get_page_number, get_upsolve_response_dict
-from user.permissions import *
-from user.exception import ValidationException
+from utils.permissions import *
+from utils.exception import ValidationException
 from lists.utils import get_total_page, getqs
 from .scrapers import get_user_profile
 # Create your views here.

@@ -7,7 +7,7 @@ from rest_framework import generics, mixins, permissions, status
 
 from .models import Blog
 from .serializers import BlogSerializer, ABlogSerializer
-from user.permissions import *
+from utils.permissions import *
 
 
 class BlogAPIView(mixins.CreateModelMixin, generics.ListAPIView):

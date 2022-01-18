@@ -12,7 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import Util
 import requests, json
 from lists.models import Solved
-from .exception import *
+from utils.exception import *
 import re
 
 
@@ -159,13 +159,13 @@ class LoginSerializer(serializers.ModelSerializer):
             user = auth.authenticate(username=user_obj_email.username,
                                      password=password)
             if user_obj_email.auth_provider != 'email':
-                raise AuthenticationException(
+                raise UnauthorizedException(
                     'Please continue your login using ' +
                     user_obj_email.auth_provider)
             if not user:
-                raise AuthenticationException('Invalid credentials. Try again')
+                raise UnauthorizedException('Invalid credentials. Try again')
             if not user.is_active:
-                raise AuthenticationException(
+                raise UnauthorizedException(
                     'Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
@@ -184,7 +184,7 @@ class LoginSerializer(serializers.ModelSerializer):
                     'to_email': user.email
                 }
                 Util.send_email(data)
-                raise AuthenticationException(
+                raise UnauthorizedException(
                     'Email is not verified, A Verification Email has been sent to your email address'
                 )
             return {
@@ -196,9 +196,9 @@ class LoginSerializer(serializers.ModelSerializer):
         if user_obj_username:
             user = auth.authenticate(username=username, password=password)
             if not user:
-                raise AuthenticationException('Invalid credentials. Try again')
+                raise UnauthorizedException('Invalid credentials. Try again')
             if not user.is_active:
-                raise AuthenticationException(
+                raise UnauthorizedException(
                     'Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
@@ -217,7 +217,7 @@ class LoginSerializer(serializers.ModelSerializer):
                     'to_email': user.email
                 }
                 Util.send_email(data)
-                raise AuthenticationException(
+                raise UnauthorizedException(
                     'Email is not verified, A Verification Email has been sent to your email address'
                 )
             return {
@@ -226,7 +226,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 'tokens': user.tokens
             }
             return super().validate(attrs)
-        raise AuthenticationException('Invalid credentials. Try again')
+        raise UnauthorizedException('Invalid credentials. Try again')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -357,14 +357,14 @@ class SetNewPasswordSerializer(serializers.Serializer):
             id = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(user, token):
-                raise AuthenticationException('The reset link is invalid')
+                raise UnauthorizedException('The reset link is invalid')
 
             user.set_password(password)
             user.save()
 
             return (user)
         except Exception as e:
-            raise AuthenticationException('The reset link is invalid')
+            raise UnauthorizedException('The reset link is invalid')
         return super().validate(attrs)
 
 

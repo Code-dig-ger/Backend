@@ -11,7 +11,7 @@ from problem.models import Problem
 from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
 from codeforces.api import user_status
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 
 def cron_codeforces(user):

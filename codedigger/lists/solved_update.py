@@ -9,7 +9,7 @@ from lists.models import Solved
 from user.models import Profile, User
 from problem.models import Problem
 from codeforces.api import user_status
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 
 def codechef(user, prob):

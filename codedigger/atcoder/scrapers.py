@@ -1,5 +1,5 @@
 import requests
-from user.exception import ValidationException
+from utils.exception import ValidationException
 
 BASEURL = "https://atcoder.jp"
 
