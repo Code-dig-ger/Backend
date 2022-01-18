@@ -30,9 +30,9 @@ def getContestDivision(contest_id):
     return subcontests
 
 
-def ContestData(type):
+def ContestData(cont_type, cont_time):
 
-    contests_data = OffsetLoader(type)
+    contests_data = OffsetLoader(cont_time)
     all_contests = []
     dateDict = {
         "Jan": "January",
@@ -48,7 +48,32 @@ def ContestData(type):
         "Nov": "November",
         "Dec": "December"
     }
+
+    longContestCode = ['JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
+
     for contest in contests_data:
+
+        if cont_type == 'starters':
+            if contest['contest_code'][:5] != 'START':
+                continue
+        
+        if cont_type == 'lunchtime':
+            if contest['contest_code'][:5] != 'LTIME':
+                continue
+
+        if cont_type == 'cookoff':
+            if contest['contest_code'][:4] != 'COOK':
+                continue
+        
+        if cont_type == 'long':
+            found = 0
+            for month in longContestCode:
+                if contest['contest_code'][:len(month)] == month:
+                    found = 1
+                    break
+            if found == 0:
+                continue
+
         childContests = getContestDivision(contest['contest_code'])
 
         for contest_id in childContests:

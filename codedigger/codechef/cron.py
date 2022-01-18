@@ -4,7 +4,7 @@ from codechef.model_utils import create_or_update_codechefContest, create_or_upd
 
 def update_AllContests():
     # Creates new contests and problems in Database
-    all_contests = ContestData('past')
+    all_contests = ContestData('all', 'past')
     for contest in all_contests:
         create_or_update_codechefContest(contest)
         contest_problems_info = ProblemData(contest['ContestCode'])
