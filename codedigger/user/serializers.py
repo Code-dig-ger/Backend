@@ -165,8 +165,7 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user:
                 raise UnauthorizedException('Invalid credentials. Try again')
             if not user.is_active:
-                raise UnauthorizedException(
-                    'Account disabled. contact admin')
+                raise UnauthorizedException('Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
                 token = RefreshToken.for_user(user).access_token
@@ -198,8 +197,7 @@ class LoginSerializer(serializers.ModelSerializer):
             if not user:
                 raise UnauthorizedException('Invalid credentials. Try again')
             if not user.is_active:
-                raise UnauthorizedException(
-                    'Account disabled. contact admin')
+                raise UnauthorizedException('Account disabled. contact admin')
             if not user.is_verified:
                 email = user.email
                 token = RefreshToken.for_user(user).access_token

@@ -15,7 +15,7 @@ class ValidationException(APIException):
         self.code = self.default_code if code == None \
             else code
         if status_code is not None:
-            self.status_code = status_code        
+            self.status_code = status_code
 
 
 class UnauthorizedException(APIException):
@@ -33,17 +33,14 @@ class UnauthorizedException(APIException):
         self.code = self.default_code if code == None \
             else code
         if status_code is not None:
-            self.status_code = status_code 
+            self.status_code = status_code
 
 
 class ForbiddenException(APIException):
 
     status_code = status.HTTP_403_FORBIDDEN
     default_code = 'permission_denied'
-    default_detail = {
-        'status': 'FAILED',
-        'error': 'Permission Denied.'
-    }
+    default_detail = {'status': 'FAILED', 'error': 'Permission Denied.'}
 
     def __init__(self, detail=None, status_code=None, code=None):
         self.detail = self.default_detail if detail == None \
@@ -51,17 +48,14 @@ class ForbiddenException(APIException):
         self.code = self.default_code if code == None \
             else code
         if status_code is not None:
-            self.status_code = status_code 
-    
+            self.status_code = status_code
+
 
 class NotFoundException(APIException):
 
     status_code = status.HTTP_404_NOT_FOUND
     default_code = 'not_found'
-    default_detail = {
-        'status': 'FAILED',
-        'error': 'Not Found.'
-    }
+    default_detail = {'status': 'FAILED', 'error': 'Not Found.'}
 
     def __init__(self, detail=None, status_code=None, code=None):
         self.detail = self.default_detail if detail == None \
@@ -69,4 +63,4 @@ class NotFoundException(APIException):
         self.code = self.default_code if code == None \
             else code
         if status_code is not None:
-            self.status_code = status_code 
+            self.status_code = status_code

@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from user.models import Profile
-from .exception import (ValidationException, UnauthorizedException, 
+from .exception import (ValidationException, UnauthorizedException,
                         ForbiddenException)
 
 
