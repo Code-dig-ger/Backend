@@ -4,6 +4,7 @@ from django.urls import reverse
 
 
 class TestUpsolve(TestSetUp):
+
     def test_codeforces_upsolve(self):
         test_url = reverse('cf_upsolve')
         token = self.login(self.client, self.login_url, self.user_data)

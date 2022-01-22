@@ -1,3 +1,4 @@
+from re import A
 import requests
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -134,9 +135,13 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from .test_fixtures.rating_change_fixture import contest_rank, rating_change
 from .utils import *
+from .contestProblem import AssignCodeforcesProblem
 
 
 def testing(request):
+    cf_user = user.objects.get(handle="shivamsinghal1012")
+    problems = AssignCodeforcesProblem(cf_user)
+    print(problems)
     return JsonResponse({'status': 'OK'})
 
 

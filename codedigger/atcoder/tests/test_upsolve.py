@@ -4,6 +4,7 @@ from django.urls import reverse
 
 
 class TestUpsolve(TestSetUp):
+
     def test_atcoder_upsolve(self):
         test_url = reverse('at_upsolve') + '?practice=true'
         token = self.login(self.client, self.login_url, self.user_data)

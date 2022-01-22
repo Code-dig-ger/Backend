@@ -50,7 +50,3 @@ jobs:
         pip install coverage
         coverage run manage.py test
         coverage report
-    - name: Run Tests
-      run: |
-        cd codedigger
-        python3 manage.py test

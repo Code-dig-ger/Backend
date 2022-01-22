@@ -5,6 +5,7 @@ from django.utils.html import strip_tags
 
 
 class Util:
+
     @staticmethod
     def send_email(data):
         context = {

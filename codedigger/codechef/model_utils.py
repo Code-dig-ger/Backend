@@ -1,10 +1,6 @@
 from datetime import datetime
-
-from .models import CodechefContest
-from .models import CodechefContest, CodechefContestProblems
 from problem.models import Problem
-from codechef.scraper import contestScraper, problemScraper, divisionScraper
-from codechef.scraper_utils import OffsetLoader, getContestDivision, ContestData, ProblemData
+from codechef.models import CodechefContest, CodechefContestProblems
 
 
 def create_or_update_codechefProblem(problemdata):
