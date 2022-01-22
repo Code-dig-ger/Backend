@@ -38,4 +38,5 @@ urlpatterns = [
          schema_view.with_ui('redoc', cache_timeout=0),
          name='schema-redoc'),
     path('codechef/', include('codechef.urls')),
+    path('team/', include('team.urls')),
 ]
