@@ -1,0 +1,66 @@
+[
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 1,
+        "fields": {
+            "contest": 1,
+            "problem": 11
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 2,
+        "fields": {
+            "contest": 1,
+            "problem": 12
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 3,
+        "fields": {
+            "contest": 1,
+            "problem": 13
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 4,
+        "fields": {
+            "contest": 1,
+            "problem": 14
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 5,
+        "fields": {
+            "contest": 1,
+            "problem": 15
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 6,
+        "fields": {
+            "contest": 2,
+            "problem": 16
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 7,
+        "fields": {
+            "contest": 2,
+            "problem": 17
+        }
+    },
+    {
+        "model": "codechef.codechefcontestproblems",
+        "pk": 8,
+        "fields": {
+            "contest": 2,
+            "problem": 18
+        }
+    }
+]
