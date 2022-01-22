@@ -9,7 +9,7 @@ urlpatterns = [
          views.CodechefUserSubmissionAPIView.as_view()),
     path('contestproblems/<str:contest>',
          views.CodechefContestProblemsAPIView.as_view()),
-     path('contests/<str:time>/<str:typec>',
+    path('contests/<str:time>/<str:typec>',
          views.CodechefContestsAPIView.as_view()),
     path('testing', views.testing)
 ]

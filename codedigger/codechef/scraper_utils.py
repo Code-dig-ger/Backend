@@ -49,14 +49,17 @@ def ContestData(cont_type, cont_time):
         "Dec": "December"
     }
 
-    longContestCode = ['JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
+    longContestCode = [
+        'JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT',
+        'OCT', 'NOV', 'DEC'
+    ]
 
     for contest in contests_data:
 
         if cont_type == 'starters':
             if contest['contest_code'][:5] != 'START':
                 continue
-        
+
         if cont_type == 'lunchtime':
             if contest['contest_code'][:5] != 'LTIME':
                 continue
@@ -64,7 +67,7 @@ def ContestData(cont_type, cont_time):
         if cont_type == 'cookoff':
             if contest['contest_code'][:4] != 'COOK':
                 continue
-        
+
         if cont_type == 'long':
             found = 0
             for month in longContestCode:

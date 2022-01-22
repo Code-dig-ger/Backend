@@ -21,7 +21,8 @@ def divisionScraper(contest_id):
 
 def contestScraper(offset, contest_type):
 
-    query_contest_url = f"https://www.codechef.com/api/list/contests/" + contest_type + "?sort_by=START&sorting_order=desc&offset=" + str(offset) + "&mode=premium"
+    query_contest_url = f"https://www.codechef.com/api/list/contests/" + contest_type + "?sort_by=START&sorting_order=desc&offset=" + str(
+        offset) + "&mode=premium"
     # Query URL might change in future.
     contest_data = requests.get(query_contest_url)
 

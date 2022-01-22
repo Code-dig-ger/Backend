@@ -114,11 +114,12 @@ class CodechefContestsAPIView(generics.GenericAPIView):
             raise ValidationException(
                 'A valid parameter for contest time is required')
 
-        if ((ctype != 'lunchtime') & (ctime != 'cookoff') & (ctime != 'starters') & (ctime != 'long')):
+        if ((ctype != 'lunchtime') & (ctime != 'cookoff') &
+            (ctime != 'starters') & (ctime != 'long')):
             ctype = 'all'
 
         result = ContestData(ctype, ctime)
-        return Response({'status': 'OK', 'result':result})
+        return Response({'status': 'OK', 'result': result})
 
 
 def testing(request):

@@ -6,19 +6,19 @@ from codechef.models import CodechefContest, CodechefContestProblems
 def create_or_update_codechefProblem(problemdata):
     for problem in problemdata:
         Prob, created = Problem.objects.get_or_create(
-            prob_id = problem['ProblemCode'],
-            platform = problem['Platform'],
-            defaults = {
-                'name' : problem['Name'],
-                'url' : problem['ProblemURL'],
-                'contest_id' : problem['ContestId'],
+            prob_id=problem['ProblemCode'],
+            platform=problem['Platform'],
+            defaults={
+                'name': problem['Name'],
+                'url': problem['ProblemURL'],
+                'contest_id': problem['ContestId'],
             },
         )
 
         cont = CodechefContest.objects.get(contestId=problem['ContestId'])
 
         ccprob, created = CodechefContestProblems.objects.get_or_create(
-            contest = cont, problem = Prob)
+            contest=cont, problem=Prob)
 
 
 def create_or_update_codechefContest(contest):
