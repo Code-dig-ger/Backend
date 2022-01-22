@@ -30,12 +30,25 @@
 		"pk": 3,
 		"fields": {
 			"name": "testinglist_userlist",
-			"owner": 1,
+			"owner": 3,
 			"isAdmin": false,
 			"isTopicWise": true,
 			"type_list": "3",
 			"public": false,
 			"slug": "testinglist_userlist"
+		}
+	},
+	{
+		"model": "lists.list",
+		"pk": 4,
+		"fields": {
+			"name": "testinglist_userlist1",
+			"owner": 1,
+			"isAdmin": false,
+			"isTopicWise": true,
+			"type_list": "3",
+			"public": false,
+			"slug": "testinglist_userlist1"
 		}
 	}
 ]

@@ -391,25 +391,35 @@ class UserlistGetView(generics.ListAPIView):
 
 
 class ListGetView(generics.ListAPIView):
-    permission_classes = [AuthenticatedOrReadOnly]
+    permission_classes = []
     serializer_class = GetUserlistSerializer
 
-    def get_queryset(self):
+    def get_queryset(self,type):
         username = self.kwargs['username']
         try:
             user = User.objects.get(username=username)
         except:
             raise ValidationException('User with given Username not exists.')
-
-        if self.request.user.is_authenticated and username == self.request.user.username:
-            qs = List.objects.filter(owner=self.request.user)
-        else:
+        if(type=="public"):
             qs = List.objects.filter(Q(owner=user) & Q(public=True))
-        return qs
+            return qs
+        elif(type=="private"):
+            if self.request.user.is_authenticated and username == self.request.user.username:
+                qs = List.objects.filter(Q(owner=self.request.user) & Q(public=False))
+                return qs
+        else:
+            list_ids = Editor.objects.filter(editor_user=user).values('editor_list')
+            qs = List.objects.filter(id__in=list_ids)
+            return qs
 
     def get(self, request, username):
-        qs = self.get_queryset()
-        send_data = GetUserlistSerializer(qs, many=True).data
+        send_data = {"public":[],"private":[],"shared":[]}
+        type_list = ["public","private","shared"]
+
+        for i in type_list:
+            qs = self.get_queryset(i)
+            send_data[i] = GetUserlistSerializer(qs, many=True).data
+
         return response.Response({'status': 'OK', 'result': send_data})
 
 
@@ -831,7 +841,6 @@ class UserListEdit(generics.GenericAPIView):
         here = self.request.user
         list = data.get('slug')
         friend = data.get('friend')
-        print(data)
 
         try:
             curr_list = List.objects.get(slug=list)

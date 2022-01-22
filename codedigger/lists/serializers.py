@@ -107,7 +107,8 @@ class GetUserlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id', 'name', 'description', 'slug', 'public')
+        fields = ('id', 'name', 'description', 'slug')
+        # fields = ('id', 'name', 'description', 'slug', 'public')
 
 
 class CreateUserlistSerializer(serializers.ModelSerializer):
@@ -211,8 +212,8 @@ class EnrollInListSerializer(serializers.Serializer):
 
 
 class EditorListSerializer(serializers.Serializer):
-    slug = serializers.CharField(required=True)
-    friend = serializers.CharField(required=True)
+    # slug = serializers.CharField(required=True)
+    # friend = serializers.CharField(required=True)
 
     class Meta:
         model = Editor

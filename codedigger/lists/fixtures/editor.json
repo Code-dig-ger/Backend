@@ -1,0 +1,10 @@
+[
+    {
+        "model": "lists.editor",
+        "pk": 1,
+        "fields": {
+            "editor_user": 1,
+            "editor_list": 3
+        }
+    }
+]
