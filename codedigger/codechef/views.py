@@ -5,9 +5,11 @@ from rest_framework import generics, serializers
 from user.exception import ValidationException
 from .models import CodechefContest
 from .serializers import CodechefUpsolveSerializer
-from .scraper_utils import contestgivenScrapper, problems_solved
+
+from .scraper_utils import contestgivenScrapper, problems_solved, RecentSubmission, UserSubmissionDetails, ContestData
 from user.models import Profile
 from problem.utils import getqs, get_total_page, get_upsolve_response_dict
+
 from codechef.cron import *
 # Create your views here.
 
@@ -54,6 +56,70 @@ class CodechefUpsolveAPIView(generics.GenericAPIView):
         res = get_upsolve_response_dict(result, path, page, total_contest,
                                         per_page)
         return Response(res)
+
+
+class CodechefRecentSubmissionAPIView(generics.GenericAPIView):
+
+    def get(self, request, username):
+
+        handle = request.GET.get('handle', username)
+        if handle == None:
+            raise ValidationException(
+                'Any of handle or Bearer Token is required.')
+
+        result = RecentSubmission(handle)
+
+        return Response({'status': 'OK', 'result': result})
+
+
+class CodechefUserSubmissionAPIView(generics.GenericAPIView):
+
+    def get(self, request, username, problem):
+
+        handle = request.GET.get('handle', username)
+        problemcode = request.GET.get('problemcode', problem)
+        if handle == None:
+            raise ValidationException(
+                'Any of handle or Bearer Token is required.')
+
+        if problemcode == None:
+            raise ValidationException('Any of valid problem code is required.')
+
+        result = UserSubmissionDetails(problemcode, handle)
+
+        return Response({'status': 'OK', 'result': result})
+
+
+class CodechefContestProblemsAPIView(generics.GenericAPIView):
+
+    def get(self, request, contest):
+
+        contest_id = request.GET.get('contest_id', contest)
+
+        if contest_id == None:
+            raise ValidationException('A valid Contest ID is required.')
+
+        result = ProblemData(contest_id)
+
+        return Response({'status': 'OK', 'result': result})
+
+
+class CodechefContestsAPIView(generics.GenericAPIView):
+
+    def get(self, request, time, typec):
+
+        ctime = request.GET.get('ctime', time)
+        ctype = request.GET.get('ctype', typec)
+        if ((ctime != 'past') & (ctime != 'present') & (ctime != 'future')):
+            raise ValidationException(
+                'A valid parameter for contest time is required')
+
+        if ((ctype != 'lunchtime') & (ctime != 'cookoff') &
+            (ctime != 'starters') & (ctime != 'long')):
+            ctype = 'all'
+
+        result = ContestData(ctype, ctime)
+        return Response({'status': 'OK', 'result': result})
 
 
 def testing(request):

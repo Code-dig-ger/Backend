@@ -1,4 +1,4 @@
-from codechef.scraper import contestScraper, problemScraper, profilePageScraper
+from codechef.scraper import contestScraper, problemScraper, profilePageScraper, recentSubmissionScraper, UserSubmissionScraper
 
 
 def OffsetLoader(contest_type):
@@ -30,9 +30,9 @@ def getContestDivision(contest_id):
     return subcontests
 
 
-def ContestData(type):
+def ContestData(cont_type, cont_time):
 
-    contests_data = OffsetLoader(type)
+    contests_data = OffsetLoader(cont_time)
     all_contests = []
     dateDict = {
         "Jan": "January",
@@ -48,7 +48,35 @@ def ContestData(type):
         "Nov": "November",
         "Dec": "December"
     }
+
+    longContestCode = [
+        'JAN', 'FEB', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT',
+        'OCT', 'NOV', 'DEC'
+    ]
+
     for contest in contests_data:
+
+        if cont_type == 'starters':
+            if contest['contest_code'][:5] != 'START':
+                continue
+
+        if cont_type == 'lunchtime':
+            if contest['contest_code'][:5] != 'LTIME':
+                continue
+
+        if cont_type == 'cookoff':
+            if contest['contest_code'][:4] != 'COOK':
+                continue
+
+        if cont_type == 'long':
+            found = 0
+            for month in longContestCode:
+                if contest['contest_code'][:len(month)] == month:
+                    found = 1
+                    break
+            if found == 0:
+                continue
+
         childContests = getContestDivision(contest['contest_code'])
 
         for contest_id in childContests:
@@ -174,3 +202,139 @@ def userScraper(user_handle):
     # user.country_rank = country_rank
     # user.global_rank = global_rank
     # user.save()
+
+
+def RecentSubmission(user_handle):
+    soup = recentSubmissionScraper(user_handle)
+    recentSubs = soup.findAll('tbody')
+
+    recentlist = []
+    for sub in recentSubs:
+        subd = sub.findAll('tr')
+        subd.pop(-1)
+        try:
+            query = subd[0].text[:18]
+        except:
+            query = "Profile found successfully"
+        if query == 'No Recent Activity':
+            break
+
+        for prob in subd:
+            baseurl = "https://www.codechef.com"
+            det = prob.findAll('td')
+
+            probid = det[1].find('a').text
+            probid = probid[:probid.index('<')]
+
+            link = det[1].find('a').get('href')
+            link = link.replace("\\", "")
+            link = baseurl + link
+
+            subtime = prob.find('span', class_="tooltiptext")
+            try:
+                subtime = subtime.text
+                subtime = subtime[:subtime.index('<')]
+            except:
+                break
+
+            subtime = subtime.replace("\\", "")
+
+            verdict = det[2].find('span').get('title')
+            if len(verdict) == 0:
+                verdict = (det[2].find('span').text)
+                verdict = verdict[:verdict.index('[')]
+                if int(verdict) == 100:
+                    verdict = "accepted [100/100]"
+                else:
+                    verdict = "partially accepted [" + verdict + "/100]"
+
+            lang = det[3].text
+            lang = lang[:lang.index('<')]
+
+            subformat = {
+                'probid': probid,
+                'subtime': subtime,
+                'verdict': verdict,
+                'lang': lang,
+                'link': link,
+            }
+
+            recentlist.append(subformat)
+
+    return recentlist
+
+
+def allProblemsSolved(user_handle):
+
+    soup = profilePageScraper(user_handle)
+    print(user_handle)
+    problems_solved = []
+
+    all_contests = soup.find('article')
+    contests_list = all_contests.find_all('p')
+    cont = (contests_list[0].find('strong').contents)[0][:-1]
+
+    # if cont == "Practice":
+    #     probs = contests_list[0].find_all('a')
+    #     for prob in probs:
+    #         upsolved_problems.append(prob.contents[0])
+
+    probs = all_contests.find_all('a')
+    for prob in probs:
+        link = prob['href']
+        name = prob.contents[0]
+
+        problems_solved.append((name, link))
+
+    return problems_solved
+
+
+def UserSubmissionDetails(problemcode, user_handle):
+
+    url = ""
+    solvedByUser = allProblemsSolved(user_handle)
+
+    for solved in solvedByUser:
+        if solved[0] == problemcode:
+            url = solved[1]
+            break
+
+    if len(url) == 0:
+        return []
+
+    baseurl = f'https://www.codechef.com/'
+    soup = UserSubmissionScraper(baseurl + url)
+    problemTable = soup.findAll('table', class_="dataTable")
+    problemRow = problemTable[0].findAll('tr')
+    problemRow.pop(0)
+    submissionlist = []
+    if len(problemRow) == 0 or problemRow[0].text == 'No Recent Activity':
+        return submissionlist
+
+    for problem in problemRow:
+        baseurl = "https://www.codechef.com"
+        problemDetails = problem.findAll('td')
+        subid = problemDetails[0].text
+        subtime = problemDetails[1].text
+        verdict = problemDetails[3].find('span').get('title')
+        if len(verdict) == 0:
+            verdict = (problemDetails[3].find('span').text)
+            verdict = verdict[:verdict.index('[')]
+            if int(verdict) == 100:
+                verdict = "accepted [100/100]"
+            else:
+                verdict = "partially accepted [" + verdict + "/100]"
+        lang = problemDetails[6].text
+        link = baseurl + problemDetails[7].find('a').get('href')
+
+        subformat = {
+            'subid': subid,
+            'subtime': subtime,
+            'verdict': verdict,
+            'lang': lang,
+            'link': link,
+        }
+
+        submissionlist.append(subformat)
+
+    return submissionlist
