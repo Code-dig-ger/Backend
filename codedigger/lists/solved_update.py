@@ -150,13 +150,14 @@ def atcoder_scraper_check(user, prob):
     if check:
         Solved.objects.create(user=user, problem=prob)
 
+
 def UpdateforUserCodeforces(user, limit):
     # limit should either be None, or be an integer greater than or equal to 1.
     if user is None:
-        return (False,"Given User object cannot be None")
+        return (False, "Given User object cannot be None")
     cf_handle = Profile.objects.get(owner=user).codeforces
     if cf_handle == None:
-        return (False,"cf_handle cannot be None.")
+        return (False, "cf_handle cannot be None.")
     try:
         submission_user = user_status(cf_handle)
     except ValidationException:
@@ -177,24 +178,29 @@ def UpdateforUserCodeforces(user, limit):
             if limit <= 0:
                 break
             continue
-    return (True, "Submission data for the given user has been saved successfully.")
+    return (True,
+            "Submission data for the given user has been saved successfully.")
 
 
-def UpdateforUserCodechef(user,limit):
+def UpdateforUserCodechef(user, limit):
     if user is None:
-        return (False,"Given User object cannot be None")
+        return (False, "Given User object cannot be None")
     codechef_handle = Profile.objects.get(owner=user).codechef
     if codechef_handle is None:
-        return (False,"codechef_handle cannot be None.")
+        return (False, "codechef_handle cannot be None.")
     url = 'https://www.codechef.com/users/' + str(codechef_handle)
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content, 'html.parser')
     problems_solved = soup.find(
         'section', {'class': 'rating-data-section problems-solved'})
     if problems_solved is None:
-        return (True,"Submission data for the given user has been saved successfully.")
+        return (
+            True,
+            "Submission data for the given user has been saved successfully.")
     if problems_solved.find('h5').text == 'Fully Solved (0)':
-        return (True,"Submission data for the given user has been saved successfully.")
+        return (
+            True,
+            "Submission data for the given user has been saved successfully.")
     for ele in problems_solved.find('article').find_all('a'):
         prob = Problem.objects.filter(prob_id=ele.text, platform='C')
         if not prob.exists():
@@ -206,19 +212,20 @@ def UpdateforUserCodechef(user,limit):
             if limit <= 0:
                 break
             continue
-    return (True,"Submission data for the given user has been saved successfully.")
+    return (True,
+            "Submission data for the given user has been saved successfully.")
 
 
-def UpdateforUserAtcoder(user,limit):
+def UpdateforUserAtcoder(user, limit):
     if user is None:
-        return (False,"Given User object cannot be None")
+        return (False, "Given User object cannot be None")
     atcoder_handle = Profile.objects.get(owner=user).atcoder
     if atcoder_handle is None:
-        return (False,"atcoder_handle cannot be None.")
+        return (False, "atcoder_handle cannot be None.")
     url = 'https://kenkoooo.com/atcoder/atcoder-api/results?user=' + atcoder_handle
     req = requests.get(url)
     if req.status_code != 200:
-        return (False,"User with the given handle does not exist.")
+        return (False, "User with the given handle does not exist.")
     req = req.json()
     sorted_req = sorted(req, key=lambda k: k['epoch_second'], reverse=True)
     for ele in sorted_req:
@@ -234,20 +241,24 @@ def UpdateforUserAtcoder(user,limit):
             if limit <= 0:
                 break
             continue
-    return (True,"Submission data for the given user has been saved successfully.")
+    return (True,
+            "Submission data for the given user has been saved successfully.")
 
-def UpdateforUserSpoj(user,limit):
+
+def UpdateforUserSpoj(user, limit):
     if user is None:
-        return (False,"Given User object cannot be None")
+        return (False, "Given User object cannot be None")
     spoj_handle = Profile.objects.get(owner=user).spoj
     if spoj_handle == None:
-        return (False,"spoj_handle cannot be None.")
+        return (False, "spoj_handle cannot be None.")
     url = 'https://www.spoj.com/users/' + spoj_handle
     res = requests.get(url)
     soup = bs4.BeautifulSoup(res.content, 'html.parser')
     problems = soup.find('table', {'class': 'table table-condensed'})
     if problems is None:
-        return (True,"Submission data for the given user has been saved successfully.")
+        return (
+            True,
+            "Submission data for the given user has been saved successfully.")
     for ele in problems.find_all('td'):
         if ele.text == "":
             continue
@@ -260,20 +271,21 @@ def UpdateforUserSpoj(user,limit):
             limit -= 1
             if limit <= 0:
                 break
-            continue 
-    return (True,"Submission data for the given user has been saved successfully.")
+            continue
+    return (True,
+            "Submission data for the given user has been saved successfully.")
 
 
-def UpdateforUserUva(user,limit):
+def UpdateforUserUva(user, limit):
     if user is None:
-        return (False,"Given User object cannot be None")
+        return (False, "Given User object cannot be None")
     uva_id = Profile.objects.get(owner=user).uva_id
     if uva_id is None:
-        return (False,"uva_id cannot be None.")
+        return (False, "uva_id cannot be None.")
     url1 = "https://uhunt.onlinejudge.org/api/subs-user/" + str(uva_id)
     req1 = requests.get(url1)
     if req1.status_code != 200:
-        return (False,"User with the given UVA-ID does not exist")
+        return (False, "User with the given UVA-ID does not exist")
     req1 = req1.json()
     sorted_req1 = sorted(req1['subs'], key=lambda k: k[4], reverse=True)
     for ele in sorted_req1:
@@ -288,5 +300,6 @@ def UpdateforUserUva(user,limit):
             limit -= 1
             if limit <= 0:
                 break
-            continue 
-    return (True,"Submission data for the given user has been saved successfully.")
+            continue
+    return (True,
+            "Submission data for the given user has been saved successfully.")
