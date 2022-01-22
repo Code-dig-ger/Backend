@@ -2,7 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('upsolve/<str:username>', views.CodechefUpsolveAPIView.as_view()),
+    path('upsolve',
+         views.CodechefUpsolveAPIView.as_view(),
+         name="codechef-upsolve"),
     path('recentsub/<str:username>',
          views.CodechefRecentSubmissionAPIView.as_view()),
     path('problemsub/<str:username>/<str:problem>',
