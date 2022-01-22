@@ -155,5 +155,5 @@ class Editor(models.Model):
                                     related_name="editor_list")
 
     def __str__(self):
-        return str(self.editor_user)+" can edit list "+str(self.editor_list)
-    
+        return str(self.editor_user) + " can edit list " + str(
+            self.editor_list)

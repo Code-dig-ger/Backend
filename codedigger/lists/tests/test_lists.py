@@ -155,9 +155,12 @@ class TestViews(TestSetUp):
         test_url = reverse('add-users')
         token = self.login(self.client, self.login_url, self.user_data)
         client = self.get_authenticated_client(token)
-        res = client.post(test_url, {"slug":slug,"friend":friend}, format="json")
-        self.assertEqual(res.data['result'],"User has been added to the list")
-        
+        res = client.post(test_url, {
+            "slug": slug,
+            "friend": friend
+        },
+                          format="json")
+        self.assertEqual(res.data['result'], "User has been added to the list")
 
     def test_get_user_list(self):
         username = "testing"
@@ -177,5 +180,6 @@ class TestViews(TestSetUp):
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         res2 = client.get(test_url, format="json")
 
-        self.assertEqual(res.status_code, 200) and self.assertEqual(len(res.data['result']),3) and self.assertRaises(
-            ValidationException, res2)
+        self.assertEqual(res.status_code, 200) and self.assertEqual(
+            len(res.data['result']), 3) and self.assertRaises(
+                ValidationException, res2)
