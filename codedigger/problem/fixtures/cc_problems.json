@@ -61,5 +61,41 @@
             "rating": 2528,
             "index":"APRIL20B"
         }
+    },
+    {
+        "model":"problem.problem",
+        "pk":16,
+        "fields":{
+            "name":"EVENTUAL",
+            "prob_id":"EVENTUAL",
+            "url":"https://www.codechef.com/problems/EVENTUAL",
+            "platform":"C",
+            "rating": 2528,
+            "index":"COOK120B"
+        }
+    },
+    {
+        "model":"problem.problem",
+        "pk":17,
+        "fields":{
+            "name":"ORTHODOX",
+            "prob_id":"ORTHODOX",
+            "url":"https://www.codechef.com/problems/ORTHODOX",
+            "platform":"C",
+            "rating": 2528,
+            "index":"COOK120B"
+        }
+    },
+    {
+        "model":"problem.problem",
+        "pk":18,
+        "fields":{
+            "name":"XORCIST",
+            "prob_id":"XORCIST",
+            "url":"https://www.codechef.com/problems/XORCIST",
+            "platform":"C",
+            "rating": 2528,
+            "index":"COOK120B"
+        }
     }
 ]

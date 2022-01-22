@@ -10,6 +10,7 @@ from lists.models import Solved
 
 
 class TestViews(TestSetUp):
+
     def test_check_owner_can_change_visibility_view(self):
         slug = "testinglist_userlist"
         test_url = reverse('userlist-edit', kwargs={'slug': slug})
@@ -120,6 +121,30 @@ class TestViews(TestSetUp):
                     break
         self.assertEqual(res.status_code, 200) and self.assertEqual(
             res2.status_code, 400) and ok
+
+    def test_get_user_stats(self):
+        slug = "testinglist_levelwise"
+        test_url = reverse('user-standing', kwargs={'slug': slug})
+        token = self.login(self.client, self.login_url, self.user_data)
+        client = self.get_authenticated_client(token)
+        res = client.get(test_url, format="json")
+
+        slug = "testinglist_userlist"
+        token = self.login(self.client, self.login_url, self.user_data)
+        client = self.get_authenticated_client(token)
+        res2 = client.get(test_url, format="json")
+
+        slug = "testinglist_levelwise"
+        test_url = reverse('user-standing', kwargs={'slug': slug
+                                                    }) + f'?friend={True}'
+        token = self.login(self.client, self.login_url, self.user_data)
+        client = self.get_authenticated_client(token)
+        res3 = client.get(test_url, format="json")
+
+        self.assertEqual(res.data['result'][0]['rank'],
+                         1) and self.assertGreaterEqual(
+                             res.data['result'][0]['problems_solved'],
+                             res.data['result'][1]['problems_solved'])
 
 
 def test_get_user_list(self):

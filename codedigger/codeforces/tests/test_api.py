@@ -8,6 +8,7 @@ from django.urls import reverse
 
 
 class TestAPI(TestSetUp):
+
     def test_user_info_api(self):
         handles = ['shivamsinghal1012', 'shivam011']
         response = user_info(handles)
