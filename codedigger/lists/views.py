@@ -7,7 +7,12 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
-                          EnrollInListSerializer)
+                          EnrollInListSerializer,
+                          UpdateCodeforcesForUserSerializer)
+from codeforces.api import user_status
+from .solved_update import (UpdateforUserCodeforces, UpdateforUserAtcoder,
+                            UpdateforUserCodechef, UpdateforUserSpoj,
+                            UpdateforUserUva, EnrollInListSerializer)
 from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
@@ -816,6 +821,44 @@ class EnrollListView(generics.GenericAPIView):
                 'result': "User has been enrolled into the list"
             },
             status=status.HTTP_201_CREATED)
+
+
+class UpdatesForUserView(generics.GenericAPIView):
+    permission_classes = [AuthenticatedActivated]
+    serializer_class = UpdateCodeforcesForUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        curr_user = self.request.user
+        data = request.data
+        platform = self.kwargs['platform']
+        username = data.get("username", None)
+        limit = data.get("limit", None)
+        if curr_user and curr_user.is_staff and username:
+            curr_user = User.objects.get(username=username)
+        if platform == 'F':
+            returned_status, returned_response = UpdateforUserCodeforces(
+                curr_user, limit)
+        if platform == 'C':
+            returned_status, returned_response = UpdateforUserCodechef(
+                curr_user, limit)
+        if platform == 'A':
+            returned_status, returned_response = UpdateforUserAtcoder(
+                curr_user, limit)
+        if platform == 'S':
+            returned_status, returned_response = UpdateforUserSpoj(
+                curr_user, limit)
+        if platform == 'U':
+            returned_status, returned_response = UpdateforUserUva(
+                curr_user, limit)
+        if returned_status:
+            return response.Response(
+                {
+                    'status': 'OK',
+                    'result': returned_response
+                },
+                status=status.HTTP_200_OK)
+        else:
+            return ValidationException(returned_response)
 
 
 def testing(request):

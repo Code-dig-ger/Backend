@@ -20,6 +20,7 @@ from .views import (
     SearchUserlistView,
     ListGetView,
     EnrollListView,
+    UpdateForUserView,
     testing)
 
 urlpatterns = [
@@ -65,6 +66,9 @@ urlpatterns = [
     path('enroll-list/', EnrollListView.as_view(), name='enroll-list'),
     path('userlists', SearchUserlistView.as_view(), name='userlist-search'),
     path('user/<str:username>', ListGetView.as_view(), name='user-list'),
+    path('update/<str:platform>/',
+         UpdateForUserView.as_view(),
+         name='update-codeforces'),
     #     path('<str:slug>/stats', ListStats.as_view(), name='list-stats'),
     path('<str:slug>/stats/standing',
          UserStandingStats.as_view(),

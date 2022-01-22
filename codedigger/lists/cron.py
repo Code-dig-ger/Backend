@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from codedigger.settings import EMAIL_HOST_USER
 from codeforces.api import user_status
 from user.exception import ValidationException
+from .solved_update import UpdateforUserCodeforces
 
 
 def cron_codeforces(user):
@@ -41,6 +42,11 @@ def cron_codeforces(user):
             if limit <= 0:
                 break
             continue
+
+
+def cron_codeforces_all_users(limit):
+    for ele in User.objects.all():
+        UpdateforUserCodeforces(ele, limit)
 
 
 def cron_uva(user):
