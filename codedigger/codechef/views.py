@@ -5,7 +5,7 @@ from rest_framework import generics, serializers
 from user.exception import ValidationException
 from .models import CodechefContest
 from .serializers import CodechefUpsolveSerializer
-from .scraper_utils import contestgivenScrapper, problems_solved, RecentSubmission, UserSubmissionDetails
+from .scraper_utils import contestgivenScrapper, problems_solved, RecentSubmission, UserSubmissionDetails, ContestData
 
 from codechef.cron import *
 # Create your views here.
@@ -78,6 +78,23 @@ class CodechefContestProblemsAPIView(generics.GenericAPIView):
         result = ProblemData(contest_id)
 
         return Response({'status': 'OK', 'result': result})
+
+
+class CodechefContestsAPIView(generics.GenericAPIView):
+
+    def get(self, request, time, typec):
+
+        ctime = request.GET.get('ctime', time)
+        ctype = request.GET.get('ctype', typec)
+        if ((ctime != 'past') & (ctime != 'present') & (ctime != 'future')):
+            raise ValidationException(
+                'A valid parameter for contest time is required')
+
+        if ((ctype != 'lunchtime') & (ctime != 'cookoff') & (ctime != 'starters') & (ctime != 'long')):
+            ctype = 'all'
+
+        result = ContestData(ctype, ctime)
+        return Response({'status': 'OK', 'result':result})
 
 
 def testing(request):
