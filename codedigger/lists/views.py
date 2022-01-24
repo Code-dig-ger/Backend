@@ -10,9 +10,13 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           EnrollInListSerializer,
                           UpdateCodeforcesForUserSerializer)
 from codeforces.api import user_status
-from .solved_update import (UpdateforUserCodeforces, UpdateforUserAtcoder,
-                            UpdateforUserCodechef, UpdateforUserSpoj,
-                            UpdateforUserUva, EnrollInListSerializer)
+from .solved_update import (
+    UpdateforUserCodeforces,
+    UpdateforUserAtcoder,
+    UpdateforUserCodechef,
+    UpdateforUserSpoj,
+    UpdateforUserUva,
+)
 from django.db.models import Q, Subquery, Count
 from user.permissions import *
 from user.exception import *
@@ -830,11 +834,13 @@ class UpdatesForUserView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         curr_user = self.request.user
         data = request.data
-        platform = self.kwargs['platform']
+        platform = request.GET.get('platform',None) 
         username = data.get("username", None)
         limit = data.get("limit", None)
         if curr_user and curr_user.is_staff and username:
-            curr_user = User.objects.get(username=username)
+            curr_user = User.objects.get(username = username)
+        returned_status = None
+        returned_response = None
         if platform == 'F':
             returned_status, returned_response = UpdateforUserCodeforces(
                 curr_user, limit)
@@ -851,15 +857,11 @@ class UpdatesForUserView(generics.GenericAPIView):
             returned_status, returned_response = UpdateforUserUva(
                 curr_user, limit)
         if returned_status:
-            return response.Response(
-                {
-                    'status': 'OK',
-                    'result': returned_response
-                },
-                status=status.HTTP_200_OK)
-        else:
-            return ValidationException(returned_response)
-
+            return response.Response({'status': 'OK', 'result': returned_response}, status = status.HTTP_200_OK)
+        return ValidationException(returned_response)
+        
+        
+        
 
 def testing(request):
     updater()
