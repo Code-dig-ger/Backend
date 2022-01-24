@@ -212,8 +212,8 @@ class EnrollInListSerializer(serializers.Serializer):
 
 
 class EditorListSerializer(serializers.Serializer):
-    # slug = serializers.CharField(required=True)
-    # friend = serializers.CharField(required=True)
+    slug = serializers.CharField(required=True)
+    friend = serializers.CharField(required=True)
 
     class Meta:
         model = Editor
