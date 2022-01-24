@@ -1,5 +1,5 @@
 from rest_framework import serializers, status
-from .models import ListInfo, Solved, List, ListInfo, LadderStarted
+from .models import ListInfo, Solved, List, ListInfo, LadderStarted, Editor
 from problem.models import Problem
 from user.models import User, Profile
 from drf_writable_nested.serializers import WritableNestedModelSerializer
@@ -107,7 +107,8 @@ class GetUserlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = ('id', 'name', 'description', 'slug', 'public')
+        fields = ('id', 'name', 'description', 'slug')
+        # fields = ('id', 'name', 'description', 'slug', 'public')
 
 
 class CreateUserlistSerializer(serializers.ModelSerializer):
@@ -208,3 +209,12 @@ class EnrollInListSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('slug', )
+
+
+class EditorListSerializer(serializers.Serializer):
+    slug = serializers.CharField(required=True)
+    friend = serializers.CharField(required=True)
+
+    class Meta:
+        model = Editor
+        fields = ('slug', 'friend')
