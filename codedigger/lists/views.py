@@ -7,7 +7,8 @@ from .serializers import (GetLadderSerializer, GetSerializer,
                           GetUserlistSerializer, EditUserlistSerializer,
                           CreateUserlistSerializer, ProblemSerializer,
                           UserlistAddSerializer, AddProblemsAdminSerializer,
-                          EnrollInListSerializer,UpdateCodeforcesForUserSerializer)
+                          EnrollInListSerializer,
+                          UpdateCodeforcesForUserSerializer)
 from codeforces.api import user_status
 from .solved_update import (
     UpdateforUserCodeforces,
@@ -829,27 +830,32 @@ class EnrollListView(generics.GenericAPIView):
 class UpdatesForUserView(generics.GenericAPIView):
     permission_classes = [AuthenticatedActivated]
     serializer_class = UpdateCodeforcesForUserSerializer
-    
-    def post(self,request,*args, **kwargs):
+
+    def post(self, request, *args, **kwargs):
         curr_user = self.request.user
         data = request.data
         platform = request.GET.get('platform',None) 
         username = data.get("username", None)
-        limit = data.get("limit",None)
+        limit = data.get("limit", None)
         if curr_user and curr_user.is_staff and username:
             curr_user = User.objects.get(username = username)
         returned_status = None
         returned_response = None
         if platform == 'F':
-            returned_status,returned_response = UpdateforUserCodeforces(curr_user,limit);
+            returned_status, returned_response = UpdateforUserCodeforces(
+                curr_user, limit)
         if platform == 'C':
-            returned_status,returned_response = UpdateforUserCodechef(curr_user,limit);
+            returned_status, returned_response = UpdateforUserCodechef(
+                curr_user, limit)
         if platform == 'A':
-            returned_status,returned_response = UpdateforUserAtcoder(curr_user,limit);
+            returned_status, returned_response = UpdateforUserAtcoder(
+                curr_user, limit)
         if platform == 'S':
-            returned_status,returned_response = UpdateforUserSpoj(curr_user,limit);
+            returned_status, returned_response = UpdateforUserSpoj(
+                curr_user, limit)
         if platform == 'U':
-            returned_status,returned_response = UpdateforUserUva(curr_user,limit);
+            returned_status, returned_response = UpdateforUserUva(
+                curr_user, limit)
         if returned_status:
             return response.Response({'status': 'OK', 'result': returned_response}, status = status.HTTP_200_OK)
         return ValidationException(returned_response)
